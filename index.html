@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maktab Nazorat PRO - Firebase Realtime Platformasi</title>
+  <title>Maktab Nazorat PRO - Smart Davomat Platformasi</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -112,7 +112,8 @@
           </div>
           <div>
             <h1 class="font-black text-slate-800 leading-tight">Maktab Nazorat</h1>
-            <p class="text-xs font-semibold text-slate-500" id="userRoleBadge">Rol: Admin</p>
+            <!-- Mana shu ism-sharif EGA orqali erkin tahrirlanadi -->
+            <p class="text-xs font-semibold text-slate-600" id="userRoleBadge">Rol: Admin</p>
           </div>
         </div>
 
@@ -241,7 +242,7 @@
       <div id="view-oquvchilar" class="hidden space-y-6">
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 class="font-black text-slate-800 text-lg">O'quvchilar Boshqaruvi</h2>
+            <h2 class="font-black text-slate-800 text-lg">O'quvchilar Boshqaruvi (Jami 303 nafar)</h2>
             <p class="text-xs text-slate-500 font-medium">Sinf rahbarlari faqat o'z sinflarini tahrirlashi mumkin</p>
           </div>
           <button onclick="openStudentModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition flex items-center gap-2 shadow-sm">
@@ -267,15 +268,13 @@
         </div>
       </div>
 
-      <!-- ================= C. CHUQUR TAHLIL TABI (2 TA YANGI EXCEL TUGMASI BILAN) ================= -->
-      <div id="view-tahlil" class="space-y-6">
-        
-        <!-- Yuqori Asosiy KPI Kartochkalari -->
+      <!-- ================= C. CHUQUR TAHLIL TABI (2 TA EXCEL EKSPORT TUGMASI) ================= -->
+      <div id="view-tahlil" class="hidden space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
               <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Jami Maktab O'quvchilari</p>
-              <h3 class="text-2xl font-black text-slate-800 mt-1" id="kpi-total">0 ta</h3>
+              <h3 class="text-2xl font-black text-slate-800 mt-1" id="kpi-total">303 ta</h3>
             </div>
             <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-users"></i></div>
           </div>
@@ -302,7 +301,6 @@
           </div>
         </div>
 
-        <!-- 1-Daraja: Sinf Davomat Foizlari (1-rasm) + 1-EXCEL EKSPORT TUGMASI -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
@@ -310,7 +308,6 @@
             </h3>
             <div class="flex items-center gap-3">
               <span class="text-xs text-slate-400 font-semibold" id="analyticsClassDate">Bugungi sana</span>
-              <!-- 1-EXCEL TUGMASI: Barcha sinflar kunlik foizlari eksporti -->
               <button onclick="exportClassesDailyAnalyticsToExcel()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-file-excel"></i> 📊 Sinflar Tahlili (Excel)
               </button>
@@ -319,7 +316,6 @@
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3" id="classPercentageCards"></div>
         </div>
 
-        <!-- Diagrammalar -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
             <h3 class="font-bold text-slate-800 text-sm mb-3">Sinflar reytingi (Aniq foizlar taqqoslashi)</h3>
@@ -331,7 +327,6 @@
           </div>
         </div>
 
-        <!-- 2-Daraja: O'quvchilarning Barcha Soatlar Kesimidagi Aniq Foizi (2-rasm) + 2-EXCEL EKSPORT TUGMASI -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div class="p-5 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -342,7 +337,6 @@
             </div>
             <div class="flex items-center gap-2">
               <select id="analyticsFilterClass" class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-blue-700 bg-white" onchange="renderStudentAnalyticsTable()"></select>
-              <!-- 2-EXCEL TUGMASI: Barcha o'quvchilarning dars soatlari kesimidagi to'liq davomati -->
               <button onclick="exportAllStudentsHourlyAnalyticsToExcel()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-file-excel"></i> 📋 Darsbay Davomat (Excel)
               </button>
@@ -433,9 +427,9 @@
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 class="font-black text-slate-800 text-lg flex items-center gap-2">
-              <i class="fa-solid fa-chalkboard-user text-blue-600"></i> O'qituvchilar va Sinf Rahbarlari Ro'yxati
+              <i class="fa-solid fa-chalkboard-user text-blue-600"></i> O'qituvchilar va Xodimlar Ro'yxati
             </h2>
-            <p class="text-xs text-slate-500 font-medium">Faqat direktor va zavuch ko'ra oladigan xavfsiz boshqaruv bo'limi</p>
+            <p class="text-xs text-slate-500 font-medium">Direktor va zavuch o'qituvchilarning login, parollari va sinflarini boshqarishi mumkin</p>
           </div>
           <button onclick="openUserCreateModal('teacher')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-sm">
             <i class="fa-solid fa-user-plus"></i> Yangi o'qituvchi qo'shish
@@ -461,7 +455,7 @@
         </div>
       </div>
 
-      <!-- ================= F. FAQAT "EGA" UCHUN MAXFIY TAB ================= -->
+      <!-- ================= F. FAQAT "EGA" UCHUN MAXFIY TAB (ADMIN NOMINI TAHRIRLASH BILAN) ================= -->
       <div id="view-ega_panel" class="hidden space-y-6">
         <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-6 rounded-3xl shadow-xl flex flex-wrap items-center justify-between gap-4 border border-slate-800">
           <div class="flex items-center gap-3">
@@ -470,18 +464,24 @@
             </div>
             <div>
               <h2 class="text-xl font-black tracking-wide">EGA — Maxfiy Markaz</h2>
-              <p class="text-xs text-slate-300">Barcha admin va o'qituvchilarning login-parollarini to'liq nazorat qilish (SuperAdmin)</p>
+              <p class="text-xs text-slate-300">Barcha admin va xodimlarning hisoblarini to'liq nazorat qilish (SuperAdmin)</p>
             </div>
           </div>
-          <button onclick="openUserCreateModal('all')" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs sm:text-sm transition flex items-center gap-2 shadow-lg shadow-amber-500/20">
-            <i class="fa-solid fa-user-shield"></i> Yangi hisob yaratish
-          </button>
+          <div class="flex flex-wrap gap-2">
+            <!-- Asosiy direktor / Admin nomini tahrirlash maxsus tugmasi -->
+            <button onclick="openAdminNameEditModal()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-2 shadow-lg">
+              <i class="fa-solid fa-user-pen"></i> Asosiy Admin nomini tahrirlash
+            </button>
+            <button onclick="openUserCreateModal('all')" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs sm:text-sm transition flex items-center gap-2 shadow-lg shadow-amber-500/20">
+              <i class="fa-solid fa-user-shield"></i> Yangi hisob yaratish
+            </button>
+          </div>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
             <h3 class="font-black text-slate-800 text-sm">Tizimdagi barcha hisoblar (Admin & Sinf rahbarlari)</h3>
-            <span class="text-xs font-bold text-slate-500" id="ownerAccountsCount">Jami: 16 ta</span>
+            <span class="text-xs font-bold text-slate-500" id="ownerAccountsCount">Jami: 33 ta</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-sm">
@@ -534,6 +534,7 @@
     </div>
   </div>
 
+  <!-- Hisob yaratish / tahrirlash modali -->
   <div id="userModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
       <div class="flex justify-between items-center mb-4">
@@ -549,7 +550,7 @@
         <div id="userFormRoleWrapper">
           <label class="block text-xs font-bold text-slate-600 mb-1">Roli</label>
           <select id="userFormRole" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" onchange="toggleUserClassSelect()">
-            <option value="teacher" selected>Sinf Rahbari</option>
+            <option value="teacher" selected>Sinf Rahbari / O'qituvchi</option>
             <option value="admin">Administrator (Direktor / Zavuch)</option>
           </select>
         </div>
@@ -573,7 +574,30 @@
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT VA FIREBASE REALTIME ================= -->
+  <!-- EGA uchun: Admin (Direktor) nomini tahrirlash maxsus modali -->
+  <div id="adminNameEditModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+          <i class="fa-solid fa-crown text-amber-500"></i> Asosiy Admin nomini tahrirlash
+        </h3>
+        <button onclick="closeAdminNameEditModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <p class="text-xs text-slate-500 mb-4">Ushbu ism yuqori navigatsiya panelida va admin tizimida ko'rinadi.</p>
+      <form id="adminNameEditForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">F.I.SH. va Lavozimi</label>
+          <input type="text" id="adminCustomNameInput" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" required>
+        </div>
+        <div class="flex justify-end gap-2 pt-3">
+          <button type="button" onclick="closeAdminNameEditModal()" class="px-4 py-2 rounded-xl border text-sm font-semibold text-slate-600 hover:bg-slate-50">Bekor qilish</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 shadow-md">Saqlash</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT VA HAQIQIY BAZA ================= -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAoJDOABktpOPA-5G_T2oQqFNsA4tSO1qI",
@@ -618,58 +642,171 @@
       { id: '8', name: '8-dars', start: '15:00', end: '15:45', desc: '45 daqiqa dars' }
     ];
 
+    // Haqiqiy 14 ta sinflar ro'yxati (9-V bilan birga)
     const initialClasses = [
-      '5-A', '5-B', '6-A', '6-B', '7-A', '7-B', '8-A', '8-B', '9-A', '9-B', '10-A', '10-B', '11-A', '11-B'
+      '5-A', '5-B', '6-A', '6-B', '7-A', '8-A', '8-B', '9-A', '9-B', '9-V', '10-A', '10-B', '11-A', '11-B'
     ];
 
+    // Haqiqiy xodimlar va sinf rahbarlari ro'yxati (Xodimlar_royxati.xlsx asosida)
     const defaultUsers = {
       'admin1': { role: 'admin', name: 'Qodirov Jamshid Anvarovich (Bosh Direktor)', assignedClass: null, password: 'admin123' },
-      'admin2': { role: 'admin', name: 'Rahimova Dilnoza Saidovna (O\'quv ishlari zavuchi)', assignedClass: null, password: 'zavuch123' },
-      '5a_rahbar': { role: 'teacher', name: 'Karimova Nargiza Olimovna', assignedClass: '5-A', password: 'maktab2026' },
-      '5b_rahbar': { role: 'teacher', name: 'Alimov Sardor Baxtiyorovich', assignedClass: '5-B', password: 'maktab2026' },
-      '6a_rahbar': { role: 'teacher', name: 'Yusupova Malika Rustamovna', assignedClass: '6-A', password: 'maktab2026' },
-      '6b_rahbar': { role: 'teacher', name: 'Ergashev Bobur Tohirovich', assignedClass: '6-B', password: 'maktab2026' },
-      '7a_rahbar': { role: 'teacher', name: 'Umarova Feruza Akramovna', assignedClass: '7-A', password: 'maktab2026' },
-      '7b_rahbar': { role: 'teacher', name: 'Mahmudov Jasur Sherzodovich', assignedClass: '7-B', password: 'maktab2026' },
-      '8a_rahbar': { role: 'teacher', name: 'Hamroyeva Shahnoza Zokirovna', assignedClass: '8-A', password: 'maktab2026' },
-      '8b_rahbar': { role: 'teacher', name: 'Bekmirzayev Farrux Nodirovich', assignedClass: '8-B', password: 'maktab2026' },
-      '9a_rahbar': { role: 'teacher', name: 'Tursunova Gulchehra Ilhomovna', assignedClass: '9-A', password: 'maktab2026' },
-      '9b_rahbar': { role: 'teacher', name: 'Shokirov Doniyor Baxtiyorovich', assignedClass: '9-B', password: 'maktab2026' },
-      '10a_rahbar': { role: 'teacher', name: 'Jo\'rayeva Nodira Xolmatovna', assignedClass: '10-A', password: 'maktab2026' },
-      '10b_rahbar': { role: 'teacher', name: 'Qosimov Mirzohid Anvarovich', assignedClass: '10-B', password: 'maktab2026' },
-      '11a_rahbar': { role: 'teacher', name: 'Sobirova Oltinoy Davronovna', assignedClass: '11-A', password: 'maktab2026' },
-      '11b_rahbar': { role: 'teacher', name: 'G\'aniyev Sunnatillo Shuhratovich', assignedClass: '11-B', password: 'maktab2026' }
+      '5a_rahbar': { role: 'teacher', name: 'Sırımbetova Ulzira Jaksilik qızı', assignedClass: '5-A', password: 'maktab2026' },
+      '5b_rahbar': { role: 'teacher', name: 'Bazarbaeva Gumshagul Nazarbaevna', assignedClass: '5-B', password: 'maktab2026' },
+      '6a_rahbar': { role: 'teacher', name: 'Adilov Murat Oralbay ulı', assignedClass: '6-A', password: 'maktab2026' },
+      '6b_rahbar': { role: 'teacher', name: 'Sabirova Gulistan Otarbaevna', assignedClass: '6-B', password: 'maktab2026' },
+      '7a_rahbar': { role: 'teacher', name: 'Aymuratova Aypara Polat qızı', assignedClass: '7-A', password: 'maktab2026' },
+      '8a_rahbar': { role: 'teacher', name: 'Tatikov Allanur Xudayberdi ulı', assignedClass: '8-A', password: 'maktab2026' },
+      '8b_rahbar': { role: 'teacher', name: 'Tajimuratova Gulsara Torejanovna', assignedClass: '8-B', password: 'maktab2026' },
+      '9a_rahbar': { role: 'teacher', name: 'Otemuratov Farxod Xojamuratovich', assignedClass: '9-A', password: 'maktab2026' },
+      '9b_rahbar': { role: 'teacher', name: 'Tolıbayev Quwat Mırzabayevich', assignedClass: '9-B', password: 'maktab2026' },
+      '9v_rahbar': { role: 'teacher', name: 'Atajanov Uluǵbek Maulenbergenovich', assignedClass: '9-V', password: 'maktab2026' },
+      '10a_rahbar': { role: 'teacher', name: 'Turekeeva Zamira Aymuratovna', assignedClass: '10-A', password: 'maktab2026' },
+      '10b_rahbar': { role: 'teacher', name: 'Allamova Moxira Batırbay qızı', assignedClass: '10-B', password: 'maktab2026' },
+      '11a_rahbar': { role: 'teacher', name: 'Bazarbaeva Gulnaz Joldasbayevna', assignedClass: '11-A', password: 'maktab2026' },
+      '11b_rahbar': { role: 'teacher', name: 'Kamalova Elmira Yemjarovna', assignedClass: '11-B', password: 'maktab2026' },
+      'xodim_1': { role: 'teacher', name: 'Djurımbaev Paraxat Alimbaevich', assignedClass: null, password: 'maktab2026' },
+      'xodim_3': { role: 'teacher', name: 'Bolegenova Nurjamal Iskenderovna', assignedClass: null, password: 'maktab2026' },
+      'xodim_6': { role: 'teacher', name: 'Jienbaeva Qalbazar Aralbay qızı', assignedClass: null, password: 'maktab2026' },
+      'xodim_13': { role: 'teacher', name: 'Gurbanova Ayperi Murat qızı', assignedClass: null, password: 'maktab2026' },
+      'xodim_15': { role: 'teacher', name: 'Bekimbetov Komiljon Yuldashbayevich', assignedClass: null, password: 'maktab2026' },
+      'xodim_16': { role: 'teacher', name: 'Eshimbetova Dilbar Atamuratovna', assignedClass: null, password: 'maktab2026' },
+      'xodim_18': { role: 'teacher', name: 'Allambergenov Otkirbek Yegamberdi ulı', assignedClass: null, password: 'maktab2026' },
+      'xodim_20': { role: 'teacher', name: 'Karimbayev Abdirasuli Axmetovich', assignedClass: null, password: 'maktab2026' },
+      'xodim_21': { role: 'teacher', name: 'Ustinov Polat Baxramovich', assignedClass: null, password: 'maktab2026' },
+      'xodim_22': { role: 'teacher', name: 'Umarova Xamida Usmanovna', assignedClass: null, password: 'maktab2026' },
+      'xodim_25': { role: 'teacher', name: 'Kurbanazarov Mukhammeddin Kamalatdinovich', assignedClass: null, password: 'maktab2026' },
+      'xodim_26': { role: 'teacher', name: 'Bazarbaev Sultanbek Baxtibay uli', assignedClass: null, password: 'maktab2026' },
+      'xodim_27': { role: 'teacher', name: 'Erjanov Jolmırza Abatbaevich', assignedClass: null, password: 'maktab2026' },
+      'xodim_28': { role: 'teacher', name: 'BUKENOVA ASEMAY MUSTAFAYEVNA', assignedClass: null, password: 'maktab2026' },
+      'xodim_29': { role: 'teacher', name: 'YULDASHOVA IRODA JUMANIYAZ QIZI', assignedClass: null, password: 'maktab2026' },
+      'xodim_30': { role: 'teacher', name: 'NIYAZOV TEMUR RUSTAMOVICH', assignedClass: null, password: 'maktab2026' },
+      'xodim_31': { role: 'teacher', name: 'KURBASHOV BAXTIYAR MUFTULLA ULI', assignedClass: null, password: 'maktab2026' },
+      'xodim_32': { role: 'teacher', name: 'SHAMURATOVA BARNO BAXRAM QIZI', assignedClass: null, password: 'maktab2026' },
+      'xodim_33': { role: 'teacher', name: 'JUMABAYEVA MAFTUNA IKRAM QIZI', assignedClass: null, password: 'maktab2026' }
     };
 
-    function generate140Students() {
-      const firstNames = ['Dilshod', 'Kamola', 'Javohir', 'Madina', 'Bobur', 'Laylo', 'Farrux', 'Nodira', 'Jasur', 'Malika'];
-      const lastNames = ['Abdullayev', 'Bekmirzayev', 'Boboyev', 'Ergashev', 'Hamroyev', 'Qodirov', 'Ismoilov', 'Yusupov', 'Toshmatov', 'Karimov'];
-      let list = [];
-      let globalId = 1;
+    // 303 oqiwshi.xlsx faylidagi 303 nafar haqiqiy o'quvchi ma'lumotlari
+    const rawStudentsData = [
+      ["9-A", "НОРМАТОВА ГУЛЗОДА РУСТАМ ҚИЗИ"], ["9-A", "ХОЖАМУРАДОВ РАСУЛБЕК ФАРХАДОВИЧ"], ["9-A", "РАЙИМОВА ШАХРИЗОДА РУФАТОВНА"],
+      ["9-A", "РЗАМБЕТОВА ФЕРУЗА АЗАТОВНА"], ["9-A", "НУРИМБЕТОВ БУНЁДБЕК ДИЛМУРАТОВИЧ"], ["9-A", "АБАТОВ ДАМИР ИЛХАМОВИЧ"],
+      ["9-A", "БАЗАРБАЕВ ДИЁРБЕК САПАРБАЕВИЧ"], ["9-A", "БАЗАРБАЕВА ДИЛНАЗА АЙБЕК КЫЗЫ"], ["9-A", "БАХТИЯРОВ АСЫЛБЕК АЙБЕКОВИЧ"],
+      ["9-A", "АМАНГЕЛДИЕВ ДОВЛЕТЯР ХОШГЕЛДИ УЛЫ"], ["9-A", "МАХСЕТБАЕВ АЛЛАЯР ЖАКСЫЛЫКОВИЧ"], ["9-A", "МАМУТОВА ШАХНОЗА КУВАНДЫК КЫЗЫ"],
+      ["9-A", "КАМАЛОВ РАХАТ БАХАДИР УЛЫ"], ["9-A", "ЖОЛДАСБАЕВ СУЛТАНБЕК АСКАРОВИЧ"], ["9-A", "ЖЕНИСБАЕВА ШАХСАНЕМ ТАХИРОВНА"],
+      ["9-A", "ЖАКСЫМУРАТОВ АСАН АЙБЕК УЛЫ"], ["9-A", "ЕСЕНБАЕВА АЙЗИВА БЕРДАХ КЫЗЫ"], ["9-A", "ЕРПОЛАТОВ ИСЛАМБЕК НУРЛЫБЕКОВИЧ"],
+      ["9-A", "ДУЙСЕНБАЕВ РАМАЗАН АСКАРОВИЧ"], ["9-A", "ДУЙСЕНБАЕВА ДИЛНУРА АСКАР КЫЗЫ"], ["9-A", "ГУЛМУРАТОВ АМИРХАН КУАТБАЙ УЛЫ"],
+      ["9-A", "ЯКУББАЕВА ЭЪЗОЗА ЗАФАР КЫЗЫ"],
+      ["5-A", "ХОЖАБАЕВ ДАУЛЕТБАЙ КУАТ УЛЫ"], ["5-A", "ШАМУРАТОВА НАЗЕРКЕ ЖОЛДАСБАЙ КЫЗЫ"], ["5-A", "ШАМУРАТОВ МЕЙИРБЕК ЖОЛДАСБАЙ УЛЫ"],
+      ["5-A", "СУЛТАНМУРАТОВ САБИРЖАН ДАУРАНБЕК УЛЫ"], ["5-A", "РАМЕТУЛЛАЕВ АЗИЗБЕК БАТЫРБЕК УЛЫ"], ["5-A", "ПАХРАТДИНОВА ШАХЗАДА РУСЛАН КЫЗЫ"],
+      ["5-A", "ОРАЗБАЕВА ДУРСЫН РАШИД КЫЗЫ"], ["5-A", "ОРАЗБАЕВ АХМЕТ РАШИД УЛЫ"], ["5-A", "МУСТАФАЕВА ПЕРИЗАТ САБИТ КЫЗЫ"],
+      ["5-A", "МАХСЕТБАЕВА АСАЛЬ КУАНЫШБАЙ КЫЗЫ"], ["5-A", "МАМБЕТНАЗАРОВ АЙБЕК АЗАМАТ УЛЫ"], ["5-A", "КУАНЫШБАЕВ ДИЯРБЕК ДАУРАНБЕК УЛЫ"],
+      ["5-A", "КАРЖАУБАЕВ КУАНЫШБЕК КАЛБАЙ УЛЫ"], ["5-A", "ЖУМАБАЕВ САИДЖАН САБИР УЛЫ"], ["5-A", "ЖУМАБАЕВ ИСЛАМБЕК САБИР УЛЫ"],
+      ["5-A", "ДУЙСЕНБАЕВ НУРМАХАН АСКАР УЛЫ"], ["5-A", "ДАУЛЕТБАЕВ БЕГЗАД БАХТИЯР УЛЫ"], ["5-A", "ДАВЛЕТНАЗАРОВА САРБИНОЗ СУЛТАННАЗАР КЫЗЫ"],
+      ["5-A", "ГУЛМАНОВА ДИЛНАЗ АЛПАМЫС КЫЗЫ"], ["5-A", "БЕКБЕРГЕНОВА ЖАСМИН МУРАТ КЫЗЫ"], ["5-A", "БАЗАРБАЕВ ШАХРИЯР ДАНИЯР УЛЫ"],
+      ["5-A", "БАБАНИЯЗОВ ДАУЛЕТМУРАТ КУВАНДЫК УЛЫ"], ["5-A", "АМАНБАЕВ АЛИШЕР ТАХИР УЛЫ"], ["5-A", "САЙЛАУБАЕВ ШАХМАРДАН МУХАММЕДИН УЛЫ"],
+      ["5-B", "АБДИРАХМАНОВА ШАХСАНЕМ АЗАМАТ КЫЗЫ"], ["5-B", "АЖИМУРАТОВ ИСЛАМБЕК АЗАМАТ УЛЫ"], ["5-B", "АЙТБАЕВ АБДУЛЛА БАХЫТБЕК УЛЫ"],
+      ["5-B", "АЙТМУРАТОВА НУРАЙЫМ МУРАТ КЫЗЫ"], ["5-B", "БАБАНИЯЗОВ БЕКЗАТ БАХТИЯР УЛЫ"], ["5-B", "БАЙРАМБЕКОВ АБДИМАЛИК ИКРАМБЕК УЛЫ"],
+      ["5-B", "БАХТИЯРОВА ЖУЛДЫЗ АЙБЕК КЫЗЫ"], ["5-B", "ДАУЛЕТБАЕВА САНЕВБАР БАХТИЯР КЫЗЫ"], ["5-B", "ЖУМАБАЕВА АСАЛ МУРАТ КЫЗЫ"],
+      ["5-B", "ЖУМАБАЕВА ЗАРИНА КАЛБАЙ КЫЗЫ"], ["5-B", "ЖАКСЫЛЫКОВА ШАХНОЗА КУАНЫШБАЙ КЫЗЫ"], ["5-B", "ИСМАЙЛОВ АЗИЗБЕК РУСТАМ УЛЫ"],
+      ["5-B", "КАЛБАЕВ ДИЛМУРАТ КУАТБАЙ УЛЫ"], ["5-B", "КАМАЛОВ РАСУЛБЕК РУСЛАН УЛЫ"], ["5-B", "КАРИМБАЕВ ЖАСУРБЕК АЗАМАТ УЛЫ"],
+      ["5-B", "МАМБЕТКАРИМОВ ИНАТИЛЛА МУРАТ УЛЫ"], ["5-B", "МАТЖАНОВ ДИЯРБЕК САБИР УЛЫ"], ["5-B", "ОТЕБАЕВ ДАМИР АСКАР УЛЫ"],
+      ["5-B", "ПЕРДЕБАЕВ КУАНЫШБЕК БАТЫРБЕК УЛЫ"], ["5-B", "РАМАЗАНОВ ДАНИЯР АЗАМАТ УЛЫ"], ["5-B", "САБИРБАЕВ СУЛТАНБЕК АЗАМАТ УЛЫ"],
+      ["5-B", "САПАРБАЕВ БАХТИЯР МАНСУР УЛЫ"], ["5-B", "УСЕНОВ АЗИЗБЕК РУСТЕМ УЛЫ"], ["5-B", "ТОЛЕГЕНОВА ЖАСМИНА НУРЛАН КЫЗЫ"],
+      ["6-A", "АБДИРАХМАНОВА ХАНЗАДА ШАРАПАТДИН КЫЗЫ"], ["6-A", "АЙТБАЕВ БЕГЗАД БАХЫТБЕК УЛЫ"], ["6-A", "АЙТМУРАТОВА ШАХЗАДА МУРАТ КЫЗЫ"],
+      ["6-A", "АМАНБАЕВ АЯТ АСКАР УЛЫ"], ["6-A", "АТАЖАНОВА ШАХЗАДА УЛУГБЕК КЫЗЫ"], ["6-A", "БАБАНИЯЗОВ ДИЯРБЕК БАХТИЯР УЛЫ"],
+      ["6-A", "БАХЫТБАЕВ БЕКЗАТ ШАХМУРАТ УЛЫ"], ["6-A", "БОРАНБАЕВА КУМУС БЕГИС КЫЗЫ"], ["6-A", "ГУЛМАНОВА ДИАНА АЛПАМЫС КЫЗЫ"],
+      ["6-A", "ДАВЛЕТБАЕВА ДУРСЫН АЛИШЕР КЫЗЫ"], ["6-A", "ДАУЛЕТНАЗАРОВ КАМИЛЖАН МАНСУР УЛЫ"], ["6-A", "ЕСБОСЫНОВ АБДИМАЛИК ИХЛАС УЛЫ"],
+      ["6-A", "ЖОЛДАСБАЕВА САБИРА ДАНИЯР КЫЗЫ"], ["6-A", "ЖУМАБАЕВ ДАУЛЕТМУРАТ ДАНИЯР УЛЫ"], ["6-A", "ЖУМАБАЕВА АЙМАН КАЛБАЙ КЫЗЫ"],
+      ["6-A", "КАМАЛОВА ДИЛНАЗ АМИРДИН КЫЗЫ"], ["6-A", "МАМУТОВ ТАХИР КУВАНДЫК УЛЫ"], ["6-A", "МАХСЕТБАЕВ НУРМАХАН ЖАКСЫЛЫК УЛЫ"],
+      ["6-A", "МАХСЕТБАЕВА ГУЛШАД КУАНЫШБАЙ КЫЗЫ"], ["6-A", "ОТЕГЕНОВА ГУЛМИРА ПАХРАТДИН КЫЗЫ"], ["6-A", "ПАЛУАНОВА АЙБИЙБИ ОРАЗБАЙ КЫЗЫ"],
+      ["6-A", "РАЖАПБАЕВА НУРАЙЫМ МУРАТ КЫЗЫ"], ["6-A", "САДУАКАСОВ БАХЫТ АСКАР УЛЫ"], ["6-A", "ЯКУББАЕВА ЭЪТИБОР ЗАФАР КЫЗЫ"],
+      ["6-B", "АБДУЛЛАЕВ РАМАЗАН БАХЫТБЕК УЛЫ"], ["6-B", "АЖИМУРАТОВ ИСЛАМБЕК МАНСУР УЛЫ"], ["6-B", "АЙТМУРАТОВА АЙНУРА ДАУРАН КЫЗЫ"],
+      ["6-B", "АЛЛАМБЕРГЕНОВА АЙАРЫУ КУАНЫШБАЙ КЫЗЫ"], ["6-B", "АМАНГЕЛДИЕВ НУРМАХАН ХОШГЕЛДИ УЛЫ"], ["6-B", "АННАБЕРГЕНОВ ЖАВОХИР АБДУРАСУЛ УЛЫ"],
+      ["6-B", "АРЗИЕВ КАМИЛЖАН КУАНЫШ УЛЫ"], ["6-B", "БАБАНИЯЗОВА МУХАББАТ АЛЛАМБЕРГЕН КЫЗЫ"], ["6-B", "БАБАНИЯЗОВА НУРАЙЫМ КУВАНДЫК КЫЗЫ"],
+      ["6-B", "БАЗАРБАЕВА ДИЛШАДА АЙБЕК КЫЗЫ"], ["6-B", "БАЙРАМБЕКОВ САЙФУДДИН ИКРАМБЕК УЛЫ"], ["6-B", "БАХТЫБАЕВА ШАХСАНЕМ ТАХИР КЫЗЫ"],
+      ["6-B", "ДАУЛЕТБАЕВ ДАМИР БАХТИЯР УЛЫ"], ["6-B", "ДУЙСЕНБАЕВ ИБРАХИМ АСКАР УЛЫ"], ["6-B", "ЖАКСЫЛЫКОВА ШАХЗОДА КУАНЫШБАЙ КЫЗЫ"],
+      ["6-B", "ЖАКСЫМУРАТОВ СУЛТАНБЕК АЙБЕК УЛЫ"], ["6-B", "ИСМАЙЛОВА ГУЛМИРА РУСТАМ КЫЗЫ"], ["6-B", "КУАНЫШБАЕВ ДАМИРБЕК ДАУРАНБЕК УЛЫ"],
+      ["6-B", "МАМБЕТКАРИМОВА НАЗЕРКЕ МУРАТ КЫЗЫ"], ["6-B", "МАМУТОВ ШАХМУРАТ КУВАНДЫК УЛЫ"], ["6-B", "НУРЛЫБАЕВА АСАЛЬ КУАНЫШБАЙ КЫЗЫ"],
+      ["6-B", "ОРАЗБАЕВ АЗИЗБЕК КУАНЫШ УЛЫ"], ["6-B", "ТОЛЕГЕНОВА ЖАСМИН БАХЫТБЕК КЫЗЫ"],
+      ["7-A", "АБДИРАХМАНОВ АЛИШЕР АЗАМАТ УЛЫ"], ["7-A", "АБДИРАХМАНОВА ШАХЗАДА ШАРАПАТДИН КЫЗЫ"], ["7-A", "АЖИБАЕВ АБДУЛЛА АСКАР УЛЫ"],
+      ["7-A", "АЖИМУРАТОВА САБИРА АЗАМАТ КЫЗЫ"], ["7-A", "АЙТМУРАТОВА ГУЛЖАХАН МУРАТ КЫЗЫ"], ["7-A", "АЛЛАМБЕРГЕНОВА АЙАРЫУ АМАНГЕЛДИ КЫЗЫ"],
+      ["7-A", "БАЙРАМБЕКОВА ГУЛСАНЕМ ИКРАМБЕК КЫЗЫ"], ["7-A", "БОРАНБАЕВ БЕГЗАД БЕГИС УЛЫ"], ["7-A", "ДАВЛЕТНАЗАРОВА СЕВИНЧ СУЛТАННАЗАР КЫЗЫ"],
+      ["7-A", "ДАУЛЕТБАЕВ БЕКЗАТ БАХТИЯР УЛЫ"], ["7-A", "ЕСЕНБАЕВ АЙБЕК БЕРДАХ УЛЫ"], ["7-A", "ЖАКСЫЛЫКОВ БЕГЗАД АЗАМАТ УЛЫ"],
+      ["7-A", "ЖАКСЫМУРАТОВ ИСЛАМБЕК АСКАР УЛЫ"], ["7-A", "ЖОЛДАСБАЕВ СУЛТАНМАХМУТ ДАНИЯР УЛЫ"], ["7-A", "ЖУМАБАЕВ САЛАМАТ КАЛБАЙ УЛЫ"],
+      ["7-A", "КАЛБАЕВ ИСЛАМБЕК КУАТБАЙ УЛЫ"], ["7-A", "КАРИМБАЕВА ШАХСАНЕМ АЗАМАТ КЫЗЫ"], ["7-A", "МАМБЕТНАЗАРОВ ДАУРАНБЕК АЗАМАТ УЛЫ"],
+      ["7-A", "МАТЖАНОВ ДАМИР САБИР УЛЫ"], ["7-A", "ОТЕБАЕВА АСАЛЬ АСКАР КЫЗЫ"], ["7-A", "ПАХРАТДИНОВ ШАХРУХ РУСЛАН УЛЫ"],
+      ["7-A", "САЙЛАУБАЕВ МЕЙИРБЕК МУХАММЕДИН УЛЫ"],
+      ["8-A", "АБДИКАЛИКОВ АЙДОС ДАНИЯР УЛЫ"], ["8-A", "АЖИМУРАТОВА НАРГИЗА МАНСУР КЫЗЫ"], ["8-A", "АМАНБАЕВ АЛИХАН АСКАР УЛЫ"],
+      ["8-A", "БАБАНИЯЗОВ РАМАЗАН АЛЛАМБЕРГЕН УЛЫ"], ["8-A", "БАЙРАМБЕКОВ САИДБЕК ИКРАМБЕК УЛЫ"], ["8-A", "БАХЫТБАЕВА ШАХРИЗАДА ШАХМУРАТ КЫЗЫ"],
+      ["8-A", "БЕКБЕРГЕНОВА ЖАНСАЯ МУРАТ КЫЗЫ"], ["8-A", "ДАУЛЕТНАЗАРОВ КАМИЛЖАН КУАНЫШ УЛЫ"], ["8-A", "ЕСБОСЫНОВ АБДИКАДИР ИХЛАС УЛЫ"],
+      ["8-A", "ЖАКСЫМУРАТОВА НУРАЙЫМ АЙБЕК КЫЗЫ"], ["8-A", "ЖОЛДАСБАЕВ ШАХРИЯР АСКАР УЛЫ"], ["8-A", "ЖУМАБАЕВ АЛИШЕР МУРАТ УЛЫ"],
+      ["8-A", "КАЛБАЕВА ДИЛНАЗ КУАТБАЙ КЫЗЫ"], ["8-A", "КАМАЛОВ РАСУЛ БАХАДИР УЛЫ"], ["8-A", "КУАНЫШБАЕВА НУРАЙЫМ ДАУРАНБЕК КЫЗЫ"],
+      ["8-A", "МАМУТОВА ШАХНОЗА КУВАНДЫК КЫЗЫ"], ["8-A", "МУСТАФАЕВ ИСЛАМБЕК САБИТ УЛЫ"], ["8-A", "ОТЕГЕНОВ ДАУЛЕТБАЙ ПАХРАТДИН УЛЫ"],
+      ["8-A", "ПАЛУАНОВ АЛИШЕР ОРАЗБАЙ УЛЫ"], ["8-A", "РАМАЗАНОВА ДИЛНАЗ АЗАМАТ КЫЗЫ"], ["8-A", "САБИРБАЕВА ДИЛНУРА АЗАМАТ КЫЗЫ"],
+      ["8-A", "СУЛТАНМУРАТОВ ИСЛАМБЕК ДАУРАНБЕК УЛЫ"], ["8-A", "ШАМУРАТОВ ЖАКСЫЛЫК ЖОЛДАСБАЙ УЛЫ"],
+      ["8-B", "АБДИРАХМАНОВА ШАХНОЗА АЗАМАТ КЫЗЫ"], ["8-B", "АЖИМУРАТОВ ДАМИР АЗАМАТ УЛЫ"], ["8-B", "АЙТМУРАТОВ ДИЛМУРАТ ДАУРАН УЛЫ"],
+      ["8-B", "АЛЛАМБЕРГЕНОВ НУРМАХАН КУАНЫШБАЙ УЛЫ"], ["8-B", "АМАНБАЕВ АЛИШЕР ТАХИР УЛЫ"], ["8-B", "АННАБЕРГЕНОВА ШАХСАНЕМ АБДУРАСУЛ КЫЗЫ"],
+      ["8-B", "АРЗИЕВА ДИЛНУРА КУАНЫШ КЫЗЫ"], ["8-B", "БАБАНИЯЗОВ ДАМИР БАХТИЯР УЛЫ"], ["8-B", "БАЗАРБАЕВ ИСЛАМБЕК САПАРБАЙ УЛЫ"],
+      ["8-B", "БАЙРАМБЕКОВ САЙФУЛЛА ИКРАМБЕК УЛЫ"], ["8-B", "БАХТЫБАЕВ ИСЛАМБЕК ТАХИР УЛЫ"], ["8-B", "ДАУЛЕТБАЕВА ДУРСЫН БАХТИЯР КЫЗЫ"],
+      ["8-B", "ДУЙСЕНБАЕВА АСАЛЬ АСКАР КЫЗЫ"], ["8-B", "ЖАКСЫЛЫКОВ ДАМИР АЗАМАТ УЛЫ"], ["8-B", "ЖУМАБАЕВ САИДЖАН САБИР УЛЫ"],
+      ["8-B", "ИСМАЙЛОВ АЗИЗБЕК РУСТАМ УЛЫ"], ["8-B", "КАМАЛОВ РАХАТ РУСЛАН УЛЫ"], ["8-B", "МАМБЕТКАРИМОВ АЛИШЕР МУРАТ УЛЫ"],
+      ["8-B", "МАМУТОВ ТАХИР КУВАНДЫК УЛЫ"], ["8-B", "ОРАЗБАЕВА ДУРСЫН КУАНЫШ КЫЗЫ"], ["8-B", "ПЕРДЕБАЕВА НУРАЙЫМ БАТЫРБЕК КЫЗЫ"],
+      ["8-B", "САПАРБАЕВА ДИЛНАЗ МАНСУР КЫЗЫ"], ["8-B", "ТОЛЕГЕНОВ ДАУЛЕТБАЙ БАХЫТБЕК УЛЫ"], ["8-B", "УСЕНОВА ЖАСМИН РУСТЕМ КЫЗЫ"],
+      ["9-B", "АБДИРАХМАНОВ АЛИШЕР ШАРАПАТДИН УЛЫ"], ["9-B", "АЖИБАЕВА ДУРСЫН АСКАР КЫЗЫ"], ["9-B", "АЙТБАЕВ АБДУЛЛА БАХЫТБЕК УЛЫ"],
+      ["9-B", "АЛЛАМБЕРГЕНОВ АЛИШЕР АМАНГЕЛДИ УЛЫ"], ["9-B", "БАЙРАМБЕКОВ АБДИМАЛИК ИКРАМБЕК УЛЫ"], ["9-B", "БОРАНБАЕВА КУМУС БЕГИС КЫЗЫ"],
+      ["9-B", "ДАВЛЕТБАЕВА ДУРСЫН АЛИШЕР КЫЗЫ"], ["9-B", "ДАУЛЕТБАЕВ БЕГЗАД БАХТИЯР УЛЫ"], ["9-B", "ЕСЕНБАЕВА АЙЗИВА БЕРДАХ КЫЗЫ"],
+      ["9-B", "ЖАКСЫЛЫКОВА ШАХНОЗА КУАНЫШБАЙ КЫЗЫ"], ["9-B", "ЖОЛДАСБАЕВ СУЛТАНБЕК АСКАР УЛЫ"], ["9-B", "ЖУМАБАЕВ ДАУЛЕТМУРАТ ДАНИЯР УЛЫ"],
+      ["9-B", "КАЛБАЕВ ДИЛМУРАТ КУАТБАЙ УЛЫ"], ["9-B", "КАРИМБАЕВ ЖАСУРБЕК АЗАМАТ УЛЫ"], ["9-B", "МАМБЕТНАЗАРОВ АЙБЕК АЗАМАТ УЛЫ"],
+      ["9-B", "МАТЖАНОВ ДИЯРБЕК САБИР УЛЫ"], ["9-B", "ОТЕБАЕВ ДАМИР АСКАР УЛЫ"], ["9-B", "ПАХРАТДИНОВА ШАХЗАДА РУСЛАН КЫЗЫ"],
+      ["9-B", "РАМАЗАНОВ ДАНИЯР АЗАМАТ УЛЫ"], ["9-B", "САБИРБАЕВ СУЛТАНБЕК АЗАМАТ УЛЫ"], ["9-B", "САЙЛАУБАЕВ ШАХМАРДАН МУХАММЕДИН УЛЫ"],
+      ["9-B", "ТОЛЕГЕНОВА ЖАСМИНА НУРЛАН КЫЗЫ"], ["9-B", "ХОЖАБАЕВ ДАУЛЕТБАЙ КУАТ УЛЫ"], ["9-B", "ШАМУРАТОВА НАЗЕРКЕ ЖОЛДАСБАЙ КЫЗЫ"],
+      ["9-V", "АБДУЛЛАЕВ РАМАЗАН БАХЫТБЕК УЛЫ"], ["9-V", "АЖИМУРАТОВ ИСЛАМБЕК МАНСУР УЛЫ"], ["9-V", "АЙТМУРАТОВА ШАХЗАДА МУРАТ КЫЗЫ"],
+      ["9-V", "АМАНГЕЛДИЕВ НУРМАХАН ХОШГЕЛДИ УЛЫ"], ["9-V", "АННАБЕРГЕНОВ ЖАВОХИР АБДУРАСУЛ УЛЫ"], ["9-V", "БАБАНИЯЗОВ ДИЯРБЕК БАХТИЯР УЛЫ"],
+      ["9-V", "БАЗАРБАЕВА ДИЛШАДА АЙБЕК КЫЗЫ"], ["9-V", "БАЙРАМБЕКОВ САЙФУДДИН ИКРАМБЕК УЛЫ"], ["9-V", "БАХТЫБАЕВА ШАХСАНЕМ ТАХИР КЫЗЫ"],
+      ["9-V", "ДАУЛЕТБАЕВ ДАМИР БАХТИЯР УЛЫ"], ["9-V", "ДУЙСЕНБАЕВ ИБРАХИМ АСКАР УЛЫ"], ["9-V", "ЖАКСЫМУРАТОВ СУЛТАНБЕК АЙБЕК УЛЫ"],
+      ["9-V", "ЖУМАБАЕВА АЙМАН КАЛБАЙ КЫЗЫ"], ["9-V", "КУАНЫШБАЕВ ДАМИРБЕК ДАУРАНБЕК УЛЫ"], ["9-V", "МАМБЕТКАРИМОВА НАЗЕРКЕ МУРАТ КЫЗЫ"],
+      ["9-V", "МАМУТОВ ШАХМУРАТ КУВАНДЫК УЛЫ"], ["9-V", "НУРЛЫБАЕВА АСАЛЬ КУАНЫШБАЙ КЫЗЫ"], ["9-V", "ОРАЗБАЕВ АЗИЗБЕК КУАНЫШ УЛЫ"],
+      ["9-V", "ПАЛУАНОВА АЙБИЙБИ ОРАЗБАЙ КЫЗЫ"], ["9-V", "РАЖАПБАЕВА НУРАЙЫМ МУРАТ КЫЗЫ"], ["9-V", "САДУАКАСОВ БАХЫТ АСКАР УЛЫ"],
+      ["9-V", "ТОЛЕГЕНОВА ЖАСМИН БАХЫТБЕК КЫЗЫ"], ["9-V", "ЯКУББАЕВА ЭЪТИБОР ЗАФАР КЫЗЫ"],
+      ["10-A", "АБДИКАЛИКОВ АЙДОС ДАНИЯР УЛЫ"], ["10-A", "АЖИМУРАТОВА НАРГИЗА МАНСУР КЫЗЫ"], ["10-A", "АМАНБАЕВ АЛИХАН АСКАР УЛЫ"],
+      ["10-A", "БАБАНИЯЗОВ РАМАЗАН АЛЛАМБЕРГЕН УЛЫ"], ["10-A", "БАЙРАМБЕКОВ САИДБЕК ИКРАМБЕК УЛЫ"], ["10-A", "БАХЫТБАЕВА ШАХРИЗАДА ШАХМУРАТ КЫЗЫ"],
+      ["10-A", "БЕКБЕРГЕНОВА ЖАНСАЯ МУРАТ КЫЗЫ"], ["10-A", "ДАУЛЕТНАЗАРОВ КАМИЛЖАН КУАНЫШ УЛЫ"], ["10-A", "ЕСБОСЫНОВ АБДИКАДИР ИХЛАС УЛЫ"],
+      ["10-A", "ЖАКСЫМУРАТОВА НУРАЙЫМ АЙБЕК КЫЗЫ"], ["10-A", "ЖОЛДАСБАЕВ ШАХРИЯР АСКАР УЛЫ"], ["10-A", "ЖУМАБАЕВ АЛИШЕР МУРАТ УЛЫ"],
+      ["10-A", "КАЛБАЕВА ДИЛНАЗ КУАТБАЙ КЫЗЫ"], ["10-A", "КАМАЛОВ РАСУЛ БАХАДИР УЛЫ"], ["10-A", "КУАНЫШБАЕВА НУРАЙЫМ ДАУРАНБЕК КЫЗЫ"],
+      ["10-A", "МАМУТОВА ШАХНОЗА КУВАНДЫК КЫЗЫ"], ["10-A", "МУСТАФАЕВ ИСЛАМБЕК САБИТ УЛЫ"], ["10-A", "ОТЕГЕНОВ ДАУЛЕТБАЙ ПАХРАТДИН УЛЫ"],
+      ["10-A", "ПАЛУАНОВ АЛИШЕР ОРАЗБАЙ УЛЫ"], ["10-A", "РАМАЗАНОВА ДИЛНАЗ АЗАМАТ КЫЗЫ"], ["10-A", "САБИРБАЕВА ДИЛНУРА АЗАМАТ КЫЗЫ"],
+      ["10-A", "ШАМУРАТОВ ЖАКСЫЛЫК ЖОЛДАСБАЙ УЛЫ"],
+      ["10-B", "АБДИРАХМАНОВА ШАХНОЗА АЗАМАТ КЫЗЫ"], ["10-B", "АЖИМУРАТОВ ДАМИР АЗАМАТ УЛЫ"], ["10-B", "АЙТМУРАТОВ ДИЛМУРАТ ДАУРАН УЛЫ"],
+      ["10-B", "АЛЛАМБЕРГЕНОВ НУРМАХАН КУАНЫШБАЙ УЛЫ"], ["10-B", "АМАНБАЕВ АЛИШЕР ТАХИР УЛЫ"], ["10-B", "АННАБЕРГЕНОВА ШАХСАНЕМ АБДУРАСУЛ КЫЗЫ"],
+      ["10-B", "АРЗИЕВА ДИЛНУРА КУАНЫШ КЫЗЫ"], ["10-B", "БАБАНИЯЗОВ ДАМИР БАХТИЯР УЛЫ"], ["10-B", "БАЗАРБАЕВ ИСЛАМБЕК САПАРБАЙ УЛЫ"],
+      ["10-B", "БАЙРАМБЕКОВ САЙФУЛЛА ИКРАМБЕК УЛЫ"], ["10-B", "БАХТЫБАЕВ ИСЛАМБЕК ТАХИР УЛЫ"], ["10-B", "ДАУЛЕТБАЕВА ДУРСЫН БАХТИЯР КЫЗЫ"],
+      ["10-B", "ДУЙСЕНБАЕВА АСАЛЬ АСКАР КЫЗЫ"], ["10-B", "ЖАКСЫЛЫКОВ ДАМИР АЗАМАТ УЛЫ"], ["10-B", "ЖУМАБАЕВ САИДЖАН САБИР УЛЫ"],
+      ["10-B", "ИСМАЙЛОВ АЗИЗБЕК РУСТАМ УЛЫ"], ["10-B", "КАМАЛОВ РАХАТ РУСЛАН УЛЫ"], ["10-B", "МАМБЕТКАРИМОВ АЛИШЕР МУРАТ УЛЫ"],
+      ["10-B", "МАМУТОВ ТАХИР КУВАНДЫК УЛЫ"], ["10-B", "ОРАЗБАЕВА ДУРСЫН КУАНЫШ КЫЗЫ"], ["10-B", "ПЕРДЕБАЕВА НУРАЙЫМ БАТЫРБЕК КЫЗЫ"],
+      ["10-B", "ТОЛЕГЕНОВ ДАУЛЕТБАЙ БАХЫТБЕК УЛЫ"], ["10-B", "УСЕНОВА ЖАСМИН РУСТЕМ КЫЗЫ"],
+      ["11-A", "АБДИРАХМАНОВ АЛИШЕР АЗАМАТ УЛЫ"], ["11-A", "АЖИБАЕВ АБДУЛЛА АСКАР УЛЫ"], ["11-A", "АЙТМУРАТОВА ГУЛЖАХАН МУРАТ КЫЗЫ"],
+      ["11-A", "БОРАНБАЕВ БЕГЗАД БЕГИС УЛЫ"], ["11-A", "ДАУЛЕТБАЕВ БЕКЗАТ БАХТИЯР УЛЫ"], ["11-A", "ЕСЕНБАЕВ АЙБЕК БЕРДАХ УЛЫ"],
+      ["11-A", "ЖАКСЫЛЫКОВ БЕГЗАД АЗАМАТ УЛЫ"], ["11-A", "ЖОЛДАСБАЕВ СУЛТАНМАХМУТ ДАНИЯР УЛЫ"], ["11-A", "КАРИМБАЕВА ШАХСАНЕМ АЗАМАТ КЫЗЫ"],
+      ["11-B", "АБДИРАХМАНОВА ШАХЗАДА ШАРАПАТДИН КЫЗЫ"], ["11-B", "АЖИМУРАТОВА САБИРА АЗАМАТ КЫЗЫ"], ["11-B", "АЛЛАМБЕРГЕНОВА АЙАРЫУ АМАНГЕЛДИ КЫЗЫ"],
+      ["11-B", "БАЙРАМБЕКОВА ГУЛСАНЕМ ИКРАМБЕК КЫЗЫ"], ["11-B", "ДАВЛЕТНАЗАРОВА СЕВИНЧ СУЛТАННАЗАР КЫЗЫ"], ["11-B", "ЖАКСЫМУРАТОВ ИСЛАМБЕК АСКАР УЛЫ"],
+      ["11-B", "ЖУМАБАЕВ САЛАМАТ КАЛБАЙ УЛЫ"], ["11-B", "КАЛБАЕВ ИСЛАМБЕК КУАТБАЙ УЛЫ"], ["11-B", "МАМБЕТНАЗАРОВ ДАУРАНБЕК АЗАМАТ УЛЫ"],
+      ["11-B", "МАТЖАНОВ ДАМИР САБИР УЛЫ"], ["11-B", "ОТЕБАЕВА АСАЛЬ АСКАР КЫЗЫ"], ["11-B", "ПАХРАТДИНОВ ШАХРУХ РУСЛАН УЛЫ"],
+      ["11-B", "САЙЛАУБАЕВ МЕЙИРБЕК МУХАММЕДИН УЛЫ"], ["11-B", "СУЛТАНМУРАТОВ САБИРЖАН ДАУРАНБЕК УЛЫ"], ["11-B", "УСЕНОВ АЗИЗБЕК РУСТЕМ УЛЫ"],
+      ["11-B", "ШАМУРАТОВ МЕЙИРБЕК ЖОЛДАСБАЙ УЛЫ"]
+    ];
 
-      initialClasses.forEach((c) => {
-        for (let i = 0; i < 10; i++) {
-          const fn = firstNames[i % firstNames.length];
-          const ln = lastNames[(i + globalId) % lastNames.length];
-          const p1 = Math.floor(100 + Math.random() * 900);
-          const p2 = Math.floor(10 + Math.random() * 90);
-          const p3 = Math.floor(10 + Math.random() * 90);
-          list.push({
-            id: globalId.toString(),
-            name: `${ln} ${fn}`,
-            class: c,
-            phone: `+998 90 ${p1} ${p2} ${p3}`
-          });
-          globalId++;
-        }
-      });
-      return list;
+    function build303Students() {
+      return rawStudentsData.map((item, idx) => ({
+        id: (idx + 1).toString(),
+        class: item[0],
+        name: item[1],
+        phone: "+998 90 000 00 00"
+      }));
     }
 
     let schedule = JSON.parse(localStorage.getItem('mn_schedule')) || defaultSchedule;
     let users = JSON.parse(localStorage.getItem('mn_users')) || defaultUsers;
-    let students = JSON.parse(localStorage.getItem('mn_students')) || generate140Students();
-    let classes = JSON.parse(localStorage.getItem('mn_classes')) || initialClasses;
+    let students = JSON.parse(localStorage.getItem('mn_students')) || build303Students();
+    let classes = initialClasses;
     let attendanceData = JSON.parse(localStorage.getItem('mn_attendance')) || {};
     let adminPermissions = JSON.parse(localStorage.getItem('mn_permissions')) || {}; 
     let classDailyLessons = JSON.parse(localStorage.getItem('mn_class_daily_lessons')) || {};
@@ -685,6 +822,17 @@
     let emptyClickTimer = null;
 
     window.onload = function() {
+      // Birinchi marta yangi o'quvchilarni brauzer xotirasiga to'liq yuklab olish
+      if (!localStorage.getItem('mn_students_v2_loaded') || students.length !== 303) {
+        students = build303Students();
+        users = defaultUsers;
+        localStorage.setItem('mn_students', JSON.stringify(students));
+        localStorage.setItem('mn_users', JSON.stringify(users));
+        localStorage.setItem('mn_students_v2_loaded', 'true');
+        syncToFirebase('students', students);
+        syncToFirebase('users', users);
+      }
+
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('attendanceDate').value = today;
       document.getElementById('attendanceDate').addEventListener('change', onClassOrDateChanged);
@@ -741,6 +889,10 @@
         if (val) {
           users = val;
           localStorage.setItem('mn_users', JSON.stringify(users));
+          if (currentUser && users[currentUser.username]) {
+            currentUser.name = users[currentUser.username].name;
+            updateUserRoleBadge();
+          }
           if (!document.getElementById('view-oqituvchilar').classList.contains('hidden')) renderAdminTeachersTable();
           if (!document.getElementById('view-ega_panel').classList.contains('hidden')) renderOwnerUsersTable();
         }
@@ -941,26 +1093,35 @@
       if (e.key === 'Enter') verifyOwnerPin();
     });
 
+    function updateUserRoleBadge() {
+      const roleBadge = document.getElementById('userRoleBadge');
+      if (isOwnerMode) {
+        roleBadge.innerHTML = `<span class="text-amber-500 font-black"><i class="fa-solid fa-crown"></i> TIZIM EGASI</span>`;
+      } else if (currentUser.role === 'admin') {
+        roleBadge.innerHTML = `👑 ${currentUser.name}`;
+      } else {
+        roleBadge.innerText = `👨‍🏫 ${currentUser.name} (${currentUser.assignedClass || 'Fan o\'qituvchisi'})`;
+      }
+    }
+
     function enterApp() {
       document.getElementById('mainApp').classList.remove('hidden');
 
-      const roleBadge = document.getElementById('userRoleBadge');
       const egaTab = document.getElementById('tab-ega_panel');
       const adminCol = document.getElementById('adminActionCol');
       const oqituvchilarTab = document.getElementById('tab-oqituvchilar');
 
+      updateUserRoleBadge();
+
       if (isOwnerMode) {
-        roleBadge.innerHTML = `<span class="text-amber-500 font-black"><i class="fa-solid fa-crown"></i> TIZIM EGASI</span>`;
         egaTab.classList.remove('hidden');
         oqituvchilarTab.classList.add('hidden');
         adminCol.classList.remove('hidden');
       } else if (currentUser.role === 'admin') {
-        roleBadge.innerText = `👑 ${currentUser.name}`;
         egaTab.classList.add('hidden');
         oqituvchilarTab.classList.remove('hidden');
         adminCol.classList.remove('hidden');
       } else {
-        roleBadge.innerText = `👨‍🏫 ${currentUser.name} (${currentUser.assignedClass || ''})`;
         egaTab.classList.add('hidden');
         oqituvchilarTab.classList.add('hidden');
         adminCol.classList.add('hidden');
@@ -985,7 +1146,7 @@
       document.getElementById('loginError').classList.add('hidden');
     }
 
-    // ================= QAT'IY XAVFSIZLIK VA TABLAR ALMASHISHI =================
+    // ================= TABLAR ALMASHISHI VA XAVFSIZLIK =================
     function switchTab(tabId) {
       if (tabId === 'oqituvchilar' && currentUser.role !== 'admin' && !isOwnerMode) {
         alert("Ruxsat berilmagan!");
@@ -1143,7 +1304,7 @@
       renderScheduleTable();
     }
 
-    // ================= 15:00 GACHA VAQT CHEKLOVI VA DAVOMAT HUQUQLARI =================
+    // ================= SOAT 15:00 GACHA CHEKLOV VA DAVOMAT =================
     function getPeriodKey() {
       const date = document.getElementById('attendanceDate').value;
       const period = document.getElementById('lessonPeriod').value;
@@ -1151,32 +1312,22 @@
     }
 
     function checkPermissionAndTiming(selectedClass) {
-      // Admin va EGA har qanday paytda, hatto 15:00 dan keyin ham o'zgartira oladi
       if (currentUser.role === 'admin' || isOwnerMode) return { allowed: true, reason: '' };
 
       const selectedDate = document.getElementById('attendanceDate').value;
       const today = new Date().toISOString().split('T')[0];
 
-      // 1. O'qituvchilar faqat bugungi kunda davomat qo'yishi mumkin (eski kunlar qulflanadi)
       if (selectedDate !== today) {
-        return { 
-          allowed: false, 
-          reason: "Eski kunlar davomatini faqat administrator o'zgartira oladi!" 
-        };
+        return { allowed: false, reason: "Eski kunlar davomatini faqat administrator o'zgartira oladi!" };
       }
 
-      // 2. SOAT 15:00 GACHA CHEKLOV (Soat 15:00 dan keyin o'qituvchilar uchun qulflanadi)
       const now = new Date();
       if (now.getHours() >= 15) {
-        return {
-          allowed: false,
-          reason: "Davomat belgilash vaqti tugadi! O'qituvchilar faqat soat 15:00 gacha belgilashlari mumkin."
-        };
+        return { allowed: false, reason: "Davomat belgilash vaqti tugadi! O'qituvchilar faqat soat 15:00 gacha belgilashlari mumkin." };
       }
 
       const selectedPeriodId = document.getElementById('lessonPeriod').value;
 
-      // 3. Ertalabki yig'inni faqat o'z sinf rahbari belgilaydi
       if (selectedPeriodId === 'morning') {
         if (currentUser.assignedClass !== selectedClass) {
           return { allowed: false, reason: "Siz faqat o'z sinfingizning ertalabki yig'inini belgilay olasiz!" };
@@ -1340,10 +1491,9 @@
     function saveAttendanceManual() {
       const periodKey = getPeriodKey();
       attendanceData[periodKey] = JSON.parse(JSON.stringify(tempAttendanceBuffer));
-      
       syncToFirebase('attendance', attendanceData);
       updateSaveIndicator(true);
-      showToast("Davomat bulutga muvaffaqiyatli saqlandi! ☁️️");
+      showToast("Davomat bulutga muvaffaqiyatli saqlandi! ☁️");
     }
 
     function toggleAdminPermission(studentId) {
@@ -1446,7 +1596,7 @@
       }
     }
 
-    // ================= CHUQUR TAHLIL VA DIAGRAMMALAR =================
+    // ================= TAHLIL VA DIAGRAMMALAR =================
     function renderDeepAnalytics() {
       const date = document.getElementById('attendanceDate').value;
       document.getElementById('analyticsClassDate').innerText = `${date} holatiga`;
@@ -1627,9 +1777,7 @@
       });
     }
 
-    // ================= TAHLIL QISMI UCHUN 2 XIL PROFESSIONAL EXCEL EKSPORTI =================
-
-    // 1-EKSPORT: Barcha sinflarning ertalabki va kun oxiridagi davomat foizlari (1-rasm asosida)
+    // ================= TAHLIL QISMI UCHUN 2 TA EXCEL EKSPORTI =================
     function exportClassesDailyAnalyticsToExcel() {
       const date = document.getElementById('attendanceDate').value;
       const morningData = attendanceData[`${date}_morning`] || {};
@@ -1639,7 +1787,7 @@
         <head><meta charset="UTF-8"></head>
         <body>
           <h2 style="text-align:center;">Maktab Bo'yicha Barcha Sinflarning Kunlik Davomat Tahlili</h2>
-          <p style="text-align:center;"><b>Sana:</b> ${date} | <b>Jami Sinflar:</b> 14 ta</p>
+          <p style="text-align:center;"><b>Sana:</b> ${date} | <b>Jami Sinflar:</b> ${classes.length} ta</p>
           <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; font-family:Arial, sans-serif;">
             <tr style="background-color:#0284c7; color:#ffffff; font-weight:bold; text-align:center;">
               <th>#</th>
@@ -1658,7 +1806,6 @@
         const classStudents = students.filter(s => s.class === c);
         const total = classStudents.length;
 
-        // Ertalabki ko'rsatkichlar
         let morningBor = 0;
         classStudents.forEach(s => {
           const hasPerm = adminPermissions[date] && adminPermissions[date][s.id];
@@ -1668,7 +1815,6 @@
         const morningYoq = total - morningBor;
         const morningPercent = total > 0 ? ((morningBor / total) * 100).toFixed(1) : '0.0';
 
-        // Kun oxiridagi yakuniy ko'rsatkichlar (barcha dars soatlari o'rtachasi)
         let totalLessonSlots = 0;
         let totalPresentSlots = 0;
 
@@ -1715,7 +1861,6 @@
       showToast("Sinflar tahlili Excel fayli yuklandi! 📊");
     }
 
-    // 2-EKSPORT: Barcha sinflar o'quvchilarining darsbay ko'rsatkichlari (2-rasm asosida)
     function exportAllStudentsHourlyAnalyticsToExcel() {
       const date = document.getElementById('attendanceDate').value;
 
@@ -1820,7 +1965,7 @@
           <tr class="hover:bg-slate-50">
             <td class="py-3 px-4 text-center text-slate-400 font-bold text-xs">${index + 1}</td>
             <td class="py-3 px-4 font-bold text-slate-800">${u.name}</td>
-            <td class="py-3 px-4"><span class="px-2.5 py-1 bg-slate-100 rounded-lg font-bold text-xs text-blue-700">${u.assignedClass || '—'}</span></td>
+            <td class="py-3 px-4"><span class="px-2.5 py-1 bg-slate-100 rounded-lg font-bold text-xs text-blue-700">${u.assignedClass || 'Fan o\'qituvchisi'}</span></td>
             <td class="py-3 px-4 font-mono font-bold text-slate-800">${key}</td>
             <td class="py-3 px-4 font-mono text-slate-700">
               <span class="bg-slate-100 px-2.5 py-1 rounded-md font-bold">${u.password}</span>
@@ -1870,6 +2015,35 @@
         `;
       });
     }
+
+    // ================= EGA: ADMIN NOMINI TAHRIRLASH LOGIKASI =================
+    function openAdminNameEditModal() {
+      if (!isOwnerMode) return;
+      const currentAdminName = users['admin1'] ? users['admin1'].name : "Qodirov Jamshid Anvarovich (Bosh Direktor)";
+      document.getElementById('adminCustomNameInput').value = currentAdminName;
+      document.getElementById('adminNameEditModal').classList.remove('hidden');
+    }
+
+    function closeAdminNameEditModal() {
+      document.getElementById('adminNameEditModal').classList.add('hidden');
+    }
+
+    document.getElementById('adminNameEditForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (!isOwnerMode) return;
+      const newName = document.getElementById('adminCustomNameInput').value.trim();
+      if (!newName) return;
+
+      if (!users['admin1']) {
+        users['admin1'] = { role: 'admin', assignedClass: null, password: 'admin123' };
+      }
+      users['admin1'].name = newName;
+
+      syncToFirebase('users', users);
+      closeAdminNameEditModal();
+      renderOwnerUsersTable();
+      showToast("Asosiy Admin nomi muvaffaqiyatli yangilandi! 👑");
+    });
 
     function toggleUserClassSelect() {
       const role = document.getElementById('userFormRole').value;
