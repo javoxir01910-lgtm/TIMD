@@ -687,7 +687,7 @@
       'xodim_33': { role: 'teacher', name: 'JUMABAYEVA MAFTUNA IKRAM QIZI', assignedClass: null, password: 'maktab2026' }
     };
 
-    // Siz yuborgan aynan 303 nafar asl o'quvchi ro'yxati (Barcha 14 ta sinf)
+    // Siz taqdim etgan haqiqiy 303 nafar o'quvchining to'liq ro'yxati
     const rawStudentsData = [
       ["9-A", "НОРМАТОВА ГУЛЗОДА РУСТАМ ҚИЗИ"],
       ["9-A", "ХОЖАМУРАДОВ РАСУЛБЕК ФАРХАДОВИЧ"],
@@ -1005,7 +1005,7 @@
 
     let schedule = JSON.parse(localStorage.getItem('mn_schedule')) || defaultSchedule;
     let users = JSON.parse(localStorage.getItem('mn_users')) || defaultUsers;
-    let students = build303Students(); // To'g'ridan-to'g'ri 303 o'quvchi
+    let students = build303Students();
     let classes = initialClasses;
     let attendanceData = JSON.parse(localStorage.getItem('mn_attendance')) || {};
     let adminPermissions = JSON.parse(localStorage.getItem('mn_permissions')) || {}; 
@@ -1021,7 +1021,6 @@
     let emptyClickCount = 0;
     let emptyClickTimer = null;
 
-    // BULUTNI VA LOKAL XOTIRANI 303 O'QUVCHIGA MAJBURIY YANGILASH
     function forceResetTo303Students() {
       students = build303Students();
       localStorage.setItem('mn_students', JSON.stringify(students));
@@ -1032,34 +1031,53 @@
         renderStudentManagementTable();
       }
       loadAttendanceForCurrentSelection();
-      showToast("Baza 303 nafar haqiqiy o'quvchiga qayta o'rnatildi va bulutga yuklandi! ✅");
+      showToast("Baza 303 nafar haqiqiy o'quvchiga qayta o'rnatildi! ✅");
     }
 
     window.onload = function() {
-      // Brauzer va Firebase-dagi eski soxta o'quvchilarni majburiy tozalash:
-      forceResetTo303Students();
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('attendanceDate');
+        if (dateInput) {
+          dateInput.value = today;
+          dateInput.addEventListener('change', onClassOrDateChanged);
+        }
 
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('attendanceDate').value = today;
-      document.getElementById('attendanceDate').addEventListener('change', onClassOrDateChanged);
-      
-      populateClassSelectors();
-      updateAvailablePeriodsForDate();
-      startLiveClock();
-      initFirebaseRealtimeListeners();
+        students = build303Students();
+        localStorage.setItem('mn_students', JSON.stringify(students));
+
+        populateClassSelectors();
+        updateAvailablePeriodsForDate();
+        startLiveClock();
+        loadAttendanceForCurrentSelection();
+        initFirebaseRealtimeListeners();
+
+        if (isFirebaseReady && db) {
+          db.ref('students').set(students);
+        }
+      } catch (err) {
+        console.error("Yuklanishda xatolik:", err);
+      }
     };
 
     function initFirebaseRealtimeListeners() {
       const badge = document.getElementById('dbStatusBadge');
 
-      if (!isFirebaseReady) {
+      if (!isFirebaseReady || !db) {
         badge.className = "hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200";
         badge.innerHTML = `<i class="fa-solid fa-hard-drive"></i> <span>Lokal rejim (Offline)</span>`;
         return;
       }
 
-      badge.className = "hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
-      badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span>Firebase Jonli Bulut</span>`;
+      db.ref('.info/connected').on('value', function(snap) {
+        if (snap.val() === true) {
+          badge.className = "hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
+          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span>Firebase Jonli Bulut</span>`;
+        } else {
+          badge.className = "hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200";
+          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span> <span>Bulutga ulanmoqda...</span>`;
+        }
+      });
 
       db.ref('attendance').on('value', snapshot => {
         const val = snapshot.val();
@@ -1080,7 +1098,6 @@
         }
       });
 
-      // Firebase-dan o'quvchilarni faqat 303 ta bo'lgandagina qabul qilish (eski 140 talikni rad etish)
       db.ref('students').on('value', snapshot => {
         const val = snapshot.val();
         if (val && Array.isArray(val) && val.length === 303) {
@@ -1089,7 +1106,6 @@
           if (!document.getElementById('view-oquvchilar').classList.contains('hidden')) renderStudentManagementTable();
           loadAttendanceForCurrentSelection();
         } else {
-          // Agar Firebase-da eski 140 ta turgan bo'lsa, uni darhol 303 taga almashtirib yuborish:
           forceResetTo303Students();
         }
       });
