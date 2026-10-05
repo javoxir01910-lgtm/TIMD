@@ -112,7 +112,6 @@
           </div>
           <div>
             <h1 class="font-black text-slate-800 leading-tight">Maktab Nazorat</h1>
-            <!-- Mana shu ism-sharif EGA orqali erkin tahrirlanadi -->
             <p class="text-xs font-semibold text-slate-600" id="userRoleBadge">Rol: Admin</p>
           </div>
         </div>
@@ -245,9 +244,14 @@
             <h2 class="font-black text-slate-800 text-lg">O'quvchilar Boshqaruvi (Jami 303 nafar)</h2>
             <p class="text-xs text-slate-500 font-medium">Sinf rahbarlari faqat o'z sinflarini tahrirlashi mumkin</p>
           </div>
-          <button onclick="openStudentModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition flex items-center gap-2 shadow-sm">
-            <i class="fa-solid fa-user-plus"></i> Yangi o'quvchi qo'shish
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="forceResetTo303Students()" class="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-amber-300" title="Bulutni 303 o'quvchiga qayta tiklash">
+              <i class="fa-solid fa-arrows-rotate"></i> Bulutni 303 o'quvchiga tiklash
+            </button>
+            <button onclick="openStudentModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition flex items-center gap-2 shadow-sm">
+              <i class="fa-solid fa-user-plus"></i> Yangi o'quvchi qo'shish
+            </button>
+          </div>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -268,7 +272,7 @@
         </div>
       </div>
 
-      <!-- ================= C. CHUQUR TAHLIL TABI (2 TA EXCEL EKSPORT TUGMASI) ================= -->
+      <!-- ================= C. CHUQUR TAHLIL TABI ================= -->
       <div id="view-tahlil" class="hidden space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
@@ -455,7 +459,7 @@
         </div>
       </div>
 
-      <!-- ================= F. FAQAT "EGA" UCHUN MAXFIY TAB (ADMIN NOMINI TAHRIRLASH BILAN) ================= -->
+      <!-- ================= F. FAQAT "EGA" UCHUN MAXFIY TAB ================= -->
       <div id="view-ega_panel" class="hidden space-y-6">
         <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-6 rounded-3xl shadow-xl flex flex-wrap items-center justify-between gap-4 border border-slate-800">
           <div class="flex items-center gap-3">
@@ -468,7 +472,9 @@
             </div>
           </div>
           <div class="flex flex-wrap gap-2">
-            <!-- Asosiy direktor / Admin nomini tahrirlash maxsus tugmasi -->
+            <button onclick="forceResetTo303Students()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-2 shadow-lg">
+              <i class="fa-solid fa-database"></i> 303 o'quvchini majburiy yuklash
+            </button>
             <button onclick="openAdminNameEditModal()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm transition flex items-center gap-2 shadow-lg">
               <i class="fa-solid fa-user-pen"></i> Asosiy Admin nomini tahrirlash
             </button>
@@ -534,7 +540,6 @@
     </div>
   </div>
 
-  <!-- Hisob yaratish / tahrirlash modali -->
   <div id="userModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
       <div class="flex justify-between items-center mb-4">
@@ -574,7 +579,6 @@
     </div>
   </div>
 
-  <!-- EGA uchun: Admin (Direktor) nomini tahrirlash maxsus modali -->
   <div id="adminNameEditModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
       <div class="flex justify-between items-center mb-4">
@@ -642,12 +646,10 @@
       { id: '8', name: '8-dars', start: '15:00', end: '15:45', desc: '45 daqiqa dars' }
     ];
 
-    // Haqiqiy 14 ta sinflar ro'yxati (9-V bilan birga)
     const initialClasses = [
       '5-A', '5-B', '6-A', '6-B', '7-A', '8-A', '8-B', '9-A', '9-B', '9-V', '10-A', '10-B', '11-A', '11-B'
     ];
 
-    // Haqiqiy xodimlar va sinf rahbarlari ro'yxati (Xodimlar_royxati.xlsx asosida)
     const defaultUsers = {
       'admin1': { role: 'admin', name: 'Qodirov Jamshid Anvarovich (Bosh Direktor)', assignedClass: null, password: 'admin123' },
       '5a_rahbar': { role: 'teacher', name: 'Sırımbetova Ulzira Jaksilik qızı', assignedClass: '5-A', password: 'maktab2026' },
@@ -685,113 +687,311 @@
       'xodim_33': { role: 'teacher', name: 'JUMABAYEVA MAFTUNA IKRAM QIZI', assignedClass: null, password: 'maktab2026' }
     };
 
-    // 303 oqiwshi.xlsx faylidagi 303 nafar haqiqiy o'quvchi ma'lumotlari
+    // Siz yuborgan aynan 303 nafar asl o'quvchi ro'yxati (Barcha 14 ta sinf)
     const rawStudentsData = [
-      ["9-A", "НОРМАТОВА ГУЛЗОДА РУСТАМ ҚИЗИ"], ["9-A", "ХОЖАМУРАДОВ РАСУЛБЕК ФАРХАДОВИЧ"], ["9-A", "РАЙИМОВА ШАХРИЗОДА РУФАТОВНА"],
-      ["9-A", "РЗАМБЕТОВА ФЕРУЗА АЗАТОВНА"], ["9-A", "НУРИМБЕТОВ БУНЁДБЕК ДИЛМУРАТОВИЧ"], ["9-A", "АБАТОВ ДАМИР ИЛХАМОВИЧ"],
-      ["9-A", "БАЗАРБАЕВ ДИЁРБЕК САПАРБАЕВИЧ"], ["9-A", "БАЗАРБАЕВА ДИЛНАЗА АЙБЕК КЫЗЫ"], ["9-A", "БАХТИЯРОВ АСЫЛБЕК АЙБЕКОВИЧ"],
-      ["9-A", "АМАНГЕЛДИЕВ ДОВЛЕТЯР ХОШГЕЛДИ УЛЫ"], ["9-A", "МАХСЕТБАЕВ АЛЛАЯР ЖАКСЫЛЫКОВИЧ"], ["9-A", "МАМУТОВА ШАХНОЗА КУВАНДЫК КЫЗЫ"],
-      ["9-A", "КАМАЛОВ РАХАТ БАХАДИР УЛЫ"], ["9-A", "ЖОЛДАСБАЕВ СУЛТАНБЕК АСКАРОВИЧ"], ["9-A", "ЖЕНИСБАЕВА ШАХСАНЕМ ТАХИРОВНА"],
-      ["9-A", "ЖАКСЫМУРАТОВ АСАН АЙБЕК УЛЫ"], ["9-A", "ЕСЕНБАЕВА АЙЗИВА БЕРДАХ КЫЗЫ"], ["9-A", "ЕРПОЛАТОВ ИСЛАМБЕК НУРЛЫБЕКОВИЧ"],
-      ["9-A", "ДУЙСЕНБАЕВ РАМАЗАН АСКАРОВИЧ"], ["9-A", "ДУЙСЕНБАЕВА ДИЛНУРА АСКАР КЫЗЫ"], ["9-A", "ГУЛМУРАТОВ АМИРХАН КУАТБАЙ УЛЫ"],
-      ["9-A", "ЯКУББАЕВА ЭЪЗОЗА ЗАФАР КЫЗЫ"],
-      ["5-A", "ХОЖАБАЕВ ДАУЛЕТБАЙ КУАТ УЛЫ"], ["5-A", "ШАМУРАТОВА НАЗЕРКЕ ЖОЛДАСБАЙ КЫЗЫ"], ["5-A", "ШАМУРАТОВ МЕЙИРБЕК ЖОЛДАСБАЙ УЛЫ"],
-      ["5-A", "СУЛТАНМУРАТОВ САБИРЖАН ДАУРАНБЕК УЛЫ"], ["5-A", "РАМЕТУЛЛАЕВ АЗИЗБЕК БАТЫРБЕК УЛЫ"], ["5-A", "ПАХРАТДИНОВА ШАХЗАДА РУСЛАН КЫЗЫ"],
-      ["5-A", "ОРАЗБАЕВА ДУРСЫН РАШИД КЫЗЫ"], ["5-A", "ОРАЗБАЕВ АХМЕТ РАШИД УЛЫ"], ["5-A", "МУСТАФАЕВА ПЕРИЗАТ САБИТ КЫЗЫ"],
-      ["5-A", "МАХСЕТБАЕВА АСАЛЬ КУАНЫШБАЙ КЫЗЫ"], ["5-A", "МАМБЕТНАЗАРОВ АЙБЕК АЗАМАТ УЛЫ"], ["5-A", "КУАНЫШБАЕВ ДИЯРБЕК ДАУРАНБЕК УЛЫ"],
-      ["5-A", "КАРЖАУБАЕВ КУАНЫШБЕК КАЛБАЙ УЛЫ"], ["5-A", "ЖУМАБАЕВ САИДЖАН САБИР УЛЫ"], ["5-A", "ЖУМАБАЕВ ИСЛАМБЕК САБИР УЛЫ"],
-      ["5-A", "ДУЙСЕНБАЕВ НУРМАХАН АСКАР УЛЫ"], ["5-A", "ДАУЛЕТБАЕВ БЕГЗАД БАХТИЯР УЛЫ"], ["5-A", "ДАВЛЕТНАЗАРОВА САРБИНОЗ СУЛТАННАЗАР КЫЗЫ"],
-      ["5-A", "ГУЛМАНОВА ДИЛНАЗ АЛПАМЫС КЫЗЫ"], ["5-A", "БЕКБЕРГЕНОВА ЖАСМИН МУРАТ КЫЗЫ"], ["5-A", "БАЗАРБАЕВ ШАХРИЯР ДАНИЯР УЛЫ"],
-      ["5-A", "БАБАНИЯЗОВ ДАУЛЕТМУРАТ КУВАНДЫК УЛЫ"], ["5-A", "АМАНБАЕВ АЛИШЕР ТАХИР УЛЫ"], ["5-A", "САЙЛАУБАЕВ ШАХМАРДАН МУХАММЕДИН УЛЫ"],
-      ["5-B", "АБДИРАХМАНОВА ШАХСАНЕМ АЗАМАТ КЫЗЫ"], ["5-B", "АЖИМУРАТОВ ИСЛАМБЕК АЗАМАТ УЛЫ"], ["5-B", "АЙТБАЕВ АБДУЛЛА БАХЫТБЕК УЛЫ"],
-      ["5-B", "АЙТМУРАТОВА НУРАЙЫМ МУРАТ КЫЗЫ"], ["5-B", "БАБАНИЯЗОВ БЕКЗАТ БАХТИЯР УЛЫ"], ["5-B", "БАЙРАМБЕКОВ АБДИМАЛИК ИКРАМБЕК УЛЫ"],
-      ["5-B", "БАХТИЯРОВА ЖУЛДЫЗ АЙБЕК КЫЗЫ"], ["5-B", "ДАУЛЕТБАЕВА САНЕВБАР БАХТИЯР КЫЗЫ"], ["5-B", "ЖУМАБАЕВА АСАЛ МУРАТ КЫЗЫ"],
-      ["5-B", "ЖУМАБАЕВА ЗАРИНА КАЛБАЙ КЫЗЫ"], ["5-B", "ЖАКСЫЛЫКОВА ШАХНОЗА КУАНЫШБАЙ КЫЗЫ"], ["5-B", "ИСМАЙЛОВ АЗИЗБЕК РУСТАМ УЛЫ"],
-      ["5-B", "КАЛБАЕВ ДИЛМУРАТ КУАТБАЙ УЛЫ"], ["5-B", "КАМАЛОВ РАСУЛБЕК РУСЛАН УЛЫ"], ["5-B", "КАРИМБАЕВ ЖАСУРБЕК АЗАМАТ УЛЫ"],
-      ["5-B", "МАМБЕТКАРИМОВ ИНАТИЛЛА МУРАТ УЛЫ"], ["5-B", "МАТЖАНОВ ДИЯРБЕК САБИР УЛЫ"], ["5-B", "ОТЕБАЕВ ДАМИР АСКАР УЛЫ"],
-      ["5-B", "ПЕРДЕБАЕВ КУАНЫШБЕК БАТЫРБЕК УЛЫ"], ["5-B", "РАМАЗАНОВ ДАНИЯР АЗАМАТ УЛЫ"], ["5-B", "САБИРБАЕВ СУЛТАНБЕК АЗАМАТ УЛЫ"],
-      ["5-B", "САПАРБАЕВ БАХТИЯР МАНСУР УЛЫ"], ["5-B", "УСЕНОВ АЗИЗБЕК РУСТЕМ УЛЫ"], ["5-B", "ТОЛЕГЕНОВА ЖАСМИНА НУРЛАН КЫЗЫ"],
-      ["6-A", "АБДИРАХМАНОВА ХАНЗАДА ШАРАПАТДИН КЫЗЫ"], ["6-A", "АЙТБАЕВ БЕГЗАД БАХЫТБЕК УЛЫ"], ["6-A", "АЙТМУРАТОВА ШАХЗАДА МУРАТ КЫЗЫ"],
-      ["6-A", "АМАНБАЕВ АЯТ АСКАР УЛЫ"], ["6-A", "АТАЖАНОВА ШАХЗАДА УЛУГБЕК КЫЗЫ"], ["6-A", "БАБАНИЯЗОВ ДИЯРБЕК БАХТИЯР УЛЫ"],
-      ["6-A", "БАХЫТБАЕВ БЕКЗАТ ШАХМУРАТ УЛЫ"], ["6-A", "БОРАНБАЕВА КУМУС БЕГИС КЫЗЫ"], ["6-A", "ГУЛМАНОВА ДИАНА АЛПАМЫС КЫЗЫ"],
-      ["6-A", "ДАВЛЕТБАЕВА ДУРСЫН АЛИШЕР КЫЗЫ"], ["6-A", "ДАУЛЕТНАЗАРОВ КАМИЛЖАН МАНСУР УЛЫ"], ["6-A", "ЕСБОСЫНОВ АБДИМАЛИК ИХЛАС УЛЫ"],
-      ["6-A", "ЖОЛДАСБАЕВА САБИРА ДАНИЯР КЫЗЫ"], ["6-A", "ЖУМАБАЕВ ДАУЛЕТМУРАТ ДАНИЯР УЛЫ"], ["6-A", "ЖУМАБАЕВА АЙМАН КАЛБАЙ КЫЗЫ"],
-      ["6-A", "КАМАЛОВА ДИЛНАЗ АМИРДИН КЫЗЫ"], ["6-A", "МАМУТОВ ТАХИР КУВАНДЫК УЛЫ"], ["6-A", "МАХСЕТБАЕВ НУРМАХАН ЖАКСЫЛЫК УЛЫ"],
-      ["6-A", "МАХСЕТБАЕВА ГУЛШАД КУАНЫШБАЙ КЫЗЫ"], ["6-A", "ОТЕГЕНОВА ГУЛМИРА ПАХРАТДИН КЫЗЫ"], ["6-A", "ПАЛУАНОВА АЙБИЙБИ ОРАЗБАЙ КЫЗЫ"],
-      ["6-A", "РАЖАПБАЕВА НУРАЙЫМ МУРАТ КЫЗЫ"], ["6-A", "САДУАКАСОВ БАХЫТ АСКАР УЛЫ"], ["6-A", "ЯКУББАЕВА ЭЪТИБОР ЗАФАР КЫЗЫ"],
-      ["6-B", "АБДУЛЛАЕВ РАМАЗАН БАХЫТБЕК УЛЫ"], ["6-B", "АЖИМУРАТОВ ИСЛАМБЕК МАНСУР УЛЫ"], ["6-B", "АЙТМУРАТОВА АЙНУРА ДАУРАН КЫЗЫ"],
-      ["6-B", "АЛЛАМБЕРГЕНОВА АЙАРЫУ КУАНЫШБАЙ КЫЗЫ"], ["6-B", "АМАНГЕЛДИЕВ НУРМАХАН ХОШГЕЛДИ УЛЫ"], ["6-B", "АННАБЕРГЕНОВ ЖАВОХИР АБДУРАСУЛ УЛЫ"],
-      ["6-B", "АРЗИЕВ КАМИЛЖАН КУАНЫШ УЛЫ"], ["6-B", "БАБАНИЯЗОВА МУХАББАТ АЛЛАМБЕРГЕН КЫЗЫ"], ["6-B", "БАБАНИЯЗОВА НУРАЙЫМ КУВАНДЫК КЫЗЫ"],
-      ["6-B", "БАЗАРБАЕВА ДИЛШАДА АЙБЕК КЫЗЫ"], ["6-B", "БАЙРАМБЕКОВ САЙФУДДИН ИКРАМБЕК УЛЫ"], ["6-B", "БАХТЫБАЕВА ШАХСАНЕМ ТАХИР КЫЗЫ"],
-      ["6-B", "ДАУЛЕТБАЕВ ДАМИР БАХТИЯР УЛЫ"], ["6-B", "ДУЙСЕНБАЕВ ИБРАХИМ АСКАР УЛЫ"], ["6-B", "ЖАКСЫЛЫКОВА ШАХЗОДА КУАНЫШБАЙ КЫЗЫ"],
-      ["6-B", "ЖАКСЫМУРАТОВ СУЛТАНБЕК АЙБЕК УЛЫ"], ["6-B", "ИСМАЙЛОВА ГУЛМИРА РУСТАМ КЫЗЫ"], ["6-B", "КУАНЫШБАЕВ ДАМИРБЕК ДАУРАНБЕК УЛЫ"],
-      ["6-B", "МАМБЕТКАРИМОВА НАЗЕРКЕ МУРАТ КЫЗЫ"], ["6-B", "МАМУТОВ ШАХМУРАТ КУВАНДЫК УЛЫ"], ["6-B", "НУРЛЫБАЕВА АСАЛЬ КУАНЫШБАЙ КЫЗЫ"],
-      ["6-B", "ОРАЗБАЕВ АЗИЗБЕК КУАНЫШ УЛЫ"], ["6-B", "ТОЛЕГЕНОВА ЖАСМИН БАХЫТБЕК КЫЗЫ"],
-      ["7-A", "АБДИРАХМАНОВ АЛИШЕР АЗАМАТ УЛЫ"], ["7-A", "АБДИРАХМАНОВА ШАХЗАДА ШАРАПАТДИН КЫЗЫ"], ["7-A", "АЖИБАЕВ АБДУЛЛА АСКАР УЛЫ"],
-      ["7-A", "АЖИМУРАТОВА САБИРА АЗАМАТ КЫЗЫ"], ["7-A", "АЙТМУРАТОВА ГУЛЖАХАН МУРАТ КЫЗЫ"], ["7-A", "АЛЛАМБЕРГЕНОВА АЙАРЫУ АМАНГЕЛДИ КЫЗЫ"],
-      ["7-A", "БАЙРАМБЕКОВА ГУЛСАНЕМ ИКРАМБЕК КЫЗЫ"], ["7-A", "БОРАНБАЕВ БЕГЗАД БЕГИС УЛЫ"], ["7-A", "ДАВЛЕТНАЗАРОВА СЕВИНЧ СУЛТАННАЗАР КЫЗЫ"],
-      ["7-A", "ДАУЛЕТБАЕВ БЕКЗАТ БАХТИЯР УЛЫ"], ["7-A", "ЕСЕНБАЕВ АЙБЕК БЕРДАХ УЛЫ"], ["7-A", "ЖАКСЫЛЫКОВ БЕГЗАД АЗАМАТ УЛЫ"],
-      ["7-A", "ЖАКСЫМУРАТОВ ИСЛАМБЕК АСКАР УЛЫ"], ["7-A", "ЖОЛДАСБАЕВ СУЛТАНМАХМУТ ДАНИЯР УЛЫ"], ["7-A", "ЖУМАБАЕВ САЛАМАТ КАЛБАЙ УЛЫ"],
-      ["7-A", "КАЛБАЕВ ИСЛАМБЕК КУАТБАЙ УЛЫ"], ["7-A", "КАРИМБАЕВА ШАХСАНЕМ АЗАМАТ КЫЗЫ"], ["7-A", "МАМБЕТНАЗАРОВ ДАУРАНБЕК АЗАМАТ УЛЫ"],
-      ["7-A", "МАТЖАНОВ ДАМИР САБИР УЛЫ"], ["7-A", "ОТЕБАЕВА АСАЛЬ АСКАР КЫЗЫ"], ["7-A", "ПАХРАТДИНОВ ШАХРУХ РУСЛАН УЛЫ"],
-      ["7-A", "САЙЛАУБАЕВ МЕЙИРБЕК МУХАММЕДИН УЛЫ"],
-      ["8-A", "АБДИКАЛИКОВ АЙДОС ДАНИЯР УЛЫ"], ["8-A", "АЖИМУРАТОВА НАРГИЗА МАНСУР КЫЗЫ"], ["8-A", "АМАНБАЕВ АЛИХАН АСКАР УЛЫ"],
-      ["8-A", "БАБАНИЯЗОВ РАМАЗАН АЛЛАМБЕРГЕН УЛЫ"], ["8-A", "БАЙРАМБЕКОВ САИДБЕК ИКРАМБЕК УЛЫ"], ["8-A", "БАХЫТБАЕВА ШАХРИЗАДА ШАХМУРАТ КЫЗЫ"],
-      ["8-A", "БЕКБЕРГЕНОВА ЖАНСАЯ МУРАТ КЫЗЫ"], ["8-A", "ДАУЛЕТНАЗАРОВ КАМИЛЖАН КУАНЫШ УЛЫ"], ["8-A", "ЕСБОСЫНОВ АБДИКАДИР ИХЛАС УЛЫ"],
-      ["8-A", "ЖАКСЫМУРАТОВА НУРАЙЫМ АЙБЕК КЫЗЫ"], ["8-A", "ЖОЛДАСБАЕВ ШАХРИЯР АСКАР УЛЫ"], ["8-A", "ЖУМАБАЕВ АЛИШЕР МУРАТ УЛЫ"],
-      ["8-A", "КАЛБАЕВА ДИЛНАЗ КУАТБАЙ КЫЗЫ"], ["8-A", "КАМАЛОВ РАСУЛ БАХАДИР УЛЫ"], ["8-A", "КУАНЫШБАЕВА НУРАЙЫМ ДАУРАНБЕК КЫЗЫ"],
-      ["8-A", "МАМУТОВА ШАХНОЗА КУВАНДЫК КЫЗЫ"], ["8-A", "МУСТАФАЕВ ИСЛАМБЕК САБИТ УЛЫ"], ["8-A", "ОТЕГЕНОВ ДАУЛЕТБАЙ ПАХРАТДИН УЛЫ"],
-      ["8-A", "ПАЛУАНОВ АЛИШЕР ОРАЗБАЙ УЛЫ"], ["8-A", "РАМАЗАНОВА ДИЛНАЗ АЗАМАТ КЫЗЫ"], ["8-A", "САБИРБАЕВА ДИЛНУРА АЗАМАТ КЫЗЫ"],
-      ["8-A", "СУЛТАНМУРАТОВ ИСЛАМБЕК ДАУРАНБЕК УЛЫ"], ["8-A", "ШАМУРАТОВ ЖАКСЫЛЫК ЖОЛДАСБАЙ УЛЫ"],
-      ["8-B", "АБДИРАХМАНОВА ШАХНОЗА АЗАМАТ КЫЗЫ"], ["8-B", "АЖИМУРАТОВ ДАМИР АЗАМАТ УЛЫ"], ["8-B", "АЙТМУРАТОВ ДИЛМУРАТ ДАУРАН УЛЫ"],
-      ["8-B", "АЛЛАМБЕРГЕНОВ НУРМАХАН КУАНЫШБАЙ УЛЫ"], ["8-B", "АМАНБАЕВ АЛИШЕР ТАХИР УЛЫ"], ["8-B", "АННАБЕРГЕНОВА ШАХСАНЕМ АБДУРАСУЛ КЫЗЫ"],
-      ["8-B", "АРЗИЕВА ДИЛНУРА КУАНЫШ КЫЗЫ"], ["8-B", "БАБАНИЯЗОВ ДАМИР БАХТИЯР УЛЫ"], ["8-B", "БАЗАРБАЕВ ИСЛАМБЕК САПАРБАЙ УЛЫ"],
-      ["8-B", "БАЙРАМБЕКОВ САЙФУЛЛА ИКРАМБЕК УЛЫ"], ["8-B", "БАХТЫБАЕВ ИСЛАМБЕК ТАХИР УЛЫ"], ["8-B", "ДАУЛЕТБАЕВА ДУРСЫН БАХТИЯР КЫЗЫ"],
-      ["8-B", "ДУЙСЕНБАЕВА АСАЛЬ АСКАР КЫЗЫ"], ["8-B", "ЖАКСЫЛЫКОВ ДАМИР АЗАМАТ УЛЫ"], ["8-B", "ЖУМАБАЕВ САИДЖАН САБИР УЛЫ"],
-      ["8-B", "ИСМАЙЛОВ АЗИЗБЕК РУСТАМ УЛЫ"], ["8-B", "КАМАЛОВ РАХАТ РУСЛАН УЛЫ"], ["8-B", "МАМБЕТКАРИМОВ АЛИШЕР МУРАТ УЛЫ"],
-      ["8-B", "МАМУТОВ ТАХИР КУВАНДЫК УЛЫ"], ["8-B", "ОРАЗБАЕВА ДУРСЫН КУАНЫШ КЫЗЫ"], ["8-B", "ПЕРДЕБАЕВА НУРАЙЫМ БАТЫРБЕК КЫЗЫ"],
-      ["8-B", "САПАРБАЕВА ДИЛНАЗ МАНСУР КЫЗЫ"], ["8-B", "ТОЛЕГЕНОВ ДАУЛЕТБАЙ БАХЫТБЕК УЛЫ"], ["8-B", "УСЕНОВА ЖАСМИН РУСТЕМ КЫЗЫ"],
-      ["9-B", "АБДИРАХМАНОВ АЛИШЕР ШАРАПАТДИН УЛЫ"], ["9-B", "АЖИБАЕВА ДУРСЫН АСКАР КЫЗЫ"], ["9-B", "АЙТБАЕВ АБДУЛЛА БАХЫТБЕК УЛЫ"],
-      ["9-B", "АЛЛАМБЕРГЕНОВ АЛИШЕР АМАНГЕЛДИ УЛЫ"], ["9-B", "БАЙРАМБЕКОВ АБДИМАЛИК ИКРАМБЕК УЛЫ"], ["9-B", "БОРАНБАЕВА КУМУС БЕГИС КЫЗЫ"],
-      ["9-B", "ДАВЛЕТБАЕВА ДУРСЫН АЛИШЕР КЫЗЫ"], ["9-B", "ДАУЛЕТБАЕВ БЕГЗАД БАХТИЯР УЛЫ"], ["9-B", "ЕСЕНБАЕВА АЙЗИВА БЕРДАХ КЫЗЫ"],
-      ["9-B", "ЖАКСЫЛЫКОВА ШАХНОЗА КУАНЫШБАЙ КЫЗЫ"], ["9-B", "ЖОЛДАСБАЕВ СУЛТАНБЕК АСКАР УЛЫ"], ["9-B", "ЖУМАБАЕВ ДАУЛЕТМУРАТ ДАНИЯР УЛЫ"],
-      ["9-B", "КАЛБАЕВ ДИЛМУРАТ КУАТБАЙ УЛЫ"], ["9-B", "КАРИМБАЕВ ЖАСУРБЕК АЗАМАТ УЛЫ"], ["9-B", "МАМБЕТНАЗАРОВ АЙБЕК АЗАМАТ УЛЫ"],
-      ["9-B", "МАТЖАНОВ ДИЯРБЕК САБИР УЛЫ"], ["9-B", "ОТЕБАЕВ ДАМИР АСКАР УЛЫ"], ["9-B", "ПАХРАТДИНОВА ШАХЗАДА РУСЛАН КЫЗЫ"],
-      ["9-B", "РАМАЗАНОВ ДАНИЯР АЗАМАТ УЛЫ"], ["9-B", "САБИРБАЕВ СУЛТАНБЕК АЗАМАТ УЛЫ"], ["9-B", "САЙЛАУБАЕВ ШАХМАРДАН МУХАММЕДИН УЛЫ"],
-      ["9-B", "ТОЛЕГЕНОВА ЖАСМИНА НУРЛАН КЫЗЫ"], ["9-B", "ХОЖАБАЕВ ДАУЛЕТБАЙ КУАТ УЛЫ"], ["9-B", "ШАМУРАТОВА НАЗЕРКЕ ЖОЛДАСБАЙ КЫЗЫ"],
-      ["9-V", "АБДУЛЛАЕВ РАМАЗАН БАХЫТБЕК УЛЫ"], ["9-V", "АЖИМУРАТОВ ИСЛАМБЕК МАНСУР УЛЫ"], ["9-V", "АЙТМУРАТОВА ШАХЗАДА МУРАТ КЫЗЫ"],
-      ["9-V", "АМАНГЕЛДИЕВ НУРМАХАН ХОШГЕЛДИ УЛЫ"], ["9-V", "АННАБЕРГЕНОВ ЖАВОХИР АБДУРАСУЛ УЛЫ"], ["9-V", "БАБАНИЯЗОВ ДИЯРБЕК БАХТИЯР УЛЫ"],
-      ["9-V", "БАЗАРБАЕВА ДИЛШАДА АЙБЕК КЫЗЫ"], ["9-V", "БАЙРАМБЕКОВ САЙФУДДИН ИКРАМБЕК УЛЫ"], ["9-V", "БАХТЫБАЕВА ШАХСАНЕМ ТАХИР КЫЗЫ"],
-      ["9-V", "ДАУЛЕТБАЕВ ДАМИР БАХТИЯР УЛЫ"], ["9-V", "ДУЙСЕНБАЕВ ИБРАХИМ АСКАР УЛЫ"], ["9-V", "ЖАКСЫМУРАТОВ СУЛТАНБЕК АЙБЕК УЛЫ"],
-      ["9-V", "ЖУМАБАЕВА АЙМАН КАЛБАЙ КЫЗЫ"], ["9-V", "КУАНЫШБАЕВ ДАМИРБЕК ДАУРАНБЕК УЛЫ"], ["9-V", "МАМБЕТКАРИМОВА НАЗЕРКЕ МУРАТ КЫЗЫ"],
-      ["9-V", "МАМУТОВ ШАХМУРАТ КУВАНДЫК УЛЫ"], ["9-V", "НУРЛЫБАЕВА АСАЛЬ КУАНЫШБАЙ КЫЗЫ"], ["9-V", "ОРАЗБАЕВ АЗИЗБЕК КУАНЫШ УЛЫ"],
-      ["9-V", "ПАЛУАНОВА АЙБИЙБИ ОРАЗБАЙ КЫЗЫ"], ["9-V", "РАЖАПБАЕВА НУРАЙЫМ МУРАТ КЫЗЫ"], ["9-V", "САДУАКАСОВ БАХЫТ АСКАР УЛЫ"],
-      ["9-V", "ТОЛЕГЕНОВА ЖАСМИН БАХЫТБЕК КЫЗЫ"], ["9-V", "ЯКУББАЕВА ЭЪТИБОР ЗАФАР КЫЗЫ"],
-      ["10-A", "АБДИКАЛИКОВ АЙДОС ДАНИЯР УЛЫ"], ["10-A", "АЖИМУРАТОВА НАРГИЗА МАНСУР КЫЗЫ"], ["10-A", "АМАНБАЕВ АЛИХАН АСКАР УЛЫ"],
-      ["10-A", "БАБАНИЯЗОВ РАМАЗАН АЛЛАМБЕРГЕН УЛЫ"], ["10-A", "БАЙРАМБЕКОВ САИДБЕК ИКРАМБЕК УЛЫ"], ["10-A", "БАХЫТБАЕВА ШАХРИЗАДА ШАХМУРАТ КЫЗЫ"],
-      ["10-A", "БЕКБЕРГЕНОВА ЖАНСАЯ МУРАТ КЫЗЫ"], ["10-A", "ДАУЛЕТНАЗАРОВ КАМИЛЖАН КУАНЫШ УЛЫ"], ["10-A", "ЕСБОСЫНОВ АБДИКАДИР ИХЛАС УЛЫ"],
-      ["10-A", "ЖАКСЫМУРАТОВА НУРАЙЫМ АЙБЕК КЫЗЫ"], ["10-A", "ЖОЛДАСБАЕВ ШАХРИЯР АСКАР УЛЫ"], ["10-A", "ЖУМАБАЕВ АЛИШЕР МУРАТ УЛЫ"],
-      ["10-A", "КАЛБАЕВА ДИЛНАЗ КУАТБАЙ КЫЗЫ"], ["10-A", "КАМАЛОВ РАСУЛ БАХАДИР УЛЫ"], ["10-A", "КУАНЫШБАЕВА НУРАЙЫМ ДАУРАНБЕК КЫЗЫ"],
-      ["10-A", "МАМУТОВА ШАХНОЗА КУВАНДЫК КЫЗЫ"], ["10-A", "МУСТАФАЕВ ИСЛАМБЕК САБИТ УЛЫ"], ["10-A", "ОТЕГЕНОВ ДАУЛЕТБАЙ ПАХРАТДИН УЛЫ"],
-      ["10-A", "ПАЛУАНОВ АЛИШЕР ОРАЗБАЙ УЛЫ"], ["10-A", "РАМАЗАНОВА ДИЛНАЗ АЗАМАТ КЫЗЫ"], ["10-A", "САБИРБАЕВА ДИЛНУРА АЗАМАТ КЫЗЫ"],
-      ["10-A", "ШАМУРАТОВ ЖАКСЫЛЫК ЖОЛДАСБАЙ УЛЫ"],
-      ["10-B", "АБДИРАХМАНОВА ШАХНОЗА АЗАМАТ КЫЗЫ"], ["10-B", "АЖИМУРАТОВ ДАМИР АЗАМАТ УЛЫ"], ["10-B", "АЙТМУРАТОВ ДИЛМУРАТ ДАУРАН УЛЫ"],
-      ["10-B", "АЛЛАМБЕРГЕНОВ НУРМАХАН КУАНЫШБАЙ УЛЫ"], ["10-B", "АМАНБАЕВ АЛИШЕР ТАХИР УЛЫ"], ["10-B", "АННАБЕРГЕНОВА ШАХСАНЕМ АБДУРАСУЛ КЫЗЫ"],
-      ["10-B", "АРЗИЕВА ДИЛНУРА КУАНЫШ КЫЗЫ"], ["10-B", "БАБАНИЯЗОВ ДАМИР БАХТИЯР УЛЫ"], ["10-B", "БАЗАРБАЕВ ИСЛАМБЕК САПАРБАЙ УЛЫ"],
-      ["10-B", "БАЙРАМБЕКОВ САЙФУЛЛА ИКРАМБЕК УЛЫ"], ["10-B", "БАХТЫБАЕВ ИСЛАМБЕК ТАХИР УЛЫ"], ["10-B", "ДАУЛЕТБАЕВА ДУРСЫН БАХТИЯР КЫЗЫ"],
-      ["10-B", "ДУЙСЕНБАЕВА АСАЛЬ АСКАР КЫЗЫ"], ["10-B", "ЖАКСЫЛЫКОВ ДАМИР АЗАМАТ УЛЫ"], ["10-B", "ЖУМАБАЕВ САИДЖАН САБИР УЛЫ"],
-      ["10-B", "ИСМАЙЛОВ АЗИЗБЕК РУСТАМ УЛЫ"], ["10-B", "КАМАЛОВ РАХАТ РУСЛАН УЛЫ"], ["10-B", "МАМБЕТКАРИМОВ АЛИШЕР МУРАТ УЛЫ"],
-      ["10-B", "МАМУТОВ ТАХИР КУВАНДЫК УЛЫ"], ["10-B", "ОРАЗБАЕВА ДУРСЫН КУАНЫШ КЫЗЫ"], ["10-B", "ПЕРДЕБАЕВА НУРАЙЫМ БАТЫРБЕК КЫЗЫ"],
-      ["10-B", "ТОЛЕГЕНОВ ДАУЛЕТБАЙ БАХЫТБЕК УЛЫ"], ["10-B", "УСЕНОВА ЖАСМИН РУСТЕМ КЫЗЫ"],
-      ["11-A", "АБДИРАХМАНОВ АЛИШЕР АЗАМАТ УЛЫ"], ["11-A", "АЖИБАЕВ АБДУЛЛА АСКАР УЛЫ"], ["11-A", "АЙТМУРАТОВА ГУЛЖАХАН МУРАТ КЫЗЫ"],
-      ["11-A", "БОРАНБАЕВ БЕГЗАД БЕГИС УЛЫ"], ["11-A", "ДАУЛЕТБАЕВ БЕКЗАТ БАХТИЯР УЛЫ"], ["11-A", "ЕСЕНБАЕВ АЙБЕК БЕРДАХ УЛЫ"],
-      ["11-A", "ЖАКСЫЛЫКОВ БЕГЗАД АЗАМАТ УЛЫ"], ["11-A", "ЖОЛДАСБАЕВ СУЛТАНМАХМУТ ДАНИЯР УЛЫ"], ["11-A", "КАРИМБАЕВА ШАХСАНЕМ АЗАМАТ КЫЗЫ"],
-      ["11-B", "АБДИРАХМАНОВА ШАХЗАДА ШАРАПАТДИН КЫЗЫ"], ["11-B", "АЖИМУРАТОВА САБИРА АЗАМАТ КЫЗЫ"], ["11-B", "АЛЛАМБЕРГЕНОВА АЙАРЫУ АМАНГЕЛДИ КЫЗЫ"],
-      ["11-B", "БАЙРАМБЕКОВА ГУЛСАНЕМ ИКРАМБЕК КЫЗЫ"], ["11-B", "ДАВЛЕТНАЗАРОВА СЕВИНЧ СУЛТАННАЗАР КЫЗЫ"], ["11-B", "ЖАКСЫМУРАТОВ ИСЛАМБЕК АСКАР УЛЫ"],
-      ["11-B", "ЖУМАБАЕВ САЛАМАТ КАЛБАЙ УЛЫ"], ["11-B", "КАЛБАЕВ ИСЛАМБЕК КУАТБАЙ УЛЫ"], ["11-B", "МАМБЕТНАЗАРОВ ДАУРАНБЕК АЗАМАТ УЛЫ"],
-      ["11-B", "МАТЖАНОВ ДАМИР САБИР УЛЫ"], ["11-B", "ОТЕБАЕВА АСАЛЬ АСКАР КЫЗЫ"], ["11-B", "ПАХРАТДИНОВ ШАХРУХ РУСЛАН УЛЫ"],
-      ["11-B", "САЙЛАУБАЕВ МЕЙИРБЕК МУХАММЕДИН УЛЫ"], ["11-B", "СУЛТАНМУРАТОВ САБИРЖАН ДАУРАНБЕК УЛЫ"], ["11-B", "УСЕНОВ АЗИЗБЕК РУСТЕМ УЛЫ"],
-      ["11-B", "ШАМУРАТОВ МЕЙИРБЕК ЖОЛДАСБАЙ УЛЫ"]
+      ["9-A", "НОРМАТОВА ГУЛЗОДА РУСТАМ ҚИЗИ"],
+      ["9-A", "ХОЖАМУРАДОВ РАСУЛБЕК ФАРХАДОВИЧ"],
+      ["9-A", "РАЙИМОВА ШАХРИЗОДА РУФАТОВНА"],
+      ["9-A", "РЗАМБЕТОВА ФЕРУЗА АЗАТОВНА"],
+      ["9-A", "НУРИМБЕТОВ БУНЁДБЕК ДИЛМУРАТОВИЧ"],
+      ["9-A", "АБАТОВ ДАМИР ИЛХАМОВИЧ"],
+      ["9-A", "БАЗАРБАЕВ ДИЁРБЕК САПАРБАЕВИЧ"],
+      ["9-A", "БАЗАРБАЕВА ДИЛНАЗА АЙБЕК КЫЗЫ"],
+      ["9-A", "БАХТИЯРОВ АСЫЛБЕК АЙБЕКОВИЧ"],
+      ["9-A", "АМАНГЕЛДИЕВ ДОВЛЕТЯР ХОШГЕЛДИ УЛЫ"],
+      ["9-A", "КЕНЕСБАЕВ БЕРДАХ КУАНЫШБАЕВИЧ"],
+      ["9-A", "ХУДАЙБЕРГЕНОВ ДАУЫТБАЙ НИЕТБАЕВИЧ"],
+      ["9-A", "ОРАЗБАЕВА ДИЛНОЗА МАКСАДОВНА"],
+      ["9-A", "КАРИМБАЕВ АХРОРБЕК АЗАМАТОВИЧ"],
+      ["9-A", "ШАМШЕТДИНОВ МИЙРАСБЕК САЛАМАТ УЛЫ"],
+      ["9-A", "ЗАРИПБАЕВ НУРУЛЛА АЗАМАТОВИЧ"],
+      ["9-A", "МАМУТОВА МУХАББАТ МУЗАФАРОВНА"],
+      ["9-A", "АЖИМУРАТОВА ЗАРИНА ОМИРЗАКОВНА"],
+      ["9-A", "ХАЙДАРОВ УМИД АЙТБАЕВИЧ"],
+      ["9-A", "ЖУМАБАЕВ ХУСНИДДИН ЗАМИРОВИЧ"],
+      ["9-A", "ОРАЗБАЕВА ЧАРОС МАНСУР КИЗИ"],
+      ["9-A", "РИМБЕРГЕНОВ ОТАБЕК ШАВКАТОВИЧ"],
+      ["5-A", "ACHILOVA NILUFAR MAXMUDOVNA"],
+      ["5-A", "RUSTEMOV XURSANDBEK XAMDAMOVICH"],
+      ["5-A", "ORAZIMBETOV MUSTAFO FURXADOVICH"],
+      ["5-A", "URAZBAYEVA ZARINA AZATOVNA"],
+      ["5-A", "KUBAIKULIYEV POLAT NURGELDIYEVICH"],
+      ["5-A", "YUSUPOV SHAXZODBEK RAXIMOVICH"],
+      ["5-A", "SAPARBAYEVA AYSULI`U AZAMATOVNA"],
+      ["5-A", "RAJAPOVA MAFTUNA ODILBEKOVNA"],
+      ["5-A", "SAPARBAEVA OLTINOY ERGASH QIZI"],
+      ["5-A", "YERKINOV ELBEK MANSUROVICH"],
+      ["5-A", "SEYTBAYEVA JULDI`Z POLATOVNA"],
+      ["5-A", "MAULENOVA BARNO AZAMAT QI`ZI`"],
+      ["5-A", "TIRKESHBAYEVA MOXINUR MAMUTOVNA"],
+      ["5-A", "XAYTMURATOVA NAZIRA KUDRATOVNA"],
+      ["5-A", "QIDIRBAYEVA SHADIYA XAMROEVNA"],
+      ["5-A", "RUSTAMOVA MAFTUNA ILXOMJONOVNA"],
+      ["5-A", "YUNUSBAYEVA MUNISA OXUNJONOVNA"],
+      ["5-A", "TLEUMURATOVA DULNURA BEKZOD QIZI"],
+      ["5-A", "ORAZBAYEVA SHOIRA OYBEKOVNA"],
+      ["5-A", "BAZARBAYEVA SABRINA DAVLATIYAROVNA"],
+      ["5-A", "ALLAMBERGENOVA NIGINA SALOMATOVNA"],
+      ["5-A", "ORINBAYEVA JASMINA ANVAROVNA"],
+      ["5-A", "CHI`NDOVLETOV SULAYMAN SERDAROVICH"],
+      ["5-A", "MATCHANOVA SHODIYONA URAZBAY QIZI"],
+      ["5-B", "DOSTANOV NURJAN SERIKBAEVICH"],
+      ["5-B", "BALTABAYEV JANDOS INAYAT ULI`"],
+      ["5-B", "POLATOVA GULSAWIR DAURANBEKOVNA"],
+      ["5-B", "Elmurzayev Qoblan Saylievich"],
+      ["5-B", "JABBARBERGENOVA JASMINA ADILBAYEVNA"],
+      ["5-B", "ABDUKARIMOV IBROHIM ABDIRAXIMOVICH"],
+      ["5-B", "BAZARBAYEV BAKIR BERDAXOVICH"],
+      ["5-B", "JIEMURATOV YERNAZAR AYDOSOVICH"],
+      ["5-B", "MURATOV SOXBET IXLASOVICH"],
+      ["5-B", "BAZARBAEVA KAMILA SAPARBAEVNA"],
+      ["5-B", "ORAZIMBETOVA MALIKA G`ULOMOVNA"],
+      ["5-B", "ARTIQBAEV ABROR IN`OMJAN O`G`LI"],
+      ["5-B", "XAYTBAYEVA NARGIZA IKROMJANOVNA"],
+      ["5-B", "IBAYDULLAYEV BEGARI`S SERIK ULI`"],
+      ["5-B", "XOJANTAYEVA DIANA DARYABAY QI`ZI`"],
+      ["5-B", "DJUMABAYEVA MUNIRA KENESBAY KI`ZI`"],
+      ["5-B", "ORI`NBAYEV ASADBEK KUTLI`MURATOVICH"],
+      ["5-B", "REJEPNAZAROV DILSHADBEK ISHANGULIYEVICH"],
+      ["5-B", "SULTAMURATOVA AYJAMAL ATAMURAT QI`ZI`"],
+      ["5-B", "TOLEGENOV NURASI`L SALAMAT ULI`"],
+      ["5-B", "SAPARBEKOV MUWSABEK MUXTARJAN ULI`"],
+      ["5-B", "TOLEGENOV YERASI`L SALAMAT ULI`"],
+      ["5-B", "RAJAPOVA CHAROS AZIMJONOVNA"],
+      ["5-B", "MARATOV RAXMAN MARATOVICH"],
+      ["6-A", "URAZBAEVA RANO IXTIYOROVNA"],
+      ["6-A", "IBRAGIMOV RAVSHANBEK JENGISBAEVICH"],
+      ["6-A", "AMANBAEVA HURLIMAN WONGARBAEVNA"],
+      ["6-A", "MURATBAEVA ZILOLA JAHONGIROVNA"],
+      ["6-A", "YULDASHOVA GULNOZA ALISHEROVNA"],
+      ["6-A", "RAJAPBAYEVA SOXIBA ALISHEROVNA"],
+      ["6-A", "ABDULLAEVA ASAL KALBAEVNA"],
+      ["6-A", "PARXATOV XURSAND AZIZOVICH"],
+      ["6-A", "XAYTBAEVA GULDANA MAXSETOVNA"],
+      ["6-A", "AZATBAYEVA ZILOLA ANVATOVNA"],
+      ["6-A", "BAZARBAEV NURBEK ANVAROVICH"],
+      ["6-A", "QOZIBAEV AVZALBEK KEULIMJAY ULI"],
+      ["6-A", "SAPARBAEV BEKZOD SHAVKATOVICH"],
+      ["6-A", "MAVLENBERGENOV AMIR ILXOMOVICH"],
+      ["6-A", "SULTANMURADOV XURSHID SHUXRATOVICH"],
+      ["6-A", "DOSMANOVA MUQADDAS GULOMJONOVNA"],
+      ["6-A", "ARTIKBAEVA LOBAR INOMJANOVNA"],
+      ["6-A", "SULTANOVA IRODA NEMATJANOVNA"],
+      ["6-A", "XAKAYEVA GULZADA AMANGELDIYEVNA"],
+      ["6-A", "TURSUNBAEVA QARASHASH SHUKURULLAEVNA"],
+      ["6-A", "ONGARBAYEV MUSLIMBEK SULTANBEK ULI"],
+      ["6-A", "SABUROVA SOHIBA DOVRONBEKOVNA"],
+      ["6-A", "SAPARBAEV BEXRUZ ANVAROVICH"],
+      ["6-A", "ISMAILOVA UMIDA OYBEKOVNA"],
+      ["6-B", "KENJEBAEV ABDULAZIZ XAMRA UGLI"],
+      ["6-B", "JOLDASBAYEV KOMRON NURLAN ULI"],
+      ["6-B", "JOLDASBAYEVA ULJAN IKRAMJAN KIZI"],
+      ["6-B", "BAXTIYAROVA SHADIYANA SALAMATOVNA"],
+      ["6-B", "IBRAGIMOVA BARNO MANSUROVNA"],
+      ["6-B", "JUMABAYEVA RUXSHONA AZIMJAN KIZI"],
+      ["6-B", "JOLDASBAYEV KOMRON NURLAN ULI"],
+      ["6-B", "BAZARBAEV NODIRBEK ABROROVICH"],
+      ["6-B", "GAYIPBAEVA MUNISA AMANBAEVNA"],
+      ["6-B", "ISLAMOV SAIDBEK MANSUROVICH"],
+      ["6-B", "SADULLAEVA ASALOY AKMALOVNA"],
+      ["6-B", "XOJABAYEVA DILNOZA DOVRANBEKOVNA"],
+      ["6-B", "MAKSETBAYEVA MADINABANU AMANGELDIYEVNA"],
+      ["6-B", "KENJEBAEV ABDULAZIZ XAMRA UGLI"],
+      ["6-B", "MAULENBERGENOV HAKIMBEK ULUGBEKOVICH"],
+      ["6-B", "GURBANGELDIYEV MUXAMMET SHOXRATOVICH"],
+      ["6-B", "ALMUXAMEDOV SEIDNUR NUERGELDIEVICH"],
+      ["6-B", "ALLAMURATOVA GUZAL SHUXRATJAN KIZI"],
+      ["6-B", "KASHKINBAYEVA INKAR JETKERBAYEVNA"],
+      ["6-B", "JUMABAYEVA RUXSHONA AZIMJAN KIZI"],
+      ["6-B", "YUSUPOVA MUBINA TURSINBAYEVNA"],
+      ["6-B", "KURBANBAEV DIDAR BERDIMURATOVICH"],
+      ["6-B", "XAYTBAYEV RISQITILLO NIYAZIMBETOVICH"],
+      ["7-A", "ISLAMOV SANJARBEK GULOMJONOVICH"],
+      ["7-A", "YULDASHEVA DILNOZA MUZAFFAR QIZI"],
+      ["7-A", "XALASHOV MUXAMMATALI PARAXAT O`G`LI"],
+      ["7-A", "NURLANOVA NAZERKE BERIK QIZI"],
+      ["7-A", "MADATOV OTABEK SHAVKATOVICH"],
+      ["7-A", "SAPARBAEV RUSLAN SHUXRATOVICH"],
+      ["7-A", "REJEPOV TIMUR RUSLANOVICH"],
+      ["7-A", "DURDIBAEVA ALBINA KUVANICHOVNA"],
+      ["7-A", "MAMETMURATOV JASURBEK ILYASJONOVICH"],
+      ["7-A", "ЖУМАМУРАТОВ МУҲАММАДАЛИ МУХИАТДИН ЎҒЛИ"],
+      ["7-A", "DJUMAMURATOVA DURDONA SABITOVNA"],
+      ["7-A", "JAMALADTINOV YERMUXAN JANABAY ULI"],
+      ["7-A", "YULDASHEVA LAYLO SHARIFBAEVNA"],
+      ["7-A", "XALILAEV BEGIS ILYASOVICH"],
+      ["7-A", "ТАЖИБАЕВ МАШРАББЕК КУРБАНБАЕВИЧ"],
+      ["7-A", "JAKSIMURATOVA NAZERKE SALIYEVNA"],
+      ["7-A", "KADEMBAEV RUFAT SHUXRATOVICH"],
+      ["7-A", "JAKSILIKOV JANDARBEK JANIBEK ULI"],
+      ["7-A", "WORINBETOV ARTUR POLATOVICH"],
+      ["7-A", "MUXAMMATDIYAROVA AYGUL MARATOVNA"],
+      ["7-A", "INIYATOV ASADBEK YERBOLOVICH"],
+      ["7-A", "PIREKOVA ZUXRA KOMEKOVNA"],
+      ["8-A", "УРАЗИМБЕТОВ ХУРШИДБЕК РАШИДОВИЧ"],
+      ["8-A", "ҚЫДЫРБАЕВ РУСЛАН ҚУАНЫШБАЙ УЛЫ"],
+      ["8-A", "ТАЖИБАЕВ НАВРУЗБАЙ КАМАЛАДДИНОВИЧ"],
+      ["8-A", "АХМЕДОВ АКРАМ АЗИЗОВИЧ"],
+      ["8-A", "ЕСЕНГЕЛДИЕВА ХУРЛИМАН САЛАМАТОВНА"],
+      ["8-A", "АБДИРИМОВА МУБИНА МУЗАФФАРОВНА"],
+      ["8-A", "ДЖУМАБАЕВА ГУЛНАЗА АЙБЕК КЫЗЫ"],
+      ["8-A", "АХМЕДОВ АТАНУР ПОЛАТБАЕВИЧ"],
+      ["8-A", "КАРИМБЕРГЕНОВ СУННАТБЕК БАКИРОВИЧ"],
+      ["8-A", "РУСТАМОВ ЭЛБЕК ШЕРЗОДОВИЧ"],
+      ["8-A", "АХМЕТОВ ЭЛЬБЕК ОЙБЕКОВИЧ"],
+      ["8-A", "КОНЫСБАЕВА ОРАЗГУЛ РОМАН ҚЫЗЫ"],
+      ["8-A", "ДАВЛЕТНАЗАРОВ АЙГУЛ АСКЕРБАЕВНА"],
+      ["8-A", "АЛЛАЯРОВ ЗУЛФИКАР ДАНИЯРОВИЧ"],
+      ["8-A", "БАЗАРБАЕВА ЛАЙЛО САПАРБАЕВНА"],
+      ["8-A", "ЖОЛДАСБАЕВ ДАМИР ТОКТАРБАЙ УЛЫ"],
+      ["8-A", "НУРАДДИНОВ БЕХРУЗБЕК НУРУЛЛАЕВИЧ"],
+      ["8-A", "TOJIBOYEV SODIQBEK HUMOYUN O`G`LI"],
+      ["8-A", "YESHKABULOVA ZARINA ADIXANOVNA"],
+      ["8-A", "УРАЗБАЕВА ШАХЗОДА КАМАЛАДДИНОВНА"],
+      ["8-A", "ТОРЕМУРАТОВ БУНЁДБЕК АХМАДОВИЧ"],
+      ["8-A", "САБУРОВ ОҒАБЕК ЭКРАМОВИЧ"],
+      ["8-A", "ЖОЛДАСБАЕВА БАРНО ОРАЛБАЕВНА"],
+      ["8-B", "КУРБАНБАЕВА ШАХИДА ИЛХОМОВНА"],
+      ["8-B", "РЕЙМБАЕВ АКМАЛБЕК БАХРАМОВИЧ"],
+      ["8-B", "ПАРАХАТОВА ХАЁТХОН УТКИРОВНА"],
+      ["8-B", "КДЫРБАЕВ АЗАМАТ АЗАТБАЕВИЧ"],
+      ["8-B", "ШЕРИПБАЕВ ЗИЁДБЕК АМАНГЕЛДИ УҒЛИ"],
+      ["8-B", "НАРБАЕВ ДИЯРБЕК АНВАРОВИЧ"],
+      ["8-B", "ЭРГАШБАЕВА МУНИРА КАМИЛ КИЗИ"],
+      ["8-B", "AXMEDINOV BAXITJAN BAUIRJAN ULI"],
+      ["8-B", "ОРАЗМУХАММЕТДИНОВА ДИАНА ИЛХАМОВНА"],
+      ["8-B", "УРАЗБАЕВ БЕХРУЗ ИЛХОМ УЛЫ"],
+      ["8-B", "ТОЛЫБАЕВ МАМАНБИЙ ЖОЛДАСБАЕВИЧ"],
+      ["8-B", "МАХСЕТБАЕВА НАБИРА ЮСУПОВНА"],
+      ["8-B", "БАХТИЯРОВА ГОЗАЛ ОТАБЕК ҚЫЗЫ"],
+      ["8-B", "РЕЙПНАЗАРОВ АЙНАЗАР БАХТИЯР УЛЫ"],
+      ["8-B", "РАМАТУЛЛАЕВА КУНДУЗ АЗАМАТ КЫЗЫ"],
+      ["8-B", "ЖАКСЫМУРАТОВ ИСАТАЙ САЛЫЙ УЛЫ"],
+      ["8-B", "ЧАВДЫРБАЕВ САЛАВАТ ЮЛДАШБАЕВИЧ"],
+      ["8-B", "МЕДЕТБАЕВ АНСАТБАЙ КУДИЯРОВИЧ"],
+      ["8-B", "САКТАНОВА МАФТУНА ЖУМАБАЕВНА"],
+      ["8-B", "АМАНГЕЛДИЕВ ЭЛБЕК ШУХРАТОВИЧ"],
+      ["8-B", "НАРИМБЕТОВ ДАВРОНБЕК КАДЕМБАЕВИЧ"],
+      ["8-B", "КУРАЛБАЕВА ЛАЙЛО БАТЫРОВНА"],
+      ["8-B", "САРСЕНБАЕВ РАХИМ САЛАМАТ УЛЫ"],
+      ["8-B", "АБДУЛЛАЕВ ИСЛАМБЕК ИЛХОМЖАНОВИЧ"],
+      ["9-B", "АЗАТОВА УЛМЕКЕН ШУХРАТОВНА"],
+      ["9-B", "ХАЛИЛЛАЕВ ДАУЛЕТМУРАТ ДЖАЛГАСБАЕВИЧ"],
+      ["9-B", "НЫШАНБАЕВА АСЕЛЯ КОСЖАНБАЕВНА"],
+      ["9-B", "ОРАЗИМБЕТОВА ЖАСМИНА ГУЛОМОВНА"],
+      ["9-B", "ДЖУМАБАЕВ ШОХИМАРДОН ГАФУРЖАН УҒЛИ"],
+      ["9-B", "СУЛТАНМУРАДОВ ЭЛБЕК БАТЫРОВИЧ"],
+      ["9-B", "ДЖУМАБАЕВА НАФИСА АЛИМЖОН КЫЗЫ"],
+      ["9-B", "АХМЕТОВ БАУЫРЖАН ЖАНИБЕК УЛЫ"],
+      ["9-B", "МАТКАРИМОВА РОЗА МАВЛАНОВНА"],
+      ["9-B", "ГУЛМУРАТОВ ДИЁРБЕК РУСТАМОВИЧ"],
+      ["9-B", "ГАЙПБАЕВА МЕХРИБАН ТУРСУНБАЙ КЫЗЫ"],
+      ["9-B", "МАТКАРИМОВА ЗЕБО МАКСУД КЫЗЫ"],
+      ["9-B", "РЕЙИМБАЕВ САИДБЕК ЮНУСОВИЧ"],
+      ["9-B", "МУХТАРОВА МАДИНА АНВАРОВНА"],
+      ["9-B", "МАРАТБАЕВ ДИДОР СЕЙТНУРОВИЧ"],
+      ["9-B", "АРТЫКБАЕВ АЗИЗБЕК РАХАТОВИЧ"],
+      ["9-B", "РЕЖЕПБАЕВ КАКАМЫРАТ ЫХЛАСОВИЧ"],
+      ["9-B", "КАДИРБЕРГЕНОВ ИЛДАР ЗАМИРОВИЧ"],
+      ["9-B", "ОВЕЗЖАНОВ СУЛТАНБЕК АЛЛАМУРАТОВИЧ"],
+      ["9-B", "МАСАТИНОВА ЖАНЕРКЕ СЕРИКБАЕВНА"],
+      ["9-B", "РЕЖЕПОВА ДИЛШАДА АЛЛАБЕРДИЕВНА"],
+      ["9-B", "ОРЫНБАЕВА ХИЛОЛА ГУЛОМЖАНОВНА"],
+      ["9-B", "DANIYAROV DAVRANBEK SERIKBAYEVICH"],
+      ["9-B", "АЗАТОВ ОРАЗАЛИ САЛАМАТОВИЧ"],
+      ["9-V", "ЖАЛГАСОВ МИРАС ИСАТАЕВИЧ"],
+      ["9-V", "ДАУЛЕТБАЕВА МАНЗУРА ГУЛАМЖАНОВНА"],
+      ["9-V", "НАРБАЕВ АБДУЛАЗИЗ АРТЫКБАЕВИЧ"],
+      ["9-V", "АБДИМУРАТОВ АЛЛАМУРАТ ТАТЛИМУРАТОВИЧ"],
+      ["9-V", "МУРАТБАЕВА ФАРАНГИЗ МАНСУРОВНА"],
+      ["9-V", "ХОЖАБАЕВ ОЗОДБЕК ДОВРАНБЕКОВИЧ"],
+      ["9-V", "НАЗАРБАЕВ РУСЛАНБЕК РУСТАМОВИЧ"],
+      ["9-V", "РАЖАПБАЕВ АБДУРАХМАН ИСЛАМОВИЧ"],
+      ["9-V", "САПАРБАЕВА ИРОДА АНГСАТБАЕВНА"],
+      ["9-V", "ЮСУПОВА АЙЖАМОЛ АМАНИЯЗ ҚИЗИ"],
+      ["9-V", "ЖУМАБАЕВА ЛАЙЛО БАТИРЖАН КЫЗЫ"],
+      ["9-V", "НУРАДДИНОВ АКБАР ШАМШЕДДИНОВИЧ"],
+      ["9-V", "КАЗАХБАЕВ АХМАТЖАН АБДУЛЛАЕВИЧ"],
+      ["9-V", "ЖАББАРБЕРГЕНОВА ФАРАНГИЗ ДАВРАНОВНА"],
+      ["9-V", "КДЫРБАЕВ АЛПАМЫС ЖУМАТДИН УЛЫ"],
+      ["9-V", "ЮЛДАШЕВА ДИЛДОРА ГУЛМИРЗАЕВНА"],
+      ["9-V", "ЮСУПОВА ДУРДАНА РАХИМОВНА"],
+      ["9-V", "КЕНЕСОВ БЕГИС КУАНЫШОВИЧ"],
+      ["9-V", "ОТЕНИЯЗОВА ГУЛДАНА АЗАМАТ КЫЗЫ"],
+      ["9-V", "ХАЙТБАЕВ ДАНИЁР МАДИЁРОВИЧ"],
+      ["9-V", "ЕСБОСЫНОВА ГУЛАЙЫМ КУАНЫШБАЙ КЫЗЫ"],
+      ["9-V", "ХОЖАНАЗАРОВА АЙНУРА ТАЖИБАЕВНА"],
+      ["9-V", "ИБАДУЛЛАЕВА ИНОБАТ КУАТБАЕВНА"],
+      ["10-A", "RUSDEMBAYEV SULTANBEK BATIROVICH"],
+      ["10-A", "MAMETMURATOVA JASMINA ILYASJANOVNA"],
+      ["10-A", "JUMABAYEVA SEVINCH DAVRONBEKOVNA"],
+      ["10-A", "ASHIRBAYEVA SHOHZODA SHUXRAT QIZI"],
+      ["10-A", "NUKUSBAEVA MADINA ATABAY QÍZÍ"],
+      ["10-A", "ФАЙЗУЛЛАЕВ ДОНИЁРБЕК ИСЛАМБЕКОВИЧ"],
+      ["10-A", "PALTAYEV ATAGELDI DURDIBAYEVICH"],
+      ["10-A", "MURATBAEV DAULET MARATOVICH"],
+      ["10-A", "KÍDÍRBAEV ADILBEK PARAXATOVICH"],
+      ["10-A", "SABUROV BEXRUZBEK RASHIDOVICH"],
+      ["10-A", "REJEPOV BEKZOD PARAXATOVICH"],
+      ["10-A", "KARIMBAYEVA OZODA ALIJANOVNA"],
+      ["10-A", "TENELBAYEV SHAXZOD KOMEKBAY ULI"],
+      ["10-A", "ALLABAEV ALÍMJAN MUXAMMETNAZAROVICH"],
+      ["10-A", "SAATBAYEVA UMIDA PULATOVNA"],
+      ["10-A", "URINBAYEVA UMIDA SHUXRAT KIZI"],
+      ["10-A", "ABDIKADIROV SULAYMAN MAXSUDOVICH"],
+      ["10-A", "XALILLAYEV MUXIDDIN UBAYDULLAYEVICH"],
+      ["10-A", "SALIJANOV BUNYODJON AZAMAT O‘G‘LI"],
+      ["10-A", "KURAMBAYEVA NORGUL POLAT QIZI"],
+      ["10-A", "AMANMUXAMETOVA PERIZAT TAXIROVNA"],
+      ["10-A", "SOYINOVA SENEMJAN KAKABAYEVNA"],
+      ["10-B", "AMANGELDIEV SHOXRAT YALKANOVICH"],
+      ["10-B", "YARLIKAPOV ARSLANBEK MAXSUD UGLI"],
+      ["10-B", "TAJIBAYEV XUSEYN BEKZODOVICH"],
+      ["10-B", "TOLÍBAEVA BIBIMARIYAM JOLDASBAEVNA"],
+      ["10-B", "JANGABAYEVA SEVARA ATABEKOVNA"],
+      ["10-B", "KAMALOVA DILRABO KOJABAY QIZI"],
+      ["10-B", "XUDAYBERGENOVA DILDORA RAFAELOVNA"],
+      ["10-B", "KARIMOV DILSHODBEK ALISHEROVICH"],
+      ["10-B", "SHARIBAEVA GULJAYNA QUANDÍQ QÍZÍ"],
+      ["10-B", "BEKIMBETOVA SEVINCH SHARAFOVNA"],
+      ["10-B", "TAGANBERDIYEVA GULRUX GELDIBAYEVNA"],
+      ["10-B", "SAATBAYEV JAVOXIR FARXADOVICH"],
+      ["10-B", "MUXANOVA BARNO YERKEBAYEVNA"],
+      ["10-B", "GALPAKBAYEV MEYLIS AMANGELDIYEVICH"],
+      ["10-B", "AZATOVA IRODA KUDRATOVNA"],
+      ["10-B", "KARIMOV ELBEK ERGASHOVICH"],
+      ["10-B", "PARXATOV BEXRUZ UTKIROVICH"],
+      ["10-B", "JIYENBAYEV ADILBEK TAXIROVICH"],
+      ["10-B", "REYPNAZAROVA BIBISARA BAXTIYAROVNA"],
+      ["10-B", "МАТДУРДИЕВ АЗАТБЕК КАДАМБАЕВИЧ"],
+      ["10-B", "ERKINOVA MUXLISA SHERZOTOVNA"],
+      ["10-B", "SABITOVA KURALAY SABIT KIZI"],
+      ["10-B", "SAPARBAYEV SHERZOD SHAUKATOVICH"],
+      ["11-A", "ЭРКИНОВ ЖАВОҲИР АЛИШЕР УҒЛИ"],
+      ["11-A", "РАДЖЕПОВА САРБИНАЗ РАШИДОВНА"],
+      ["11-A", "КЫДЫРБАЕВ САМАНДАР ИЛХОМОВИЧ"],
+      ["11-A", "ГУЛМУРЗАЕВА МАРЖОНА ШАВКАТ ҚИЗИ"],
+      ["11-A", "ДЖУМАМУРАТОВ ҚУДРАТ САБИТОВИЧ"],
+      ["11-A", "АХМЕТОВ ЖУРАБЕК ОЙБЕКОВИЧ"],
+      ["11-A", "УРАЗБАЕВА СОГДИАНА СЕЙТМЫРАТ ҚЫЗЫ"],
+      ["11-A", "KURALBAEV JAVLONBEK DJALALATDINOVICH"],
+      ["11-A", "YAKUBBAYEV JAVLONBEK ULUGBEK ULI"],
+      ["11-B", "САПАРНИЯЗОВ АСАДБЕК УРАЗБАЙ УЛЫ"],
+      ["11-B", "ДУРДЫБАЕВ ИСЛАМ КУВАНИЧ УЛЫ"],
+      ["11-B", "АЖИМУРАТОВ КУТЛЫМУРАТ ОМИРЗАКОВИЧ"],
+      ["11-B", "ЕШБАЕВ ДИЛШОД БАХАДИР УЛЫ"],
+      ["11-B", "ҒАЙРАТОВ УМИДЖОН АЛЛАМБЕРГАН ЎҒЛИ"],
+      ["11-B", "РАХМАНОВ БАТЫРБЕК АЛТЫ УЛЫ"],
+      ["11-B", "ХАЙБУЛЛАЕВ ИБРОХИМ МАХМУД УЛЫ"],
+      ["11-B", "БАЛТАБАЕВА ФАРАНГИЗ ХАМЗА ҚЫЗЫ"],
+      ["11-B", "ИСЛАМОВА МАФТУНА МАМУР КИЗИ"],
+      ["11-B", "ЖАНАБАЕВ ЖОВОХИР МАХМУДОВИЧ"],
+      ["11-B", "КАЗАКБАЕВ АЛИШЕР АЙБЕКОВИЧ"],
+      ["11-B", "ЮЛДАШЕВ ОЗОДБЕК РЕЖЕПБАЙ УЛЫ"],
+      ["11-B", "АРАЛБАЕВ АБИЎБАКИР АЗАМАТ УЛЫ"],
+      ["11-B", "ЖАНАБАЕВ ОЗОДБЕК БАХАДЫРОВИЧ"],
+      ["11-B", "ТУРСИНБАЕВА ШОХНОЗА БАХАДИРОВНА"],
+      ["11-B", "КАДРБЕРГЕНОВ АМИРБЕК БАХТИЯР УЛЫ"]
     ];
 
     function build303Students() {
@@ -805,7 +1005,7 @@
 
     let schedule = JSON.parse(localStorage.getItem('mn_schedule')) || defaultSchedule;
     let users = JSON.parse(localStorage.getItem('mn_users')) || defaultUsers;
-    let students = JSON.parse(localStorage.getItem('mn_students')) || build303Students();
+    let students = build303Students(); // To'g'ridan-to'g'ri 303 o'quvchi
     let classes = initialClasses;
     let attendanceData = JSON.parse(localStorage.getItem('mn_attendance')) || {};
     let adminPermissions = JSON.parse(localStorage.getItem('mn_permissions')) || {}; 
@@ -821,17 +1021,23 @@
     let emptyClickCount = 0;
     let emptyClickTimer = null;
 
-    window.onload = function() {
-      // Birinchi marta yangi o'quvchilarni brauzer xotirasiga to'liq yuklab olish
-      if (!localStorage.getItem('mn_students_v2_loaded') || students.length !== 303) {
-        students = build303Students();
-        users = defaultUsers;
-        localStorage.setItem('mn_students', JSON.stringify(students));
-        localStorage.setItem('mn_users', JSON.stringify(users));
-        localStorage.setItem('mn_students_v2_loaded', 'true');
-        syncToFirebase('students', students);
-        syncToFirebase('users', users);
+    // BULUTNI VA LOKAL XOTIRANI 303 O'QUVCHIGA MAJBURIY YANGILASH
+    function forceResetTo303Students() {
+      students = build303Students();
+      localStorage.setItem('mn_students', JSON.stringify(students));
+      if (isFirebaseReady && db) {
+        db.ref('students').set(students);
       }
+      if (!document.getElementById('view-oquvchilar').classList.contains('hidden')) {
+        renderStudentManagementTable();
+      }
+      loadAttendanceForCurrentSelection();
+      showToast("Baza 303 nafar haqiqiy o'quvchiga qayta o'rnatildi va bulutga yuklandi! ✅");
+    }
+
+    window.onload = function() {
+      // Brauzer va Firebase-dagi eski soxta o'quvchilarni majburiy tozalash:
+      forceResetTo303Students();
 
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('attendanceDate').value = today;
@@ -874,13 +1080,17 @@
         }
       });
 
+      // Firebase-dan o'quvchilarni faqat 303 ta bo'lgandagina qabul qilish (eski 140 talikni rad etish)
       db.ref('students').on('value', snapshot => {
         const val = snapshot.val();
-        if (val) {
+        if (val && Array.isArray(val) && val.length === 303) {
           students = val;
           localStorage.setItem('mn_students', JSON.stringify(students));
           if (!document.getElementById('view-oquvchilar').classList.contains('hidden')) renderStudentManagementTable();
           loadAttendanceForCurrentSelection();
+        } else {
+          // Agar Firebase-da eski 140 ta turgan bo'lsa, uni darhol 303 taga almashtirib yuborish:
+          forceResetTo303Students();
         }
       });
 
