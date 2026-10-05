@@ -601,7 +601,7 @@
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT VA HAQIQIY BAZA ================= -->
+  <!-- ================= JAVASCRIPT VA BAZA ================= -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAoJDOABktpOPA-5G_T2oQqFNsA4tSO1qI",
@@ -687,7 +687,7 @@
       'xodim_33': { role: 'teacher', name: 'JUMABAYEVA MAFTUNA IKRAM QIZI', assignedClass: null, password: 'maktab2026' }
     };
 
-    // 303 nafar haqiqiy o'quvchi ro'yxati
+    // 303 nafar asl o'quvchilar ro'yxati
     const rawStudentsData = [
       ["9-A", "НОРМАТОВА ГУЛЗОДА РУСТАМ ҚИЗИ"],
       ["9-A", "ХОЖАМУРАДОВ РАСУЛБЕК ФАРХАДОВИЧ"],
@@ -1060,6 +1060,7 @@
       }
     };
 
+    // REALTIME VA JONLI TINGLOVCHI (Boshqa qurilmalarda darhol aks etadi)
     function initFirebaseRealtimeListeners() {
       const badge = document.getElementById('dbStatusBadge');
 
@@ -1079,23 +1080,27 @@
         }
       });
 
+      // Bulutdan barcha o'zgarishlarni real vaqt rejimida qabul qilish
       db.ref('attendance').on('value', snapshot => {
         const val = snapshot.val();
-        if (val) {
-          attendanceData = val;
-          localStorage.setItem('mn_attendance', JSON.stringify(attendanceData));
-          loadAttendanceForCurrentSelection();
-          if (!document.getElementById('view-tahlil').classList.contains('hidden')) renderDeepAnalytics();
+        attendanceData = val || {};
+        localStorage.setItem('mn_attendance', JSON.stringify(attendanceData));
+        
+        // Hozirgi tanlangan darsning buferini yangilash va jadvalni chizish
+        const curKey = getPeriodKey();
+        tempAttendanceBuffer = JSON.parse(JSON.stringify(attendanceData[curKey] || {}));
+        renderAttendanceTable();
+
+        if (!document.getElementById('view-tahlil').classList.contains('hidden')) {
+          renderDeepAnalytics();
         }
       });
 
       db.ref('adminPermissions').on('value', snapshot => {
         const val = snapshot.val();
-        if (val) {
-          adminPermissions = val;
-          localStorage.setItem('mn_permissions', JSON.stringify(adminPermissions));
-          loadAttendanceForCurrentSelection();
-        }
+        adminPermissions = val || {};
+        localStorage.setItem('mn_permissions', JSON.stringify(adminPermissions));
+        renderAttendanceTable();
       });
 
       db.ref('students').on('value', snapshot => {
@@ -1718,12 +1723,28 @@
       renderAttendanceTable();
     }
 
+    // TO'G'RIDAN-TO'G'RI SANAGA YOZISH: REALTIME BO'LIB BOSHQALARDA HAM BIR ZUMDA KO'RINADI
     function saveAttendanceManual() {
       const periodKey = getPeriodKey();
+      
+      if (!attendanceData) attendanceData = {};
       attendanceData[periodKey] = JSON.parse(JSON.stringify(tempAttendanceBuffer));
-      syncToFirebase('attendance', attendanceData);
-      updateSaveIndicator(true);
-      showToast("Davomat bulutga muvaffaqiyatli saqlandi! ☁️");
+      localStorage.setItem('mn_attendance', JSON.stringify(attendanceData));
+
+      if (isFirebaseReady && db) {
+        db.ref('attendance/' + periodKey).set(tempAttendanceBuffer)
+          .then(() => {
+            updateSaveIndicator(true);
+            showToast("Davomat bulutga muvaffaqiyatli saqlandi! ☁️");
+          })
+          .catch((err) => {
+            console.error("Firebase yozish xatosi:", err);
+            alert("Bulutga saqlanmadi: " + err.message);
+          });
+      } else {
+        updateSaveIndicator(true);
+        showToast("Lokal xotiraga saqlandi (Firebase ulanmagan)");
+      }
     }
 
     function toggleAdminPermission(studentId) {
