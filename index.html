@@ -687,7 +687,7 @@
       'xodim_33': { role: 'teacher', name: 'JUMABAYEVA MAFTUNA IKRAM QIZI', assignedClass: null, password: 'maktab2026' }
     };
 
-    // Siz taqdim etgan haqiqiy 303 nafar o'quvchining to'liq ro'yxati
+    // 303 nafar haqiqiy o'quvchi ro'yxati
     const rawStudentsData = [
       ["9-A", "НОРМАТОВА ГУЛЗОДА РУСТАМ ҚИЗИ"],
       ["9-A", "ХОЖАМУРАДОВ РАСУЛБЕК ФАРХАДОВИЧ"],
@@ -1530,7 +1530,7 @@
       renderScheduleTable();
     }
 
-    // ================= SOAT 15:00 GACHA CHEKLOV VA DAVOMAT =================
+    // ================= 24 SOATLIK KUNLIK DAVOMAT HUQUQI =================
     function getPeriodKey() {
       const date = document.getElementById('attendanceDate').value;
       const period = document.getElementById('lessonPeriod').value;
@@ -1543,23 +1543,27 @@
       const selectedDate = document.getElementById('attendanceDate').value;
       const today = new Date().toISOString().split('T')[0];
 
+      // O'qituvchilar faqat o'sha o'qish kunining o'zida (24 soat davomida) belgilashi mumkin
       if (selectedDate !== today) {
-        return { allowed: false, reason: "Eski kunlar davomatini faqat administrator o'zgartira oladi!" };
-      }
-
-      const now = new Date();
-      if (now.getHours() >= 15) {
-        return { allowed: false, reason: "Davomat belgilash vaqti tugadi! O'qituvchilar faqat soat 15:00 gacha belgilashlari mumkin." };
+        return { 
+          allowed: false, 
+          reason: "Eski kunlar davomatini faqat administrator o'zgartira oladi!" 
+        };
       }
 
       const selectedPeriodId = document.getElementById('lessonPeriod').value;
 
+      // Ertalabki yig'inni faqat o'z sinf rahbari belgilaydi
       if (selectedPeriodId === 'morning') {
         if (currentUser.assignedClass !== selectedClass) {
-          return { allowed: false, reason: "Siz faqat o'z sinfingizning ertalabki yig'inini belgilay olasiz!" };
+          return { 
+            allowed: false, 
+            reason: "Siz faqat o'z sinfingizning ertalabki yig'inini belgilay olasiz!" 
+          };
         }
       }
 
+      // O'sha o'qish kunida 24 soat davomida istalgan paytda ruxsat beriladi
       return { allowed: true, reason: '' };
     }
 
