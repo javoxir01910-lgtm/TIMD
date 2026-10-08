@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Maktab Nazorat PRO - Smart Davomat Platformasi</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,24 +27,33 @@
       20%, 60% { transform: translateX(-8px); }
       40%, 80% { transform: translateX(8px); }
     }
+    /* Mobil ekranda pastki menyu ustiga tushib qolmasligi uchun */
+    .mobile-bottom-space {
+      padding-bottom: 5rem;
+    }
+    @media (min-width: 768px) {
+      .mobile-bottom-space {
+        padding-bottom: 2rem;
+      }
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen select-none">
 
   <!-- Toast Xabarnomasi -->
-  <div id="toast" class="fixed top-5 right-5 z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center space-x-3 text-sm font-semibold">
-    <i class="fa-solid fa-circle-check text-lg"></i>
+  <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-auto z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center justify-center sm:justify-start space-x-3 text-xs sm:text-sm font-semibold">
+    <i class="fa-solid fa-circle-check text-base"></i>
     <span id="toastMsg">Amal bajarildi!</span>
   </div>
 
   <!-- ================= 1. LOGIN OYNASI ================= -->
   <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-900">
-    <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 w-full max-w-md border border-white/20">
+    <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-md border border-white/20">
       <div class="text-center mb-6">
-        <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white mx-auto shadow-lg shadow-blue-500/30 mb-3">
-          <i class="fa-solid fa-school-flag text-3xl"></i>
+        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white mx-auto shadow-lg shadow-blue-500/30 mb-3">
+          <i class="fa-solid fa-school-flag text-2xl sm:text-3xl"></i>
         </div>
-        <h1 class="text-2xl font-black text-slate-800 tracking-tight">Maktab Nazorat PRO</h1>
+        <h1 class="text-xl sm:text-2xl font-black text-slate-800 tracking-tight">Maktab Nazorat PRO</h1>
         <p class="text-slate-500 text-xs mt-1">Smart elektron davomat va monitoring tizimi</p>
       </div>
 
@@ -64,7 +73,7 @@
           </div>
         </div>
         <p id="loginError" class="text-xs text-rose-600 font-semibold hidden text-center">Login yoki parol noto'g'ri!</p>
-        <button type="submit" id="loginSubmitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition duration-200 shadow-lg shadow-blue-600/30 text-sm flex items-center justify-center gap-2">
+        <button type="submit" id="loginSubmitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold rounded-xl transition duration-200 shadow-lg shadow-blue-600/30 text-sm flex items-center justify-center gap-2">
           <span>Tizimga kirish</span> <i class="fa-solid fa-arrow-right text-xs"></i>
         </button>
       </form>
@@ -77,21 +86,21 @@
 
   <!-- ================= 2. MAXFIY PIN OYNASI ================= -->
   <div id="ownerPinScreen" class="hidden min-h-screen flex items-center justify-center p-4 bg-slate-950">
-    <div id="pinBox" class="bg-slate-900 border border-slate-800 rounded-3xl p-8 w-full max-w-sm text-center shadow-2xl space-y-6">
-      <div class="w-20 h-20 bg-gradient-to-tr from-amber-500 to-indigo-600 rounded-3xl flex items-center justify-center text-white mx-auto shadow-xl shadow-amber-500/20">
-        <i class="fa-solid fa-shield-halved text-3xl"></i>
+    <div id="pinBox" class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 w-full max-w-sm text-center shadow-2xl space-y-5">
+      <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-tr from-amber-500 to-indigo-600 rounded-3xl flex items-center justify-center text-white mx-auto shadow-xl shadow-amber-500/20">
+        <i class="fa-solid fa-shield-halved text-2xl sm:text-3xl"></i>
       </div>
       <div>
-        <h2 class="text-2xl font-black text-white tracking-widest uppercase">Xavfsiz Kirish</h2>
+        <h2 class="text-xl sm:text-2xl font-black text-white tracking-widest uppercase">Xavfsiz Kirish</h2>
         <p class="text-xs text-slate-400 mt-1">Boshqaruv PIN-kodini kiriting</p>
       </div>
 
       <div class="space-y-4">
         <div>
-          <input type="password" id="ownerPinInput" maxlength="4" class="w-44 mx-auto text-center text-2xl font-mono tracking-[0.5em] py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="••••" autofocus>
+          <input type="password" id="ownerPinInput" maxlength="4" class="w-40 sm:w-44 mx-auto text-center text-2xl font-mono tracking-[0.5em] py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="••••" autofocus>
         </div>
         <p id="pinError" class="text-xs text-rose-500 font-bold hidden">PIN-kod noto'g'ri!</p>
-        <button onclick="verifyOwnerPin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black rounded-xl transition duration-200 shadow-lg shadow-amber-500/20 text-sm">
+        <button onclick="verifyOwnerPin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 active:scale-95 text-slate-950 font-black rounded-xl transition duration-200 shadow-lg shadow-amber-500/20 text-sm">
           Tasdiqlash
         </button>
         <button onclick="cancelOwnerPin()" class="text-xs text-slate-500 hover:text-slate-300 transition">
@@ -103,32 +112,33 @@
 
   <!-- ================= 3. ASOSIY ILOVA ================= -->
   <div id="mainApp" class="hidden min-h-screen flex flex-col">
+    <!-- Tepada ixcham header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div id="navbarLogoBg" class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md">
-            <i id="navbarLogoIcon" class="fa-solid fa-school text-lg"></i>
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-2 sm:space-x-3 overflow-hidden pr-2">
+          <div id="navbarLogoBg" class="w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md">
+            <i id="navbarLogoIcon" class="fa-solid fa-school text-sm sm:text-lg"></i>
           </div>
-          <div>
-            <h1 class="font-black text-slate-800 leading-tight">Maktab Nazorat</h1>
-            <!-- Mana shu ism-sharif Admin yoki EGA tomonidan tahrirlanadi -->
-            <p class="text-xs font-semibold text-slate-600" id="userRoleBadge">👑 Qodirov Jamshid Anvarovich (Bosh Direktor)</p>
+          <div class="truncate">
+            <h1 class="font-black text-xs sm:text-base text-slate-800 leading-tight">Maktab Nazorat</h1>
+            <p class="text-[11px] sm:text-xs font-semibold text-slate-600 truncate" id="userRoleBadge">👑 Qodirov Jamshid Anvarovich (Bosh Direktor)</p>
           </div>
         </div>
 
-        <div class="flex items-center space-x-2 sm:space-x-4">
-          <div id="dbStatusBadge" class="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-            <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
-            <span id="dbStatusText">Bulutga ulanmoqda...</span>
+        <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
+          <div id="dbStatusBadge" class="flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-500 animate-ping"></span>
+            <span id="dbStatusText">Ulanmoqda...</span>
           </div>
 
-          <div class="hidden sm:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">
+          <div class="hidden lg:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">
             <i class="fa-regular fa-clock text-blue-600"></i>
             <span id="liveClock">00:00:00</span>
             <span id="currentPeriodBadge" class="bg-blue-600 text-white px-2 py-0.5 rounded-lg text-[10px] ml-1">Dars</span>
           </div>
 
-          <nav class="flex space-x-1 bg-slate-100 p-1 rounded-xl text-xs sm:text-sm font-semibold">
+          <!-- Kompyuter uchun yuqori tablar menyusi -->
+          <nav class="hidden md:flex space-x-1 bg-slate-100 p-1 rounded-xl text-xs sm:text-sm font-semibold">
             <button onclick="switchTab('davomat')" id="tab-davomat" class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 transition flex items-center gap-1.5 font-bold">
               <i class="fa-solid fa-clipboard-check"></i> Davomat
             </button>
@@ -146,76 +156,87 @@
             </button>
           </nav>
 
-          <button onclick="logout()" class="p-2 text-slate-400 hover:text-rose-600 rounded-xl hover:bg-rose-50 transition" title="Chiqish">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <button onclick="logout()" class="p-1.5 sm:p-2 text-slate-400 hover:text-rose-600 rounded-xl hover:bg-rose-50 transition" title="Chiqish">
+            <i class="fa-solid fa-arrow-right-from-bracket text-sm sm:text-base"></i>
           </button>
         </div>
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full mobile-bottom-space">
 
-      <!-- ================= A. DAVOMAT TABI ================= -->
-      <div id="view-davomat" class="space-y-6">
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 no-print flex flex-wrap items-center justify-between gap-4">
-          <div class="flex flex-wrap items-center gap-3">
+      <!-- ================= A. DAVOMAT BO'LIMI ================= -->
+      <div id="view-davomat" class="space-y-4 sm:space-y-6">
+        <!-- Filtrlar bloki (Telefonda ixcham grid, kompyuterda flex) -->
+        <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-slate-200 no-print space-y-3">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Sana</label>
-              <input type="date" id="attendanceDate" class="border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
+              <label class="block text-[10px] sm:text-xs font-bold text-slate-500 uppercase mb-1">Sana</label>
+              <input type="date" id="attendanceDate" class="w-full border border-slate-300 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Dars Vaqti / Soati</label>
-              <select id="lessonPeriod" class="border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold text-indigo-700" onchange="loadAttendanceForCurrentSelection()">
+              <label class="block text-[10px] sm:text-xs font-bold text-slate-500 uppercase mb-1">Sinf</label>
+              <select id="classSelector" class="w-full border border-slate-300 rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold text-blue-700" onchange="onClassOrDateChanged()">
               </select>
             </div>
 
-            <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Sinf</label>
-              <select id="classSelector" class="border border-slate-300 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold text-blue-700" onchange="onClassOrDateChanged()">
+            <div class="col-span-2 sm:col-span-1">
+              <label class="block text-[10px] sm:text-xs font-bold text-slate-500 uppercase mb-1">Dars Vaqti / Soati</label>
+              <select id="lessonPeriod" class="w-full border border-slate-300 rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold text-indigo-700" onchange="loadAttendanceForCurrentSelection()">
               </select>
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2">
-            <button id="markAllPresentBtn" onclick="markAllPresent()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-1.5 border border-slate-300">
-              <i class="fa-solid fa-check-double text-emerald-600"></i> Hammasi bor
-            </button>
-            <button onclick="exportToExcel()" class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-1.5 border border-emerald-300">
-              <i class="fa-solid fa-file-excel"></i> Excel
-            </button>
-            <button onclick="window.print()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-1.5 border border-slate-300">
-              <i class="fa-solid fa-print"></i> Chop etish
-            </button>
-            <button id="saveAttendanceBtn" onclick="saveAttendanceManual()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 shadow-lg shadow-blue-500/30">
-              <i class="fa-solid fa-cloud-arrow-up text-base"></i> <span>Bulutga Saqlash</span>
+          <!-- Amallar tugmalari -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <button id="markAllPresentBtn" onclick="markAllPresent()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-1.5 border border-slate-300">
+                <i class="fa-solid fa-check-double text-emerald-600"></i> <span class="hidden sm:inline">Hammasi</span> bor
+              </button>
+              <button onclick="exportToExcel()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-emerald-700 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-1.5 border border-emerald-300">
+                <i class="fa-solid fa-file-excel"></i> Excel
+              </button>
+              <button onclick="window.print()" class="hidden sm:flex px-3.5 py-2 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-xs sm:text-sm transition items-center gap-1.5 border border-slate-300">
+                <i class="fa-solid fa-print"></i> Chop etish
+              </button>
+            </div>
+
+            <button id="saveAttendanceBtn" onclick="saveAttendanceManual()" class="px-4 py-1.5 sm:px-5 sm:py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 shadow-lg shadow-blue-500/30">
+              <i class="fa-solid fa-cloud-arrow-up text-sm sm:text-base"></i> <span>Bulutga Saqlash</span>
             </button>
           </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-1">
-          <div id="saveStatusIndicator" class="text-xs font-semibold text-emerald-700 flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl w-fit">
+        <!-- Bildirishnoma va holat satri -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-1">
+          <div id="saveStatusIndicator" class="text-[11px] sm:text-xs font-semibold text-emerald-700 flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl w-full sm:w-fit">
             <i class="fa-solid fa-cloud-arrow-up"></i> Barcha ma'lumotlar bulutda sinxronlangan
           </div>
-          <div id="permissionWarning" class="hidden text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl flex items-center gap-2 w-fit">
+          <div id="permissionWarning" class="hidden text-[11px] sm:text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-xl flex items-center gap-2 w-full sm:w-fit">
             <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> <span id="warningMessageText">Vaqt cheklovi mavjud!</span>
           </div>
         </div>
 
-        <div id="printableArea" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="p-4 bg-slate-50/80 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3">
-            <div>
-              <h2 class="font-black text-slate-800 text-base" id="tableClassTitle">Sinf Davomati</h2>
-              <p class="text-xs text-slate-500 font-medium" id="tableSubtitle">Sana va dars vaqti</p>
-            </div>
-            <div class="flex items-center gap-3 text-xs font-bold bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm">
-              <span class="text-emerald-700 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Bor: <b id="count-bor">0</b></span>
-              <span class="text-rose-700 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Kelmadi: <b id="count-kelmadi">0</b></span>
-              <span class="text-amber-700 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Sababli: <b id="count-sababli">0</b></span>
-              <span class="text-indigo-700 border-l pl-3 ml-1">Aniq Foiz: <b id="count-percentage">0.0%</b></span>
-            </div>
+        <!-- Davomat statistikasi va sarlavhasi -->
+        <div class="bg-white p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-2">
+          <div>
+            <h2 class="font-black text-slate-800 text-sm sm:text-base" id="tableClassTitle">Sinf Davomati</h2>
+            <p class="text-[11px] sm:text-xs text-slate-500 font-medium" id="tableSubtitle">Sana va dars vaqti</p>
           </div>
+          <div class="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs font-bold bg-slate-50 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200">
+            <span class="text-emerald-700 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Bor: <b id="count-bor">0</b></span>
+            <span class="text-rose-700 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Yo'q: <b id="count-kelmadi">0</b></span>
+            <span class="text-amber-700 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Sabab: <b id="count-sababli">0</b></span>
+            <span class="text-indigo-700 border-l pl-2 border-slate-300">Foiz: <b id="count-percentage">0.0%</b></span>
+          </div>
+        </div>
 
+        <!-- 1-KO'RINISh: TELEFON UCHUN QULAY KARTOCHKALAR (block md:hidden) -->
+        <div id="mobileCardsContainer" class="block md:hidden space-y-2.5"></div>
+
+        <!-- 2-KO'RINISh: KOMPYUTER UCHUN JADVAL (hidden md:block) -->
+        <div id="printableArea" class="hidden md:block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-sm">
               <thead>
@@ -234,21 +255,26 @@
         </div>
       </div>
 
-      <!-- ================= B. O'QUVCHILAR RO'YXATI TABI ================= -->
-      <div id="view-oquvchilar" class="hidden space-y-6">
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+      <!-- ================= B. O'QUVCHILAR RO'YXATI BO'LIMI ================= -->
+      <div id="view-oquvchilar" class="hidden space-y-4 sm:space-y-6">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="font-black text-slate-800 text-lg">O'quvchilar Boshqaruvi (Jami 303 nafar)</h2>
-            <p class="text-xs text-slate-500 font-medium">Sinf rahbarlari faqat o'z sinflarini tahrirlashi mumkin</p>
+            <h2 class="font-black text-slate-800 text-base sm:text-lg">O'quvchilar Boshqaruvi (303 nafar)</h2>
+            <p class="text-xs text-slate-500 font-medium">Barcha sinf o'quvchilari ro'yxati</p>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="forceResetTo303Students()" class="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-amber-300" title="Bulutni 303 o'quvchiga qayta tiklash">
-              <i class="fa-solid fa-arrows-rotate"></i> Bulutni 303 o'quvchiga tiklash
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button onclick="forceResetTo303Students()" class="flex-1 sm:flex-initial px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-amber-300">
+              <i class="fa-solid fa-arrows-rotate"></i> 303 o'quvchini tiklash
             </button>
-            <button onclick="openStudentModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition flex items-center gap-2 shadow-sm">
-              <i class="fa-solid fa-user-plus"></i> Yangi o'quvchi qo'shish
+            <button onclick="openStudentModal()" class="flex-1 sm:flex-initial px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 shadow-sm">
+              <i class="fa-solid fa-user-plus"></i> Yangi qo'shish
             </button>
           </div>
+        </div>
+
+        <!-- Telefonda qidiruv / sinf bo'yicha filter -->
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 flex gap-2">
+          <input type="text" id="studentSearchInput" oninput="renderStudentManagementTable()" placeholder="O'quvchi ismini qidiring..." class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -256,11 +282,11 @@
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr class="border-b border-slate-200 bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider font-bold">
-                  <th class="py-3 px-4 w-12 text-center">#</th>
-                  <th class="py-3 px-4">F.I.SH</th>
-                  <th class="py-3 px-4">Sinfi</th>
-                  <th class="py-3 px-4">Telefon</th>
-                  <th class="py-3 px-4 text-right">Amallar</th>
+                  <th class="py-3 px-3 sm:px-4 w-10 sm:w-12 text-center">#</th>
+                  <th class="py-3 px-3 sm:px-4">F.I.SH</th>
+                  <th class="py-3 px-2 sm:px-4 text-center sm:text-left">Sinfi</th>
+                  <th class="py-3 px-3 sm:px-4 hidden sm:table-cell">Telefon</th>
+                  <th class="py-3 px-3 sm:px-4 text-right">Amallar</th>
                 </tr>
               </thead>
               <tbody id="studentManagementTbody" class="divide-y divide-slate-100"></tbody>
@@ -269,77 +295,77 @@
         </div>
       </div>
 
-      <!-- ================= C. CHUQUR TAHLIL TABI ================= -->
-      <div id="view-tahlil" class="hidden space-y-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+      <!-- ================= C. CHUQUR TAHLIL BO'LIMI ================= -->
+      <div id="view-tahlil" class="hidden space-y-4 sm:space-y-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
-              <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Jami Maktab O'quvchilari</p>
-              <h3 class="text-2xl font-black text-slate-800 mt-1" id="kpi-total">303 ta</h3>
+              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Jami O'quvchi</p>
+              <h3 class="text-lg sm:text-2xl font-black text-slate-800 mt-1" id="kpi-total">303 ta</h3>
             </div>
-            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-users"></i></div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-users"></i></div>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
-              <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Bugungi Ishtirok</p>
-              <h3 class="text-2xl font-black text-emerald-600 mt-1" id="kpi-present">0 ta</h3>
+              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Bugun Bor</p>
+              <h3 class="text-lg sm:text-2xl font-black text-emerald-600 mt-1" id="kpi-present">0 ta</h3>
             </div>
-            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-user-check"></i></div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-user-check"></i></div>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
-              <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Dars Qoldirganlar</p>
-              <h3 class="text-2xl font-black text-rose-600 mt-1" id="kpi-absent">0 ta</h3>
+              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Bugun Yo'q</p>
+              <h3 class="text-lg sm:text-2xl font-black text-rose-600 mt-1" id="kpi-absent">0 ta</h3>
             </div>
-            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-user-xmark"></i></div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-user-xmark"></i></div>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
-              <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Aniq Davomat Foizi</p>
-              <h3 class="text-2xl font-black text-indigo-600 mt-1" id="kpi-percent">0.0%</h3>
+              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Aniq Foiz</p>
+              <h3 class="text-lg sm:text-2xl font-black text-indigo-600 mt-1" id="kpi-percent">0.0%</h3>
             </div>
-            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-chart-pie"></i></div>
           </div>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
-            <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
+            <h3 class="font-black text-slate-800 text-sm sm:text-base flex items-center gap-2">
               <i class="fa-solid fa-chalkboard-user text-blue-600"></i> Sinf Davomat Foizlari
             </h3>
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               <span class="text-xs text-slate-400 font-semibold" id="analyticsClassDate">Bugungi sana</span>
-              <button onclick="exportClassesDailyAnalyticsToExcel()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+              <button onclick="exportClassesDailyAnalyticsToExcel()" class="w-full sm:w-auto px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
                 <i class="fa-solid fa-file-excel"></i> 📊 Sinflar Tahlili (Excel)
               </button>
             </div>
           </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3" id="classPercentageCards"></div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3" id="classPercentageCards"></div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="font-bold text-slate-800 text-sm mb-3">Sinflar reytingi (Aniq foizlar taqqoslashi)</h3>
-            <div class="h-64"><canvas id="classBarChart"></canvas></div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-slate-800 text-xs sm:text-sm mb-3">Sinflar reytingi (Foizlar taqqoslashi)</h3>
+            <div class="h-56 sm:h-64"><canvas id="classBarChart"></canvas></div>
           </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="font-bold text-slate-800 text-sm mb-3">1–8 Dars soatlari kesimidagi davomat dinamikasi</h3>
-            <div class="h-64"><canvas id="periodLineChart"></canvas></div>
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-slate-800 text-xs sm:text-sm mb-3">Dars soatlari dinamikasi</h3>
+            <div class="h-56 sm:h-64"><canvas id="periodLineChart"></canvas></div>
           </div>
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="p-5 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div class="p-4 sm:p-5 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
-                <i class="fa-solid fa-user-graduate text-indigo-600"></i> O'quvchilarning Barcha Soatlar Kesimidagi Aniq Foizi
+              <h3 class="font-black text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                <i class="fa-solid fa-user-graduate text-indigo-600"></i> Darsbay Davomat Jadvali
               </h3>
-              <p class="text-xs text-slate-500 font-medium">Har bir dars soatidagi bor-yo'qlik</p>
+              <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Barcha soatlar kesimida</p>
             </div>
-            <div class="flex items-center gap-2">
-              <select id="analyticsFilterClass" class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-blue-700 bg-white" onchange="renderStudentAnalyticsTable()"></select>
-              <button onclick="exportAllStudentsHourlyAnalyticsToExcel()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-file-excel"></i> 📋 Darsbay Davomat (Excel)
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <select id="analyticsFilterClass" class="flex-1 sm:flex-initial border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-blue-700 bg-white" onchange="renderStudentAnalyticsTable()"></select>
+              <button onclick="exportAllStudentsHourlyAnalyticsToExcel()" class="flex-1 sm:flex-initial px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-file-excel"></i> 📋 Darsbay Excel
               </button>
             </div>
           </div>
@@ -347,19 +373,19 @@
             <table class="w-full text-left border-collapse text-xs">
               <thead>
                 <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
-                  <th class="py-3 px-4 w-10 text-center">#</th>
-                  <th class="py-3 px-4">O'quvchi</th>
-                  <th class="py-3 px-4">Sinf</th>
-                  <th class="py-3 px-1 text-center">Ertalab</th>
-                  <th class="py-3 px-1 text-center">1</th>
-                  <th class="py-3 px-1 text-center">2</th>
-                  <th class="py-3 px-1 text-center">3</th>
-                  <th class="py-3 px-1 text-center">4</th>
-                  <th class="py-3 px-1 text-center">5</th>
-                  <th class="py-3 px-1 text-center">6</th>
-                  <th class="py-3 px-1 text-center">7</th>
-                  <th class="py-3 px-1 text-center">8</th>
-                  <th class="py-3 px-4 text-center">Kunlik Foiz</th>
+                  <th class="py-2.5 px-3 w-8 text-center">#</th>
+                  <th class="py-2.5 px-3">O'quvchi</th>
+                  <th class="py-2.5 px-2">Sinf</th>
+                  <th class="py-2.5 px-1 text-center">Ert</th>
+                  <th class="py-2.5 px-1 text-center">1</th>
+                  <th class="py-2.5 px-1 text-center">2</th>
+                  <th class="py-2.5 px-1 text-center">3</th>
+                  <th class="py-2.5 px-1 text-center">4</th>
+                  <th class="py-2.5 px-1 text-center">5</th>
+                  <th class="py-2.5 px-1 text-center">6</th>
+                  <th class="py-2.5 px-1 text-center">7</th>
+                  <th class="py-2.5 px-1 text-center">8</th>
+                  <th class="py-2.5 px-3 text-center">Kunlik</th>
                 </tr>
               </thead>
               <tbody id="studentAnalyticsTbody" class="divide-y divide-slate-100"></tbody>
@@ -368,53 +394,43 @@
         </div>
       </div>
 
-      <!-- ================= D. DARS JADVALI TABI ================= -->
-      <div id="view-jadval" class="hidden space-y-6">
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+      <!-- ================= D. DARS JADVALI BO'LIMI ================= -->
+      <div id="view-jadval" class="hidden space-y-4 sm:space-y-6">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="font-black text-slate-800 text-lg flex items-center gap-2">
-              <i class="fa-regular fa-clock text-blue-600"></i> Qo'ng'iroqlar va Dars Vaqtlari Jadvali
+            <h2 class="font-black text-slate-800 text-base sm:text-lg flex items-center gap-2">
+              <i class="fa-regular fa-clock text-blue-600"></i> Qo'ng'iroqlar Jadvali
             </h2>
-            <p class="text-xs text-slate-500 font-medium">Sinf rahbarlari har bir kun uchun darslar sonini oxiridan boshlab olib tashlashi mumkin</p>
+            <p class="text-xs text-slate-500 font-medium">Haftalik kunlik darslar sonini boshqarish</p>
           </div>
-          <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2">
-              <label class="text-xs font-bold text-slate-600">Sinfni tanlang:</label>
-              <select id="scheduleClassSelector" class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-blue-700 bg-white" onchange="renderWeeklyDayCounters()">
-              </select>
-            </div>
-            <button onclick="saveScheduleChanges()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5 shadow-sm">
-              <i class="fa-solid fa-floppy-disk"></i> Jadvalni saqlash
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <select id="scheduleClassSelector" class="flex-1 sm:flex-initial border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-blue-700 bg-white" onchange="renderWeeklyDayCounters()">
+            </select>
+            <button onclick="saveScheduleChanges()" class="flex-1 sm:flex-initial px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-floppy-disk"></i> Saqlash
             </button>
           </div>
         </div>
 
-        <div class="bg-gradient-to-r from-blue-50/70 via-indigo-50/50 to-purple-50/70 p-5 rounded-2xl border-2 border-dashed border-blue-200 shadow-sm space-y-3">
+        <div class="bg-gradient-to-r from-blue-50/70 via-indigo-50/50 to-purple-50/70 p-4 sm:p-5 rounded-2xl border border-blue-200 shadow-sm space-y-3">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center text-xs font-black">📅</span>
-              <h3 class="text-sm font-black text-slate-800">Haftalik kunlik darslar soni (Dushanba — Shanba)</h3>
-            </div>
-            <span class="text-xs font-semibold text-slate-500" id="schedulePermissionNotice"></span>
+            <span class="text-xs font-black text-slate-800">📅 Haftalik darslar soni (1–8)</span>
+            <span class="text-[11px] font-semibold text-slate-500" id="schedulePermissionNotice"></span>
           </div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="weeklyDaysContainer"></div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3" id="weeklyDaysContainer"></div>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="p-4 bg-slate-50/80 border-b border-slate-200 flex justify-between items-center">
-            <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wider">Umumiy Dars va Qo'ng'iroq Vaqtlari</h4>
-            <span class="text-[11px] text-slate-400 font-medium">Boshlanish va tugash vaqtlari</span>
-          </div>
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-sm">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
                 <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 text-xs uppercase font-bold">
-                  <th class="py-3.5 px-4 w-16 text-center">Soat</th>
-                  <th class="py-3.5 px-4">Dars / Bosqich Nomi</th>
-                  <th class="py-3.5 px-4 text-center">Boshlanish vaqti</th>
-                  <th class="py-3.5 px-4 text-center">Tugash vaqti</th>
-                  <th class="py-3.5 px-4">Davomiyligi va Tanaffus</th>
-                  <th class="py-3.5 px-4 text-center">Holat</th>
+                  <th class="py-3 px-3 w-12 text-center">Soat</th>
+                  <th class="py-3 px-3">Dars Nomi</th>
+                  <th class="py-3 px-3 text-center">Boshlanish</th>
+                  <th class="py-3 px-3 text-center">Tugash</th>
+                  <th class="py-3 px-3 hidden sm:table-cell">Tavsif</th>
+                  <th class="py-3 px-3 text-center">Holat</th>
                 </tr>
               </thead>
               <tbody id="scheduleTbody" class="divide-y divide-slate-100"></tbody>
@@ -423,50 +439,48 @@
         </div>
       </div>
 
-      <!-- ================= E. XODIMLAR BO'LIMI (HAMMA UCHUN MOSLASHTIRILGAN) ================= -->
-      <div id="view-oqituvchilar" class="hidden space-y-6">
-        
-        <!-- Agar Admin kirgan bo'lsa: O'zining login parolini tahrirlash kartochkasi -->
-        <div id="myAdminAccountCard" class="hidden bg-gradient-to-r from-amber-50 to-indigo-50 border border-amber-200 p-5 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+      <!-- ================= E. XODIMLAR BO'LIMI ================= -->
+      <div id="view-oqituvchilar" class="hidden space-y-4 sm:space-y-6">
+        <div id="myAdminAccountCard" class="hidden bg-gradient-to-r from-amber-50 to-indigo-50 border border-amber-200 p-4 sm:p-5 rounded-2xl flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-amber-500 text-white rounded-xl flex items-center justify-center text-xl shadow-md">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500 text-white rounded-xl flex items-center justify-center text-lg sm:text-xl shadow-md">
               <i class="fa-solid fa-id-card-clip"></i>
             </div>
             <div>
-              <span class="text-[10px] font-black uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Sizning Shaxsiy Profilingiz</span>
-              <h3 class="font-black text-slate-800 text-base" id="myAccountName">Admin</h3>
-              <p class="text-xs text-slate-500 font-mono mt-0.5" id="myAccountLoginDetails">Login: admin | Parol: ********</p>
+              <span class="text-[10px] font-black uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Shaxsiy Profil</span>
+              <h3 class="font-black text-slate-800 text-sm sm:text-base" id="myAccountName">Admin</h3>
+              <p class="text-[11px] sm:text-xs text-slate-500 font-mono mt-0.5" id="myAccountLoginDetails">Login: admin | Parol: ********</p>
             </div>
           </div>
-          <button onclick="openSelfEditModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+          <button onclick="openSelfEditModal()" class="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
             <i class="fa-solid fa-key text-amber-400"></i> O'z login-parolimni o'zgartirish
           </button>
         </div>
 
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="font-black text-slate-800 text-lg flex items-center gap-2">
-              <i class="fa-solid fa-chalkboard-user text-blue-600"></i> Xodimlar va Hisoblar Boshqaruvi
+            <h2 class="font-black text-slate-800 text-base sm:text-lg flex items-center gap-2">
+              <i class="fa-solid fa-chalkboard-user text-blue-600"></i> Xodimlar va Hisoblar
             </h2>
-            <p class="text-xs text-slate-500 font-medium">Barcha xodimlar va administratorlar ro'yxati</p>
+            <p class="text-xs text-slate-500 font-medium">Barcha xodimlar va administratorlar</p>
           </div>
-          <button onclick="openUserCreateModal('all')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-sm">
-            <i class="fa-solid fa-user-plus"></i> Yangi xodim / Admin qo'shish
+          <button onclick="openUserCreateModal('all')" class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm">
+            <i class="fa-solid fa-user-plus"></i> Yangi hisob qo'shish
           </button>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-sm">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
                 <tr class="border-b border-slate-200 bg-slate-50/50 text-slate-500 text-xs uppercase font-bold">
-                  <th class="py-3 px-4 w-12 text-center">#</th>
-                  <th class="py-3 px-4">F.I.SH. (Xodim / Admin)</th>
-                  <th class="py-3 px-4">Roli</th>
-                  <th class="py-3 px-4">Biriktirilgan Sinf</th>
-                  <th class="py-3 px-4 font-mono">Login</th>
-                  <th class="py-3 px-4 font-mono">Parol</th>
-                  <th class="py-3 px-4 text-right">Amallar</th>
+                  <th class="py-3 px-3 w-10 text-center">#</th>
+                  <th class="py-3 px-3">F.I.SH.</th>
+                  <th class="py-3 px-3">Roli</th>
+                  <th class="py-3 px-3">Sinf</th>
+                  <th class="py-3 px-3 font-mono">Login</th>
+                  <th class="py-3 px-3 font-mono">Parol</th>
+                  <th class="py-3 px-3 text-right">Amallar</th>
                 </tr>
               </thead>
               <tbody id="adminTeachersTbody" class="divide-y divide-slate-100 font-medium"></tbody>
@@ -476,109 +490,130 @@
       </div>
 
     </main>
+
+    <!-- TELEFON UCHUN PASTKI NAVIGATSIYA PANELI (Bottom Navigation Bar) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex items-center justify-around py-1.5 px-2 shadow-lg no-print">
+      <button onclick="switchTab('davomat')" id="m-tab-davomat" class="flex flex-col items-center justify-center py-1 px-2 text-blue-600 font-bold transition">
+        <i class="fa-solid fa-clipboard-check text-lg"></i>
+        <span class="text-[10px] mt-0.5">Davomat</span>
+      </button>
+      <button onclick="switchTab('oquvchilar')" id="m-tab-oquvchilar" class="flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
+        <i class="fa-solid fa-users text-lg"></i>
+        <span class="text-[10px] mt-0.5">O'quvchilar</span>
+      </button>
+      <button onclick="switchTab('tahlil')" id="m-tab-tahlil" class="flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
+        <i class="fa-solid fa-chart-line text-lg"></i>
+        <span class="text-[10px] mt-0.5">Tahlil</span>
+      </button>
+      <button onclick="switchTab('jadval')" id="m-tab-jadval" class="flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
+        <i class="fa-regular fa-calendar-days text-lg"></i>
+        <span class="text-[10px] mt-0.5">Jadval</span>
+      </button>
+      <button onclick="switchTab('oqituvchilar')" id="m-tab-oqituvchilar" class="hidden flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
+        <i class="fa-solid fa-chalkboard-user text-lg"></i>
+        <span class="text-[10px] mt-0.5">Xodimlar</span>
+      </button>
+    </nav>
   </div>
 
   <!-- Modallar -->
   <div id="studentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+    <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="font-bold text-slate-800 text-lg" id="modalTitle">O'quvchi qo'shish</h3>
+        <h3 class="font-bold text-slate-800 text-base sm:text-lg" id="modalTitle">O'quvchi qo'shish</h3>
         <button onclick="closeStudentModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <form id="studentForm" class="space-y-4">
+      <form id="studentForm" class="space-y-3.5">
         <input type="hidden" id="editStudentId">
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">F.I.SH</label>
-          <input type="text" id="modalName" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+          <input type="text" id="modalName" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Sinf</label>
-          <select id="modalClass" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" required></select>
+          <select id="modalClass" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" required></select>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Ota-ona telefoni</label>
-          <input type="text" id="modalPhone" placeholder="+998 90 123 45 67" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" required>
+          <input type="text" id="modalPhone" placeholder="+998 90 123 45 67" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" required>
         </div>
         <div class="flex justify-end gap-2 pt-3">
-          <button type="button" onclick="closeStudentModal()" class="px-4 py-2 rounded-xl border text-sm font-semibold text-slate-600 hover:bg-slate-50">Bekor qilish</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 shadow-md">Saqlash</button>
+          <button type="button" onclick="closeStudentModal()" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-50">Bekor qilish</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold hover:bg-blue-700 shadow-md">Saqlash</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Hisob yaratish va tahrirlash modali -->
   <div id="userModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+    <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="font-bold text-slate-800 text-lg" id="userModalTitle">Hisob yaratish</h3>
+        <h3 class="font-bold text-slate-800 text-base sm:text-lg" id="userModalTitle">Hisob yaratish</h3>
         <button onclick="closeUserModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <form id="userForm" class="space-y-4">
+      <form id="userForm" class="space-y-3.5">
         <input type="hidden" id="userFormKey">
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">F.I.SH. va Lavozimi</label>
-          <input type="text" id="userFormName" placeholder="Masalan: Qodirov Jamshid Anvarovich (Bosh Direktor)" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
-          <p class="text-[10px] text-slate-400 mt-1">Admin qilib tayinlangan kishining ismi yuqori sarlavhada ko'rinadi.</p>
+          <input type="text" id="userFormName" placeholder="Qodirov Jamshid Anvarovich (Bosh Direktor)" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold" required>
         </div>
         <div id="userFormRoleWrapper">
-          <label class="block text-xs font-bold text-slate-600 mb-1">Roli / Huquqi</label>
-          <select id="userFormRole" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" onchange="toggleUserClassSelect()">
+          <label class="block text-xs font-bold text-slate-600 mb-1">Roli</label>
+          <select id="userFormRole" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" onchange="toggleUserClassSelect()">
             <option value="teacher" selected>Sinf Rahbari / O'qituvchi</option>
             <option value="admin">Administrator (Direktor / Zavuch)</option>
           </select>
         </div>
         <div id="userFormClassWrapper">
           <label class="block text-xs font-bold text-slate-600 mb-1">Biriktirilgan Sinf</label>
-          <select id="userFormClass" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold"></select>
+          <select id="userFormClass" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold"></select>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Login</label>
-          <input type="text" id="userFormLogin" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" required>
+          <input type="text" id="userFormLogin" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" required>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Parol</label>
-          <input type="text" id="userFormPassword" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" required>
+          <input type="text" id="userFormPassword" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono" required>
         </div>
         <div class="flex justify-end gap-2 pt-3">
-          <button type="button" onclick="closeUserModal()" class="px-4 py-2 rounded-xl border text-sm font-semibold text-slate-600 hover:bg-slate-50">Bekor qilish</button>
-          <button type="submit" id="userModalSaveBtn" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 shadow-md">Saqlash</button>
+          <button type="button" onclick="closeUserModal()" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-50">Bekor qilish</button>
+          <button type="submit" id="userModalSaveBtn" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold hover:bg-blue-700 shadow-md">Saqlash</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Admin o'z hisobini o'zgartirish modali -->
   <div id="selfEditModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+    <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
-          <i class="fa-solid fa-user-pen text-blue-600"></i> Profilingizni tahrirlash
+        <h3 class="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2">
+          <i class="fa-solid fa-user-pen text-blue-600"></i> Profilni tahrirlash
         </h3>
         <button onclick="closeSelfEditModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <form id="selfEditForm" class="space-y-4">
+      <form id="selfEditForm" class="space-y-3.5">
         <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">F.I.SH. va Lavozimingiz</label>
-          <input type="text" id="selfNameInput" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" required>
+          <label class="block text-xs font-bold text-slate-600 mb-1">F.I.SH. va Lavozim</label>
+          <input type="text" id="selfNameInput" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" required>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Yangi Login</label>
-          <input type="text" id="selfLoginInput" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono font-bold" required>
+          <input type="text" id="selfLoginInput" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono font-bold" required>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Yangi Parol</label>
-          <input type="text" id="selfPasswordInput" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono font-bold" required>
+          <input type="text" id="selfPasswordInput" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono font-bold" required>
         </div>
         <div class="flex justify-end gap-2 pt-3">
-          <button type="button" onclick="closeSelfEditModal()" class="px-4 py-2 rounded-xl border text-sm font-semibold text-slate-600 hover:bg-slate-50">Bekor qilish</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 shadow-md">Saqlash</button>
+          <button type="button" onclick="closeSelfEditModal()" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-50">Bekor qilish</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold hover:bg-blue-700 shadow-md">Saqlash</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT VA BAZA ================= -->
+  <!-- ================= JAVASCRIPT VA HAQIQIY BAZA ================= -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAoJDOABktpOPA-5G_T2oQqFNsA4tSO1qI",
@@ -612,12 +647,12 @@
     ];
 
     const defaultSchedule = [
-      { id: 'morning', name: "Ertalabki yig'in (Sinf rahbari)", start: '08:00', end: '08:29', desc: 'Sinf rahbari nazorati' },
+      { id: 'morning', name: "Ertalabki yig'in", start: '08:00', end: '08:29', desc: 'Sinf rahbari nazorati' },
       { id: '1', name: '1-dars', start: '08:30', end: '09:15', desc: '45 daqiqa (5 daq tanaffus)' },
       { id: '2', name: '2-dars', start: '09:20', end: '10:05', desc: '45 daqiqa (5 daq tanaffus)' },
       { id: '3', name: '3-dars', start: '10:10', end: '10:55', desc: '45 daqiqa (5 daq tanaffus)' },
       { id: '4', name: '4-dars', start: '11:00', end: '11:45', desc: '45 daqiqa (5 daq tanaffus)' },
-      { id: '5', name: '5-dars', start: '11:50', end: '12:35', desc: '45 daqiqa (Katta tanaffus: 45 daq)' },
+      { id: '5', name: '5-dars', start: '11:50', end: '12:35', desc: '45 daqiqa (Katta tanaffus)' },
       { id: '6', name: '6-dars', start: '13:20', end: '14:05', desc: '45 daqiqa (5 daq tanaffus)' },
       { id: '7', name: '7-dars', start: '14:10', end: '14:55', desc: '45 daqiqa (5 daq tanaffus)' },
       { id: '8', name: '8-dars', start: '15:00', end: '15:45', desc: '45 daqiqa dars' }
@@ -664,310 +699,112 @@
       'xodim_33': { role: 'teacher', name: 'JUMABAYEVA MAFTUNA IKRAM QIZI', assignedClass: null, password: 'maktab2026' }
     };
 
-    // 303 nafar asl o'quvchilar ro'yxati
+    // 303 nafar asl o'quvchilar ro'yxati (14 ta sinf)
     const rawStudentsData = [
-      ["9-A", "НОРМАТОВА ГУЛЗОДА РУСТАМ ҚИЗИ"],
-      ["9-A", "ХОЖАМУРАДОВ РАСУЛБЕК ФАРХАДОВИЧ"],
-      ["9-A", "РАЙИМОВА ШАХРИЗОДА РУФАТОВНА"],
-      ["9-A", "РЗАМБЕТОВА ФЕРУЗА АЗАТОВНА"],
-      ["9-A", "НУРИМБЕТОВ БУНЁДБЕК ДИЛМУРАТОВИЧ"],
-      ["9-A", "АБАТОВ ДАМИР ИЛХАМОВИЧ"],
-      ["9-A", "БАЗАРБАЕВ ДИЁРБЕК САПАРБАЕВИЧ"],
-      ["9-A", "БАЗАРБАЕВА ДИЛНАЗА АЙБЕК КЫЗЫ"],
-      ["9-A", "БАХТИЯРОВ АСЫЛБЕК АЙБЕКОВИЧ"],
-      ["9-A", "АМАНГЕЛДИЕВ ДОВЛЕТЯР ХОШГЕЛДИ УЛЫ"],
-      ["9-A", "КЕНЕСБАЕВ БЕРДАХ КУАНЫШБАЕВИЧ"],
-      ["9-A", "ХУДАЙБЕРГЕНОВ ДАУЫТБАЙ НИЕТБАЕВИЧ"],
-      ["9-A", "ОРАЗБАЕВА ДИЛНОЗА МАКСАДОВНА"],
-      ["9-A", "КАРИМБАЕВ АХРОРБЕК АЗАМАТОВИЧ"],
-      ["9-A", "ШАМШЕТДИНОВ МИЙРАСБЕК САЛАМАТ УЛЫ"],
-      ["9-A", "ЗАРИПБАЕВ НУРУЛЛА АЗАМАТОВИЧ"],
-      ["9-A", "МАМУТОВА МУХАББАТ МУЗАФАРОВНА"],
-      ["9-A", "АЖИМУРАТОВА ЗАРИНА ОМИРЗАКОВНА"],
-      ["9-A", "ХАЙДАРОВ УМИД АЙТБАЕВИЧ"],
-      ["9-A", "ЖУМАБАЕВ ХУСНИДДИН ЗАМИРОВИЧ"],
-      ["9-A", "ОРАЗБАЕВА ЧАРОС МАНСУР КИЗИ"],
+      ["9-A", "НОРМАТОВА ГУЛЗОДА РУСТАМ ҚИЗИ"], ["9-A", "ХОЖАМУРАДОВ РАСУЛБЕК ФАРХАДОВИЧ"], ["9-A", "РАЙИМОВА ШАХРИЗОДА РУФАТОВНА"],
+      ["9-A", "РЗАМБЕТОВА ФЕРУЗА АЗАТОВНА"], ["9-A", "НУРИМБЕТОВ БУНЁДБЕК ДИЛМУРАТОВИЧ"], ["9-A", "АБАТОВ ДАМИР ИЛХАМОВИЧ"],
+      ["9-A", "БАЗАРБАЕВ ДИЁРБЕК САПАРБАЕВИЧ"], ["9-A", "БАЗАРБАЕВА ДИЛНАЗА АЙБЕК КЫЗЫ"], ["9-A", "БАХТИЯРОВ АСЫЛБЕК АЙБЕКОВИЧ"],
+      ["9-A", "АМАНГЕЛДИЕВ ДОВЛЕТЯР ХОШГЕЛДИ УЛЫ"], ["9-A", "КЕНЕСБАЕВ БЕРДАХ КУАНЫШБАЕВИЧ"], ["9-A", "ХУДАЙБЕРГЕНОВ ДАУЫТБАЙ НИЕТБАЕВИЧ"],
+      ["9-A", "ОРАЗБАЕВА ДИЛНОЗА МАКСАДОВНА"], ["9-A", "КАРИМБАЕВ АХРОРБЕК АЗАМАТОВИЧ"], ["9-A", "ШАМШЕТДИНОВ МИЙРАСБЕК САЛАМАТ УЛЫ"],
+      ["9-A", "ЗАРИПБАЕВ НУРУЛЛА АЗАМАТОВИЧ"], ["9-A", "МАМУТОВА МУХАББАТ МУЗАФАРОВНА"], ["9-A", "АЖИМУРАТОВА ЗАРИНА ОМИРЗАКОВНА"],
+      ["9-A", "ХАЙДАРОВ УМИД АЙТБАЕВИЧ"], ["9-A", "ЖУМАБАЕВ ХУСНИДДИН ЗАМИРОВИЧ"], ["9-A", "ОРАЗБАЕВА ЧАРОС МАНСУР КИЗИ"],
       ["9-A", "РИМБЕРГЕНОВ ОТАБЕК ШАВКАТОВИЧ"],
-      ["5-A", "ACHILOVA NILUFAR MAXMUDOVNA"],
-      ["5-A", "RUSTEMOV XURSANDBEK XAMDAMOVICH"],
-      ["5-A", "ORAZIMBETOV MUSTAFO FURXADOVICH"],
-      ["5-A", "URAZBAYEVA ZARINA AZATOVNA"],
-      ["5-A", "KUBAIKULIYEV POLAT NURGELDIYEVICH"],
-      ["5-A", "YUSUPOV SHAXZODBEK RAXIMOVICH"],
-      ["5-A", "SAPARBAYEVA AYSULI`U AZAMATOVNA"],
-      ["5-A", "RAJAPOVA MAFTUNA ODILBEKOVNA"],
-      ["5-A", "SAPARBAEVA OLTINOY ERGASH QIZI"],
-      ["5-A", "YERKINOV ELBEK MANSUROVICH"],
-      ["5-A", "SEYTBAYEVA JULDI`Z POLATOVNA"],
-      ["5-A", "MAULENOVA BARNO AZAMAT QI`ZI`"],
-      ["5-A", "TIRKESHBAYEVA MOXINUR MAMUTOVNA"],
-      ["5-A", "XAYTMURATOVA NAZIRA KUDRATOVNA"],
-      ["5-A", "QIDIRBAYEVA SHADIYA XAMROEVNA"],
-      ["5-A", "RUSTAMOVA MAFTUNA ILXOMJONOVNA"],
-      ["5-A", "YUNUSBAYEVA MUNISA OXUNJONOVNA"],
-      ["5-A", "TLEUMURATOVA DULNURA BEKZOD QIZI"],
-      ["5-A", "ORAZBAYEVA SHOIRA OYBEKOVNA"],
-      ["5-A", "BAZARBAYEVA SABRINA DAVLATIYAROVNA"],
-      ["5-A", "ALLAMBERGENOVA NIGINA SALOMATOVNA"],
-      ["5-A", "ORINBAYEVA JASMINA ANVAROVNA"],
-      ["5-A", "CHI`NDOVLETOV SULAYMAN SERDAROVICH"],
-      ["5-A", "MATCHANOVA SHODIYONA URAZBAY QIZI"],
-      ["5-B", "DOSTANOV NURJAN SERIKBAEVICH"],
-      ["5-B", "BALTABAYEV JANDOS INAYAT ULI`"],
-      ["5-B", "POLATOVA GULSAWIR DAURANBEKOVNA"],
-      ["5-B", "Elmurzayev Qoblan Saylievich"],
-      ["5-B", "JABBARBERGENOVA JASMINA ADILBAYEVNA"],
-      ["5-B", "ABDUKARIMOV IBROHIM ABDIRAXIMOVICH"],
-      ["5-B", "BAZARBAYEV BAKIR BERDAXOVICH"],
-      ["5-B", "JIEMURATOV YERNAZAR AYDOSOVICH"],
-      ["5-B", "MURATOV SOXBET IXLASOVICH"],
-      ["5-B", "BAZARBAEVA KAMILA SAPARBAEVNA"],
-      ["5-B", "ORAZIMBETOVA MALIKA G`ULOMOVNA"],
-      ["5-B", "ARTIQBAEV ABROR IN`OMJAN O`G`LI"],
-      ["5-B", "XAYTBAYEVA NARGIZA IKROMJANOVNA"],
-      ["5-B", "IBAYDULLAYEV BEGARI`S SERIK ULI`"],
-      ["5-B", "XOJANTAYEVA DIANA DARYABAY QI`ZI`"],
-      ["5-B", "DJUMABAYEVA MUNIRA KENESBAY KI`ZI`"],
-      ["5-B", "ORI`NBAYEV ASADBEK KUTLI`MURATOVICH"],
-      ["5-B", "REJEPNAZAROV DILSHADBEK ISHANGULIYEVICH"],
-      ["5-B", "SULTAMURATOVA AYJAMAL ATAMURAT QI`ZI`"],
-      ["5-B", "TOLEGENOV NURASI`L SALAMAT ULI`"],
-      ["5-B", "SAPARBEKOV MUWSABEK MUXTARJAN ULI`"],
-      ["5-B", "TOLEGENOV YERASI`L SALAMAT ULI`"],
-      ["5-B", "RAJAPOVA CHAROS AZIMJONOVNA"],
-      ["5-B", "MARATOV RAXMAN MARATOVICH"],
-      ["6-A", "URAZBAEVA RANO IXTIYOROVNA"],
-      ["6-A", "IBRAGIMOV RAVSHANBEK JENGISBAEVICH"],
-      ["6-A", "AMANBAEVA HURLIMAN WONGARBAEVNA"],
-      ["6-A", "MURATBAEVA ZILOLA JAHONGIROVNA"],
-      ["6-A", "YULDASHOVA GULNOZA ALISHEROVNA"],
-      ["6-A", "RAJAPBAYEVA SOXIBA ALISHEROVNA"],
-      ["6-A", "ABDULLAEVA ASAL KALBAEVNA"],
-      ["6-A", "PARXATOV XURSAND AZIZOVICH"],
-      ["6-A", "XAYTBAEVA GULDANA MAXSETOVNA"],
-      ["6-A", "AZATBAYEVA ZILOLA ANVATOVNA"],
-      ["6-A", "BAZARBAEV NURBEK ANVAROVICH"],
-      ["6-A", "QOZIBAEV AVZALBEK KEULIMJAY ULI"],
-      ["6-A", "SAPARBAEV BEKZOD SHAVKATOVICH"],
-      ["6-A", "MAVLENBERGENOV AMIR ILXOMOVICH"],
-      ["6-A", "SULTANMURADOV XURSHID SHUXRATOVICH"],
-      ["6-A", "DOSMANOVA MUQADDAS GULOMJONOVNA"],
-      ["6-A", "ARTIKBAEVA LOBAR INOMJANOVNA"],
-      ["6-A", "SULTANOVA IRODA NEMATJANOVNA"],
-      ["6-A", "XAKAYEVA GULZADA AMANGELDIYEVNA"],
-      ["6-A", "TURSUNBAEVA QARASHASH SHUKURULLAEVNA"],
-      ["6-A", "ONGARBAYEV MUSLIMBEK SULTANBEK ULI"],
-      ["6-A", "SABUROVA SOHIBA DOVRONBEKOVNA"],
-      ["6-A", "SAPARBAEV BEXRUZ ANVAROVICH"],
-      ["6-A", "ISMAILOVA UMIDA OYBEKOVNA"],
-      ["6-B", "KENJEBAEV ABDULAZIZ XAMRA UGLI"],
-      ["6-B", "JOLDASBAYEV KOMRON NURLAN ULI"],
-      ["6-B", "JOLDASBAYEVA ULJAN IKRAMJAN KIZI"],
-      ["6-B", "BAXTIYAROVA SHADIYANA SALAMATOVNA"],
-      ["6-B", "IBRAGIMOVA BARNO MANSUROVNA"],
-      ["6-B", "JUMABAYEVA RUXSHONA AZIMJAN KIZI"],
-      ["6-B", "JOLDASBAYEV KOMRON NURLAN ULI"],
-      ["6-B", "BAZARBAEV NODIRBEK ABROROVICH"],
-      ["6-B", "GAYIPBAEVA MUNISA AMANBAEVNA"],
-      ["6-B", "ISLAMOV SAIDBEK MANSUROVICH"],
-      ["6-B", "SADULLAEVA ASALOY AKMALOVNA"],
-      ["6-B", "XOJABAYEVA DILNOZA DOVRANBEKOVNA"],
-      ["6-B", "MAKSETBAYEVA MADINABANU AMANGELDIYEVNA"],
-      ["6-B", "KENJEBAEV ABDULAZIZ XAMRA UGLI"],
-      ["6-B", "MAULENBERGENOV HAKIMBEK ULUGBEKOVICH"],
-      ["6-B", "GURBANGELDIYEV MUXAMMET SHOXRATOVICH"],
-      ["6-B", "ALMUXAMEDOV SEIDNUR NUERGELDIEVICH"],
-      ["6-B", "ALLAMURATOVA GUZAL SHUXRATJAN KIZI"],
-      ["6-B", "KASHKINBAYEVA INKAR JETKERBAYEVNA"],
-      ["6-B", "JUMABAYEVA RUXSHONA AZIMJAN KIZI"],
-      ["6-B", "YUSUPOVA MUBINA TURSINBAYEVNA"],
-      ["6-B", "KURBANBAEV DIDAR BERDIMURATOVICH"],
-      ["6-B", "XAYTBAYEV RISQITILLO NIYAZIMBETOVICH"],
-      ["7-A", "ISLAMOV SANJARBEK GULOMJONOVICH"],
-      ["7-A", "YULDASHEVA DILNOZA MUZAFFAR QIZI"],
-      ["7-A", "XALASHOV MUXAMMATALI PARAXAT O`G`LI"],
-      ["7-A", "NURLANOVA NAZERKE BERIK QIZI"],
-      ["7-A", "MADATOV OTABEK SHAVKATOVICH"],
-      ["7-A", "SAPARBAEV RUSLAN SHUXRATOVICH"],
-      ["7-A", "REJEPOV TIMUR RUSLANOVICH"],
-      ["7-A", "DURDIBAEVA ALBINA KUVANICHOVNA"],
-      ["7-A", "MAMETMURATOV JASURBEK ILYASJONOVICH"],
-      ["7-A", "ЖУМАМУРАТОВ МУҲАММАДАЛИ МУХИАТДИН ЎҒЛИ"],
-      ["7-A", "DJUMAMURATOVA DURDONA SABITOVNA"],
-      ["7-A", "JAMALADTINOV YERMUXAN JANABAY ULI"],
-      ["7-A", "YULDASHEVA LAYLO SHARIFBAEVNA"],
-      ["7-A", "XALILAEV BEGIS ILYASOVICH"],
-      ["7-A", "ТАЖИБАЕВ МАШРАББЕК КУРБАНБАЕВИЧ"],
-      ["7-A", "JAKSIMURATOVA NAZERKE SALIYEVNA"],
-      ["7-A", "KADEMBAEV RUFAT SHUXRATOVICH"],
-      ["7-A", "JAKSILIKOV JANDARBEK JANIBEK ULI"],
-      ["7-A", "WORINBETOV ARTUR POLATOVICH"],
-      ["7-A", "MUXAMMATDIYAROVA AYGUL MARATOVNA"],
-      ["7-A", "INIYATOV ASADBEK YERBOLOVICH"],
+      ["5-A", "ACHILOVA NILUFAR MAXMUDOVNA"], ["5-A", "RUSTEMOV XURSANDBEK XAMDAMOVICH"], ["5-A", "ORAZIMBETOV MUSTAFO FURXADOVICH"],
+      ["5-A", "URAZBAYEVA ZARINA AZATOVNA"], ["5-A", "KUBAIKULIYEV POLAT NURGELDIYEVICH"], ["5-A", "YUSUPOV SHAXZODBEK RAXIMOVICH"],
+      ["5-A", "SAPARBAYEVA AYSULI`U AZAMATOVNA"], ["5-A", "RAJAPOVA MAFTUNA ODILBEKOVNA"], ["5-A", "SAPARBAEVA OLTINOY ERGASH QIZI"],
+      ["5-A", "YERKINOV ELBEK MANSUROVICH"], ["5-A", "SEYTBAYEVA JULDI`Z POLATOVNA"], ["5-A", "MAULENOVA BARNO AZAMAT QI`ZI`"],
+      ["5-A", "TIRKESHBAYEVA MOXINUR MAMUTOVNA"], ["5-A", "XAYTMURATOVA NAZIRA KUDRATOVNA"], ["5-A", "QIDIRBAYEVA SHADIYA XAMROEVNA"],
+      ["5-A", "RUSTAMOVA MAFTUNA ILXOMJONOVNA"], ["5-A", "YUNUSBAYEVA MUNISA OXUNJONOVNA"], ["5-A", "TLEUMURATOVA DULNURA BEKZOD QIZI"],
+      ["5-A", "ORAZBAYEVA SHOIRA OYBEKOVNA"], ["5-A", "BAZARBAYEVA SABRINA DAVLATIYAROVNA"], ["5-A", "ALLAMBERGENOVA NIGINA SALOMATOVNA"],
+      ["5-A", "ORINBAYEVA JASMINA ANVAROVNA"], ["5-A", "CHI`NDOVLETOV SULAYMAN SERDAROVICH"], ["5-A", "MATCHANOVA SHODIYONA URAZBAY QIZI"],
+      ["5-B", "DOSTANOV NURJAN SERIKBAEVICH"], ["5-B", "BALTABAYEV JANDOS INAYAT ULI`"], ["5-B", "POLATOVA GULSAWIR DAURANBEKOVNA"],
+      ["5-B", "Elmurzayev Qoblan Saylievich"], ["5-B", "JABBARBERGENOVA JASMINA ADILBAYEVNA"], ["5-B", "ABDUKARIMOV IBROHIM ABDIRAXIMOVICH"],
+      ["5-B", "BAZARBAYEV BAKIR BERDAXOVICH"], ["5-B", "JIEMURATOV YERNAZAR AYDOSOVICH"], ["5-B", "MURATOV SOXBET IXLASOVICH"],
+      ["5-B", "BAZARBAEVA KAMILA SAPARBAEVNA"], ["5-B", "ORAZIMBETOVA MALIKA G`ULOMOVNA"], ["5-B", "ARTIQBAEV ABROR IN`OMJAN O`G`LI"],
+      ["5-B", "XAYTBAYEVA NARGIZA IKROMJANOVNA"], ["5-B", "IBAYDULLAYEV BEGARI`S SERIK ULI`"], ["5-B", "XOJANTAYEVA DIANA DARYABAY QI`ZI`"],
+      ["5-B", "DJUMABAYEVA MUNIRA KENESBAY KI`ZI`"], ["5-B", "ORI`NBAYEV ASADBEK KUTLI`MURATOVICH"], ["5-B", "REJEPNAZAROV DILSHADBEK ISHANGULIYEVICH"],
+      ["5-B", "SULTAMURATOVA AYJAMAL ATAMURAT QI`ZI`"], ["5-B", "TOLEGENOV NURASI`L SALAMAT ULI`"], ["5-B", "SAPARBEKOV MUWSABEK MUXTARJAN ULI`"],
+      ["5-B", "TOLEGENOV YERASI`L SALAMAT ULI`"], ["5-B", "RAJAPOVA CHAROS AZIMJONOVNA"], ["5-B", "MARATOV RAXMAN MARATOVICH"],
+      ["6-A", "URAZBAEVA RANO IXTIYOROVNA"], ["6-A", "IBRAGIMOV RAVSHANBEK JENGISBAEVICH"], ["6-A", "AMANBAEVA HURLIMAN WONGARBAEVNA"],
+      ["6-A", "MURATBAEVA ZILOLA JAHONGIROVNA"], ["6-A", "YULDASHOVA GULNOZA ALISHEROVNA"], ["6-A", "RAJAPBAYEVA SOXIBA ALISHEROVNA"],
+      ["6-A", "ABDULLAEVA ASAL KALBAEVNA"], ["6-A", "PARXATOV XURSAND AZIZOVICH"], ["6-A", "XAYTBAEVA GULDANA MAXSETOVNA"],
+      ["6-A", "AZATBAYEVA ZILOLA ANVATOVNA"], ["6-A", "BAZARBAEV NURBEK ANVAROVICH"], ["6-A", "QOZIBAEV AVZALBEK KEULIMJAY ULI"],
+      ["6-A", "SAPARBAEV BEKZOD SHAVKATOVICH"], ["6-A", "MAVLENBERGENOV AMIR ILXOMOVICH"], ["6-A", "SULTANMURADOV XURSHID SHUXRATOVICH"],
+      ["6-A", "DOSMANOVA MUQADDAS GULOMJONOVNA"], ["6-A", "ARTIKBAEVA LOBAR INOMJANOVNA"], ["6-A", "SULTANOVA IRODA NEMATJANOVNA"],
+      ["6-A", "XAKAYEVA GULZADA AMANGELDIYEVNA"], ["6-A", "TURSUNBAEVA QARASHASH SHUKURULLAEVNA"], ["6-A", "ONGARBAYEV MUSLIMBEK SULTANBEK ULI"],
+      ["6-A", "SABUROVA SOHIBA DOVRONBEKOVNA"], ["6-A", "SAPARBAEV BEXRUZ ANVAROVICH"], ["6-A", "ISMAILOVA UMIDA OYBEKOVNA"],
+      ["6-B", "KENJEBAEV ABDULAZIZ XAMRA UGLI"], ["6-B", "JOLDASBAYEV KOMRON NURLAN ULI"], ["6-B", "JOLDASBAYEVA ULJAN IKRAMJAN KIZI"],
+      ["6-B", "BAXTIYAROVA SHADIYANA SALAMATOVNA"], ["6-B", "IBRAGIMOVA BARNO MANSUROVNA"], ["6-B", "JUMABAYEVA RUXSHONA AZIMJAN KIZI"],
+      ["6-B", "JOLDASBAYEV KOMRON NURLAN ULI"], ["6-B", "BAZARBAEV NODIRBEK ABROROVICH"], ["6-B", "GAYIPBAEVA MUNISA AMANBAEVNA"],
+      ["6-B", "ISLAMOV SAIDBEK MANSUROVICH"], ["6-B", "SADULLAEVA ASALOY AKMALOVNA"], ["6-B", "XOJABAYEVA DILNOZA DOVRANBEKOVNA"],
+      ["6-B", "MAKSETBAYEVA MADINABANU AMANGELDIYEVNA"], ["6-B", "KENJEBAEV ABDULAZIZ XAMRA UGLI"], ["6-B", "MAULENBERGENOV HAKIMBEK ULUGBEKOVICH"],
+      ["6-B", "GURBANGELDIYEV MUXAMMET SHOXRATOVICH"], ["6-B", "ALMUXAMEDOV SEIDNUR NUERGELDIEVICH"], ["6-B", "ALLAMURATOVA GUZAL SHUXRATJAN KIZI"],
+      ["6-B", "KASHKINBAYEVA INKAR JETKERBAYEVNA"], ["6-B", "JUMABAYEVA RUXSHONA AZIMJAN KIZI"], ["6-B", "YUSUPOVA MUBINA TURSINBAYEVNA"],
+      ["6-B", "KURBANBAEV DIDAR BERDIMURATOVICH"], ["6-B", "XAYTBAYEV RISQITILLO NIYAZIMBETOVICH"],
+      ["7-A", "ISLAMOV SANJARBEK GULOMJONOVICH"], ["7-A", "YULDASHEVA DILNOZA MUZAFFAR QIZI"], ["7-A", "XALASHOV MUXAMMATALI PARAXAT O`G`LI"],
+      ["7-A", "NURLANOVA NAZERKE BERIK QIZI"], ["7-A", "MADATOV OTABEK SHAVKATOVICH"], ["7-A", "SAPARBAEV RUSLAN SHUXRATOVICH"],
+      ["7-A", "REJEPOV TIMUR RUSLANOVICH"], ["7-A", "DURDIBAEVA ALBINA KUVANICHOVNA"], ["7-A", "MAMETMURATOV JASURBEK ILYASJONOVICH"],
+      ["7-A", "ЖУМАМУРАТОВ МУҲАММАДАЛИ МУХИАТДИН ЎҒЛИ"], ["7-A", "DJUMAMURATOVA DURDONA SABITOVNA"], ["7-A", "JAMALADTINOV YERMUXAN JANABAY ULI"],
+      ["7-A", "YULDASHEVA LAYLO SHARIFBAEVNA"], ["7-A", "XALILAEV BEGIS ILYASOVICH"], ["7-A", "ТАЖИБАЕВ МАШРАББЕК КУРБАНБАЕВИЧ"],
+      ["7-A", "JAKSIMURATOVA NAZERKE SALIYEVNA"], ["7-A", "KADEMBAEV RUFAT SHUXRATOVICH"], ["7-A", "JAKSILIKOV JANDARBEK JANIBEK ULI"],
+      ["7-A", "WORINBETOV ARTUR POLATOVICH"], ["7-A", "MUXAMMATDIYAROVA AYGUL MARATOVNA"], ["7-A", "INIYATOV ASADBEK YERBOLOVICH"],
       ["7-A", "PIREKOVA ZUXRA KOMEKOVNA"],
-      ["8-A", "УРАЗИМБЕТОВ ХУРШИДБЕК РАШИДОВИЧ"],
-      ["8-A", "ҚЫДЫРБАЕВ РУСЛАН ҚУАНЫШБАЙ УЛЫ"],
-      ["8-A", "ТАЖИБАЕВ НАВРУЗБАЙ КАМАЛАДДИНОВИЧ"],
-      ["8-A", "АХМЕДОВ АКРАМ АЗИЗОВИЧ"],
-      ["8-A", "ЕСЕНГЕЛДИЕВА ХУРЛИМАН САЛАМАТОВНА"],
-      ["8-A", "АБДИРИМОВА МУБИНА МУЗАФФАРОВНА"],
-      ["8-A", "ДЖУМАБАЕВА ГУЛНАЗА АЙБЕК КЫЗЫ"],
-      ["8-A", "АХМЕДОВ АТАНУР ПОЛАТБАЕВИЧ"],
-      ["8-A", "КАРИМБЕРГЕНОВ СУННАТБЕК БАКИРОВИЧ"],
-      ["8-A", "РУСТАМОВ ЭЛБЕК ШЕРЗОДОВИЧ"],
-      ["8-A", "АХМЕТОВ ЭЛЬБЕК ОЙБЕКОВИЧ"],
-      ["8-A", "КОНЫСБАЕВА ОРАЗГУЛ РОМАН ҚЫЗЫ"],
-      ["8-A", "ДАВЛЕТНАЗАРОВ АЙГУЛ АСКЕРБАЕВНА"],
-      ["8-A", "АЛЛАЯРОВ ЗУЛФИКАР ДАНИЯРОВИЧ"],
-      ["8-A", "БАЗАРБАЕВА ЛАЙЛО САПАРБАЕВНА"],
-      ["8-A", "ЖОЛДАСБАЕВ ДАМИР ТОКТАРБАЙ УЛЫ"],
-      ["8-A", "НУРАДДИНОВ БЕХРУЗБЕК НУРУЛЛАЕВИЧ"],
-      ["8-A", "TOJIBOYEV SODIQBEK HUMOYUN O`G`LI"],
-      ["8-A", "YESHKABULOVA ZARINA ADIXANOVNA"],
-      ["8-A", "УРАЗБАЕВА ШАХЗОДА КАМАЛАДДИНОВНА"],
-      ["8-A", "ТОРЕМУРАТОВ БУНЁДБЕК АХМАДОВИЧ"],
-      ["8-A", "САБУРОВ ОҒАБЕК ЭКРАМОВИЧ"],
-      ["8-A", "ЖОЛДАСБАЕВА БАРНО ОРАЛБАЕВНА"],
-      ["8-B", "КУРБАНБАЕВА ШАХИДА ИЛХОМОВНА"],
-      ["8-B", "РЕЙМБАЕВ АКМАЛБЕК БАХРАМОВИЧ"],
-      ["8-B", "ПАРАХАТОВА ХАЁТХОН УТКИРОВНА"],
-      ["8-B", "КДЫРБАЕВ АЗАМАТ АЗАТБАЕВИЧ"],
-      ["8-B", "ШЕРИПБАЕВ ЗИЁДБЕК АМАНГЕЛДИ УҒЛИ"],
-      ["8-B", "НАРБАЕВ ДИЯРБЕК АНВАРОВИЧ"],
-      ["8-B", "ЭРГАШБАЕВА МУНИРА КАМИЛ КИЗИ"],
-      ["8-B", "AXMEDINOV BAXITJAN BAUIRJAN ULI"],
-      ["8-B", "ОРАЗМУХАММЕТДИНОВА ДИАНА ИЛХАМОВНА"],
-      ["8-B", "УРАЗБАЕВ БЕХРУЗ ИЛХОМ УЛЫ"],
-      ["8-B", "ТОЛЫБАЕВ МАМАНБИЙ ЖОЛДАСБАЕВИЧ"],
-      ["8-B", "МАХСЕТБАЕВА НАБИРА ЮСУПОВНА"],
-      ["8-B", "БАХТИЯРОВА ГОЗАЛ ОТАБЕК ҚЫЗЫ"],
-      ["8-B", "РЕЙПНАЗАРОВ АЙНАЗАР БАХТИЯР УЛЫ"],
-      ["8-B", "РАМАТУЛЛАЕВА КУНДУЗ АЗАМАТ КЫЗЫ"],
-      ["8-B", "ЖАКСЫМУРАТОВ ИСАТАЙ САЛЫЙ УЛЫ"],
-      ["8-B", "ЧАВДЫРБАЕВ САЛАВАТ ЮЛДАШБАЕВИЧ"],
-      ["8-B", "МЕДЕТБАЕВ АНСАТБАЙ КУДИЯРОВИЧ"],
-      ["8-B", "САКТАНОВА МАФТУНА ЖУМАБАЕВНА"],
-      ["8-B", "АМАНГЕЛДИЕВ ЭЛБЕК ШУХРАТОВИЧ"],
-      ["8-B", "НАРИМБЕТОВ ДАВРОНБЕК КАДЕМБАЕВИЧ"],
-      ["8-B", "КУРАЛБАЕВА ЛАЙЛО БАТЫРОВНА"],
-      ["8-B", "САРСЕНБАЕВ РАХИМ САЛАМАТ УЛЫ"],
-      ["8-B", "АБДУЛЛАЕВ ИСЛАМБЕК ИЛХОМЖАНОВИЧ"],
-      ["9-B", "АЗАТОВА УЛМЕКЕН ШУХРАТОВНА"],
-      ["9-B", "ХАЛИЛЛАЕВ ДАУЛЕТМУРАТ ДЖАЛГАСБАЕВИЧ"],
-      ["9-B", "НЫШАНБАЕВА АСЕЛЯ КОСЖАНБАЕВНА"],
-      ["9-B", "ОРАЗИМБЕТОВА ЖАСМИНА ГУЛОМОВНА"],
-      ["9-B", "ДЖУМАБАЕВ ШОХИМАРДОН ГАФУРЖАН УҒЛИ"],
-      ["9-B", "СУЛТАНМУРАДОВ ЭЛБЕК БАТЫРОВИЧ"],
-      ["9-B", "ДЖУМАБАЕВА НАФИСА АЛИМЖОН КЫЗЫ"],
-      ["9-B", "АХМЕТОВ БАУЫРЖАН ЖАНИБЕК УЛЫ"],
-      ["9-B", "МАТКАРИМОВА РОЗА МАВЛАНОВНА"],
-      ["9-B", "ГУЛМУРАТОВ ДИЁРБЕК РУСТАМОВИЧ"],
-      ["9-B", "ГАЙПБАЕВА МЕХРИБАН ТУРСУНБАЙ КЫЗЫ"],
-      ["9-B", "МАТКАРИМОВА ЗЕБО МАКСУД КЫЗЫ"],
-      ["9-B", "РЕЙИМБАЕВ САИДБЕК ЮНУСОВИЧ"],
-      ["9-B", "МУХТАРОВА МАДИНА АНВАРОВНА"],
-      ["9-B", "МАРАТБАЕВ ДИДОР СЕЙТНУРОВИЧ"],
-      ["9-B", "АРТЫКБАЕВ АЗИЗБЕК РАХАТОВИЧ"],
-      ["9-B", "РЕЖЕПБАЕВ КАКАМЫРАТ ЫХЛАСОВИЧ"],
-      ["9-B", "КАДИРБЕРГЕНОВ ИЛДАР ЗАМИРОВИЧ"],
-      ["9-B", "ОВЕЗЖАНОВ СУЛТАНБЕК АЛЛАМУРАТОВИЧ"],
-      ["9-B", "МАСАТИНОВА ЖАНЕРКЕ СЕРИКБАЕВНА"],
-      ["9-B", "РЕЖЕПОВА ДИЛШАДА АЛЛАБЕРДИЕВНА"],
-      ["9-B", "ОРЫНБАЕВА ХИЛОЛА ГУЛОМЖАНОВНА"],
-      ["9-B", "DANIYAROV DAVRANBEK SERIKBAYEVICH"],
-      ["9-B", "АЗАТОВ ОРАЗАЛИ САЛАМАТОВИЧ"],
-      ["9-V", "ЖАЛГАСОВ МИРАС ИСАТАЕВИЧ"],
-      ["9-V", "ДАУЛЕТБАЕВА МАНЗУРА ГУЛАМЖАНОВНА"],
-      ["9-V", "НАРБАЕВ АБДУЛАЗИЗ АРТЫКБАЕВИЧ"],
-      ["9-V", "АБДИМУРАТОВ АЛЛАМУРАТ ТАТЛИМУРАТОВИЧ"],
-      ["9-V", "МУРАТБАЕВА ФАРАНГИЗ МАНСУРОВНА"],
-      ["9-V", "ХОЖАБАЕВ ОЗОДБЕК ДОВРАНБЕКОВИЧ"],
-      ["9-V", "НАЗАРБАЕВ РУСЛАНБЕК РУСТАМОВИЧ"],
-      ["9-V", "РАЖАПБАЕВ АБДУРАХМАН ИСЛАМОВИЧ"],
-      ["9-V", "САПАРБАЕВА ИРОДА АНГСАТБАЕВНА"],
-      ["9-V", "ЮСУПОВА АЙЖАМОЛ АМАНИЯЗ ҚИЗИ"],
-      ["9-V", "ЖУМАБАЕВА ЛАЙЛО БАТИРЖАН КЫЗЫ"],
-      ["9-V", "НУРАДДИНОВ АКБАР ШАМШЕДДИНОВИЧ"],
-      ["9-V", "КАЗАХБАЕВ АХМАТЖАН АБДУЛЛАЕВИЧ"],
-      ["9-V", "ЖАББАРБЕРГЕНОВА ФАРАНГИЗ ДАВРАНОВНА"],
-      ["9-V", "КДЫРБАЕВ АЛПАМЫС ЖУМАТДИН УЛЫ"],
-      ["9-V", "ЮЛДАШЕВА ДИЛДОРА ГУЛМИРЗАЕВНА"],
-      ["9-V", "ЮСУПОВА ДУРДАНА РАХИМОВНА"],
-      ["9-V", "КЕНЕСОВ БЕГИС КУАНЫШОВИЧ"],
-      ["9-V", "ОТЕНИЯЗОВА ГУЛДАНА АЗАМАТ КЫЗЫ"],
-      ["9-V", "ХАЙТБАЕВ ДАНИЁР МАДИЁРОВИЧ"],
-      ["9-V", "ЕСБОСЫНОВА ГУЛАЙЫМ КУАНЫШБАЙ КЫЗЫ"],
-      ["9-V", "ХОЖАНАЗАРОВА АЙНУРА ТАЖИБАЕВНА"],
-      ["9-V", "ИБАДУЛЛАЕВА ИНОБАТ КУАТБАЕВНА"],
-      ["10-A", "RUSDEMBAYEV SULTANBEK BATIROVICH"],
-      ["10-A", "MAMETMURATOVA JASMINA ILYASJANOVNA"],
-      ["10-A", "JUMABAYEVA SEVINCH DAVRONBEKOVNA"],
-      ["10-A", "ASHIRBAYEVA SHOHZODA SHUXRAT QIZI"],
-      ["10-A", "NUKUSBAEVA MADINA ATABAY QÍZÍ"],
-      ["10-A", "ФАЙЗУЛЛАЕВ ДОНИЁРБЕК ИСЛАМБЕКОВИЧ"],
-      ["10-A", "PALTAYEV ATAGELDI DURDIBAYEVICH"],
-      ["10-A", "MURATBAEV DAULET MARATOVICH"],
-      ["10-A", "KÍDÍRBAEV ADILBEK PARAXATOVICH"],
-      ["10-A", "SABUROV BEXRUZBEK RASHIDOVICH"],
-      ["10-A", "REJEPOV BEKZOD PARAXATOVICH"],
-      ["10-A", "KARIMBAYEVA OZODA ALIJANOVNA"],
-      ["10-A", "TENELBAYEV SHAXZOD KOMEKBAY ULI"],
-      ["10-A", "ALLABAEV ALÍMJAN MUXAMMETNAZAROVICH"],
-      ["10-A", "SAATBAYEVA UMIDA PULATOVNA"],
-      ["10-A", "URINBAYEVA UMIDA SHUXRAT KIZI"],
-      ["10-A", "ABDIKADIROV SULAYMAN MAXSUDOVICH"],
-      ["10-A", "XALILLAYEV MUXIDDIN UBAYDULLAYEVICH"],
-      ["10-A", "SALIJANOV BUNYODJON AZAMAT O‘G‘LI"],
-      ["10-A", "KURAMBAYEVA NORGUL POLAT QIZI"],
-      ["10-A", "AMANMUXAMETOVA PERIZAT TAXIROVNA"],
+      ["8-A", "УРАЗИМБЕТОВ ХУРШИДБЕК РАШИДОВИЧ"], ["8-A", "ҚЫДЫРБАЕВ РУСЛАН ҚУАНЫШБАЙ УЛЫ"], ["8-A", "ТАЖИБАЕВ НАВРУЗБАЙ КАМАЛАДДИНОВИЧ"],
+      ["8-A", "АХМЕДОВ АКРАМ АЗИЗОВИЧ"], ["8-A", "ЕСЕНГЕЛДИЕВА ХУРЛИМАН САЛАМАТОВНА"], ["8-A", "АБДИРИМОВА МУБИНА МУЗАФФАРОВНА"],
+      ["8-A", "ДЖУМАБАЕВА ГУЛНАЗА АЙБЕК КЫЗЫ"], ["8-A", "АХМЕДОВ АТАНУР ПОЛАТБАЕВИЧ"], ["8-A", "КАРИМБЕРГЕНОВ СУННАТБЕК БАКИРОВИЧ"],
+      ["8-A", "РУСТАМОВ ЭЛБЕК ШЕРЗОДОВИЧ"], ["8-A", "АХМЕТОВ ЭЛЬБЕК ОЙБЕКОВИЧ"], ["8-A", "КОНЫСБАЕВА ОРАЗГУЛ РОМАН ҚЫЗЫ"],
+      ["8-A", "ДАВЛЕТНАЗАРОВ АЙГУЛ АСКЕРБАЕВНА"], ["8-A", "АЛЛАЯРОВ ЗУЛФИКАР ДАНИЯРОВИЧ"], ["8-A", "БАЗАРБАЕВА ЛАЙЛО САПАРБАЕВНА"],
+      ["8-A", "ЖОЛДАСБАЕВ ДАМИР ТОКТАРБАЙ УЛЫ"], ["8-A", "НУРАДДИНОВ БЕХРУЗБЕК НУРУЛЛАЕВИЧ"], ["8-A", "TOJIBOYEV SODIQBEK HUMOYUN O`G`LI"],
+      ["8-A", "YESHKABULOVA ZARINA ADIXANOVNA"], ["8-A", "УРАЗБАЕВА ШАХЗОДА КАМАЛАДДИНОВНА"], ["8-A", "ТОРЕМУРАТОВ БУНЁДБЕК АХМАДОВИЧ"],
+      ["8-A", "САБУРОВ ОҒАБЕК ЭКРАМОВИЧ"], ["8-A", "ЖОЛДАСБАЕВА БАРНО ОРАЛБАЕВНА"],
+      ["8-B", "КУРБАНБАЕВА ШАХИДА ИЛХОМОВНА"], ["8-B", "РЕЙМБАЕВ АКМАЛБЕК БАХРАМОВИЧ"], ["8-B", "ПАРАХАТОВА ХАЁТХОН УТКИРОВНА"],
+      ["8-B", "КДЫРБАЕВ АЗАМАТ АЗАТБАЕВИЧ"], ["8-B", "ШЕРИПБАЕВ ЗИЁДБЕК АМАНГЕЛДИ УҒЛИ"], ["8-B", "НАРБАЕВ ДИЯРБЕК АНВАРОВИЧ"],
+      ["8-B", "ЭРГАШБАЕВА МУНИРА КАМИЛ КИЗИ"], ["8-B", "AXMEDINOV BAXITJAN BAUIRJAN ULI"], ["8-B", "ОРАЗМУХАММЕТДИНОВА ДИАНА ИЛХАМОВНА"],
+      ["8-B", "УРАЗБАЕВ БЕХРУЗ ИЛХОМ УЛЫ"], ["8-B", "ТОЛЫБАЕВ МАМАНБИЙ ЖОЛДАСБАЕВИЧ"], ["8-B", "МАХСЕТБАЕВА НАБИРА ЮСУПОВНА"],
+      ["8-B", "БАХТИЯРОВА ГОЗАЛ ОТАБЕК ҚЫЗЫ"], ["8-B", "РЕЙПНАЗАРОВ АЙНАЗАР БАХТИЯР УЛЫ"], ["8-B", "РАМАТУЛЛАЕВА КУНДУЗ АЗАМАТ КЫЗЫ"],
+      ["8-B", "ЖАКСЫМУРАТОВ ИСАТАЙ САЛЫЙ УЛЫ"], ["8-B", "ЧАВДЫРБАЕВ САЛАВАТ ЮЛДАШБАЕВИЧ"], ["8-B", "МЕДЕТБАЕВ АНСАТБАЙ КУДИЯРОВИЧ"],
+      ["8-B", "САКТАНОВА МАФТУНА ЖУМАБАЕВНА"], ["8-B", "АМАНГЕЛДИЕВ ЭЛБЕК ШУХРАТОВИЧ"], ["8-B", "НАРИМБЕТОВ ДАВРОНБЕК КАДЕМБАЕВИЧ"],
+      ["8-B", "КУРАЛБАЕВА ЛАЙЛО БАТЫРОВНА"], ["8-B", "САРСЕНБАЕВ РАХИМ САЛАМАТ УЛЫ"], ["8-B", "АБДУЛЛАЕВ ИСЛАМБЕК ИЛХОМЖАНОВИЧ"],
+      ["9-B", "АЗАТОВА УЛМЕКЕН ШУХРАТОВНА"], ["9-B", "ХАЛИЛЛАЕВ ДАУЛЕТМУРАТ ДЖАЛГАСБАЕВИЧ"], ["9-B", "НЫШАНБАЕВА АСЕЛЯ КОСЖАНБАЕВНА"],
+      ["9-B", "ОРАЗИМБЕТОВА ЖАСМИНА ГУЛОМОВНА"], ["9-B", "ДЖУМАБАЕВ ШОХИМАРДОН ГАФУРЖАН УҒЛИ"], ["9-B", "СУЛТАНМУРАДОВ ЭЛБЕК БАТЫРОВИЧ"],
+      ["9-B", "ДЖУМАБАЕВА НАФИСА АЛИМЖОН КЫЗЫ"], ["9-B", "АХМЕТОВ БАУЫРЖАН ЖАНИБЕК УЛЫ"], ["9-B", "МАТКАРИМОВА РОЗА МАВЛАНОВНА"],
+      ["9-B", "ГУЛМУРАТОВ ДИЁРБЕК РУСТАМОВИЧ"], ["9-B", "ГАЙПБАЕВА МЕХРИБАН ТУРСУНБАЙ КЫЗЫ"], ["9-B", "МАТКАРИМОВА ЗЕБО МАКСУД КЫЗЫ"],
+      ["9-B", "РЕЙИМБАЕВ САИДБЕК ЮНУСОВИЧ"], ["9-B", "МУХТАРОВА МАДИНА АНВАРОВНА"], ["9-B", "МАРАТБАЕВ ДИДОР СЕЙТНУРОВИЧ"],
+      ["9-B", "АРТЫКБАЕВ АЗИЗБЕК РАХАТОВИЧ"], ["9-B", "РЕЖЕПБАЕВ КАКАМЫРАТ ЫХЛАСОВИЧ"], ["9-B", "КАДИРБЕРГЕНОВ ИЛДАР ЗАМИРОВИЧ"],
+      ["9-B", "ОВЕЗЖАНОВ СУЛТАНБЕК АЛЛАМУРАТОВИЧ"], ["9-B", "МАСАТИНОВА ЖАНЕРКЕ СЕРИКБАЕВНА"], ["9-B", "РЕЖЕПОВА ДИЛШАДА АЛЛАБЕРДИЕВНА"],
+      ["9-B", "ОРЫНБАЕВА ХИЛОЛА ГУЛОМЖАНОВНА"], ["9-B", "DANIYAROV DAVRANBEK SERIKBAYEVICH"], ["9-B", "АЗАТОВ ОРАЗАЛИ САЛАМАТОВИЧ"],
+      ["9-V", "ЖАЛГАСОВ МИРАС ИСАТАЕВИЧ"], ["9-V", "ДАУЛЕТБАЕВА МАНЗУРА ГУЛАМЖАНОВНА"], ["9-V", "НАРБАЕВ АБДУЛАЗИЗ АРТЫКБАЕВИЧ"],
+      ["9-V", "АБДИМУРАТОВ АЛЛАМУРАТ ТАТЛИМУРАТОВИЧ"], ["9-V", "МУРАТБАЕВА ФАРАНГИЗ МАНСУРОВНА"], ["9-V", "ХОЖАБАЕВ ОЗОДБЕК ДОВРАНБЕКОВИЧ"],
+      ["9-V", "НАЗАРБАЕВ РУСЛАНБЕК РУСТАМОВИЧ"], ["9-V", "РАЖАПБАЕВ АБДУРАХМАН ИСЛАМОВИЧ"], ["9-V", "САПАРБАЕВА ИРОДА АНГСАТБАЕВНА"],
+      ["9-V", "ЮСУПОВА АЙЖАМОЛ АМАНИЯЗ ҚИЗИ"], ["9-V", "ЖУМАБАЕВА ЛАЙЛО БАТИРЖАН КЫЗЫ"], ["9-V", "НУРАДДИНОВ АКБАР ШАМШЕДДИНОВИЧ"],
+      ["9-V", "КАЗАХБАЕВ АХМАТЖАН АБДУЛЛАЕВИЧ"], ["9-V", "ЖАББАРБЕРГЕНОВА ФАРАНГИЗ ДАВРАНОВНА"], ["9-V", "КДЫРБАЕВ АЛПАМЫС ЖУМАТДИН УЛЫ"],
+      ["9-V", "ЮЛДАШЕВА ДИЛДОРА ГУЛМИРЗАЕВНА"], ["9-V", "ЮСУПОВА ДУРДАНА РАХИМОВНА"], ["9-V", "КЕНЕСОВ БЕГИС КУАНЫШОВИЧ"],
+      ["9-V", "ОТЕНИЯЗОВА ГУЛДАНА АЗАМАТ КЫЗЫ"], ["9-V", "ХАЙТБАЕВ ДАНИЁР МАДИЁРОВИЧ"], ["9-V", "ЕСБОСЫНОВА ГУЛАЙЫМ КУАНЫШБАЙ КЫЗЫ"],
+      ["9-V", "ХОЖАНАЗАРОВА АЙНУРА ТАЖИБАЕВНА"], ["9-V", "ИБАДУЛЛАЕВА ИНОБАТ КУАТБАЕВНА"],
+      ["10-A", "RUSDEMBAYEV SULTANBEK BATIROVICH"], ["10-A", "MAMETMURATOVA JASMINA ILYASJANOVNA"], ["10-A", "JUMABAYEVA SEVINCH DAVRONBEKOVNA"],
+      ["10-A", "ASHIRBAYEVA SHOHZODA SHUXRAT QIZI"], ["10-A", "NUKUSBAEVA MADINA ATABAY QÍZÍ"], ["10-A", "ФАЙЗУЛЛАЕВ ДОНИЁРБЕК ИСЛАМБЕКОВИЧ"],
+      ["10-A", "PALTAYEV ATAGELDI DURDIBAYEVICH"], ["10-A", "MURATBAEV DAULET MARATOVICH"], ["10-A", "KÍDÍRBAEV ADILBEK PARAXATOVICH"],
+      ["10-A", "SABUROV BEXRUZBEK RASHIDOVICH"], ["10-A", "REJEPOV BEKZOD PARAXATOVICH"], ["10-A", "KARIMBAYEVA OZODA ALIJANOVNA"],
+      ["10-A", "TENELBAYEV SHAXZOD KOMEKBAY ULI"], ["10-A", "ALLABAEV ALÍMJAN MUXAMMETNAZAROVICH"], ["10-A", "SAATBAYEVA UMIDA PULATOVNA"],
+      ["10-A", "URINBAYEVA UMIDA SHUXRAT KIZI"], ["10-A", "ABDIKADIROV SULAYMAN MAXSUDOVICH"], ["10-A", "XALILLAYEV MUXIDDIN UBAYDULLAYEVICH"],
+      ["10-A", "SALIJANOV BUNYODJON AZAMAT O‘G‘LI"], ["10-A", "KURAMBAYEVA NORGUL POLAT QIZI"], ["10-A", "AMANMUXAMETOVA PERIZAT TAXIROVNA"],
       ["10-A", "SOYINOVA SENEMJAN KAKABAYEVNA"],
-      ["10-B", "AMANGELDIEV SHOXRAT YALKANOVICH"],
-      ["10-B", "YARLIKAPOV ARSLANBEK MAXSUD UGLI"],
-      ["10-B", "TAJIBAYEV XUSEYN BEKZODOVICH"],
-      ["10-B", "TOLÍBAEVA BIBIMARIYAM JOLDASBAEVNA"],
-      ["10-B", "JANGABAYEVA SEVARA ATABEKOVNA"],
-      ["10-B", "KAMALOVA DILRABO KOJABAY QIZI"],
-      ["10-B", "XUDAYBERGENOVA DILDORA RAFAELOVNA"],
-      ["10-B", "KARIMOV DILSHODBEK ALISHEROVICH"],
-      ["10-B", "SHARIBAEVA GULJAYNA QUANDÍQ QÍZÍ"],
-      ["10-B", "BEKIMBETOVA SEVINCH SHARAFOVNA"],
-      ["10-B", "TAGANBERDIYEVA GULRUX GELDIBAYEVNA"],
-      ["10-B", "SAATBAYEV JAVOXIR FARXADOVICH"],
-      ["10-B", "MUXANOVA BARNO YERKEBAYEVNA"],
-      ["10-B", "GALPAKBAYEV MEYLIS AMANGELDIYEVICH"],
-      ["10-B", "AZATOVA IRODA KUDRATOVNA"],
-      ["10-B", "KARIMOV ELBEK ERGASHOVICH"],
-      ["10-B", "PARXATOV BEXRUZ UTKIROVICH"],
-      ["10-B", "JIYENBAYEV ADILBEK TAXIROVICH"],
-      ["10-B", "REYPNAZAROVA BIBISARA BAXTIYAROVNA"],
-      ["10-B", "МАТДУРДИЕВ АЗАТБЕК КАДАМБАЕВИЧ"],
-      ["10-B", "ERKINOVA MUXLISA SHERZOTOVNA"],
-      ["10-B", "SABITOVA KURALAY SABIT KIZI"],
-      ["10-B", "SAPARBAYEV SHERZOD SHAUKATOVICH"],
-      ["11-A", "ЭРКИНОВ ЖАВОҲИР АЛИШЕР УҒЛИ"],
-      ["11-A", "РАДЖЕПОВА САРБИНАЗ РАШИДОВНА"],
-      ["11-A", "КЫДЫРБАЕВ САМАНДАР ИЛХОМОВИЧ"],
-      ["11-A", "ГУЛМУРЗАЕВА МАРЖОНА ШАВКАТ ҚИЗИ"],
-      ["11-A", "ДЖУМАМУРАТОВ ҚУДРАТ САБИТОВИЧ"],
-      ["11-A", "АХМЕТОВ ЖУРАБЕК ОЙБЕКОВИЧ"],
-      ["11-A", "УРАЗБАЕВА СОГДИАНА СЕЙТМЫРАТ ҚЫЗЫ"],
-      ["11-A", "KURALBAEV JAVLONBEK DJALALATDINOVICH"],
-      ["11-A", "YAKUBBAYEV JAVLONBEK ULUGBEK ULI"],
-      ["11-B", "САПАРНИЯЗОВ АСАДБЕК УРАЗБАЙ УЛЫ"],
-      ["11-B", "ДУРДЫБАЕВ ИСЛАМ КУВАНИЧ УЛЫ"],
-      ["11-B", "АЖИМУРАТОВ КУТЛЫМУРАТ ОМИРЗАКОВИЧ"],
-      ["11-B", "ЕШБАЕВ ДИЛШОД БАХАДИР УЛЫ"],
-      ["11-B", "ҒАЙРАТОВ УМИДЖОН АЛЛАМБЕРГАН ЎҒЛИ"],
-      ["11-B", "РАХМАНОВ БАТЫРБЕК АЛТЫ УЛЫ"],
-      ["11-B", "ХАЙБУЛЛАЕВ ИБРОХИМ МАХМУД УЛЫ"],
-      ["11-B", "БАЛТАБАЕВА ФАРАНГИЗ ХАМЗА ҚЫЗЫ"],
-      ["11-B", "ИСЛАМОВА МАФТУНА МАМУР КИЗИ"],
-      ["11-B", "ЖАНАБАЕВ ЖОВОХИР МАХМУДОВИЧ"],
-      ["11-B", "КАЗАКБАЕВ АЛИШЕР АЙБЕКОВИЧ"],
-      ["11-B", "ЮЛДАШЕВ ОЗОДБЕК РЕЖЕПБАЙ УЛЫ"],
-      ["11-B", "АРАЛБАЕВ АБИЎБАКИР АЗАМАТ УЛЫ"],
-      ["11-B", "ЖАНАБАЕВ ОЗОДБЕК БАХАДЫРОВИЧ"],
-      ["11-B", "ТУРСИНБАЕВА ШОХНОЗА БАХАДИРОВНА"],
+      ["10-B", "AMANGELDIEV SHOXRAT YALKANOVICH"], ["10-B", "YARLIKAPOV ARSLANBEK MAXSUD UGLI"], ["10-B", "TAJIBAYEV XUSEYN BEKZODOVICH"],
+      ["10-B", "TOLÍBAEVA BIBIMARIYAM JOLDASBAEVNA"], ["10-B", "JANGABAYEVA SEVARA ATABEKOVNA"], ["10-B", "KAMALOVA DILRABO KOJABAY QIZI"],
+      ["10-B", "XUDAYBERGENOVA DILDORA RAFAELOVNA"], ["10-B", "KARIMOV DILSHODBEK ALISHEROVICH"], ["10-B", "SHARIBAEVA GULJAYNA QUANDÍQ QÍZÍ"],
+      ["10-B", "BEKIMBETOVA SEVINCH SHARAFOVNA"], ["10-B", "TAGANBERDIYEVA GULRUX GELDIBAYEVNA"], ["10-B", "SAATBAYEV JAVOXIR FARXADOVICH"],
+      ["10-B", "MUXANOVA BARNO YERKEBAYEVNA"], ["10-B", "GALPAKBAYEV MEYLIS AMANGELDIYEVICH"], ["10-B", "AZATOVA IRODA KUDRATOVNA"],
+      ["10-B", "KARIMOV ELBEK ERGASHOVICH"], ["10-B", "PARXATOV BEXRUZ UTKIROVICH"], ["10-B", "JIYENBAYEV ADILBEK TAXIROVICH"],
+      ["10-B", "REYPNAZAROVA BIBISARA BAXTIYAROVNA"], ["10-B", "МАТДУРДИЕВ АЗАТБЕК КАДАМБАЕВИЧ"], ["10-B", "ERKINOVA MUXLISA SHERZOTOVNA"],
+      ["10-B", "SABITOVA KURALAY SABIT KIZI"], ["10-B", "SAPARBAYEV SHERZOD SHAUKATOVICH"],
+      ["11-A", "ЭРКИНОВ ЖАВОҲИР АЛИШЕР УҒЛИ"], ["11-A", "РАДЖЕПОВА САРБИНАЗ РАШИДОВНА"], ["11-A", "КЫДЫРБАЕВ САМАНДАР ИЛХОМОВИЧ"],
+      ["11-A", "ГУЛМУРЗАЕВА МАРЖОНА ШАВКАТ ҚИЗИ"], ["11-A", "ДЖУМАМУРАТОВ ҚУДРАТ САБИТОВИЧ"], ["11-A", "АХМЕТОВ ЖУРАБЕК ОЙБЕКОВИЧ"],
+      ["11-A", "УРАЗБАЕВА СОГДИАНА СЕЙТМЫРАТ ҚЫЗЫ"], ["11-A", "KURALBAEV JAVLONBEK DJALALATDINOVICH"], ["11-A", "YAKUBBAYEV JAVLONBEK ULUGBEK ULI"],
+      ["11-B", "САПАРНИЯЗОВ АСАДБЕК УРАЗБАЙ УЛЫ"], ["11-B", "ДУРДЫБАЕВ ИСЛАМ КУВАНИЧ УЛЫ"], ["11-B", "АЖИМУРАТОВ КУТЛЫМУРАТ ОМИРЗАКОВИЧ"],
+      ["11-B", "ЕШБАЕВ ДИЛШОД БАХАДИР УЛЫ"], ["11-B", "ҒАЙРАТОВ УМИДЖОН АЛЛАМБЕРГАН ЎҒЛИ"], ["11-B", "РАХМАНОВ БАТЫРБЕК АЛТЫ УЛЫ"],
+      ["11-B", "ХАЙБУЛЛАЕВ ИБРОХИМ МАХМУД УЛЫ"], ["11-B", "БАЛТАБАЕВА ФАРАНГИЗ ХАМЗА ҚЫЗЫ"], ["11-B", "ИСЛАМОВА МАФТУНА МАМУР КИЗИ"],
+      ["11-B", "ЖАНАБАЕВ ЖОВОХИР МАХМУДОВИЧ"], ["11-B", "КАЗАКБАЕВ АЛИШЕР АЙБЕКОВИЧ"], ["11-B", "ЮЛДАШЕВ ОЗОДБЕК РЕЖЕПБАЙ УЛЫ"],
+      ["11-B", "АРАЛБАЕВ АБИЎБАКИР АЗАМАТ УЛЫ"], ["11-B", "ЖАНАБАЕВ ОЗОДБЕК БАХАДЫРОВИЧ"], ["11-B", "ТУРСИНБАЕВА ШОХНОЗА БАХАДИРОВНА"],
       ["11-B", "КАДРБЕРГЕНОВ АМИРБЕК БАХТИЯР УЛЫ"]
     ];
 
@@ -1041,18 +878,18 @@
       const badge = document.getElementById('dbStatusBadge');
 
       if (!isFirebaseReady || !db) {
-        badge.className = "hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200";
-        badge.innerHTML = `<i class="fa-solid fa-hard-drive"></i> <span>Lokal rejim (Offline)</span>`;
+        badge.className = "flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200";
+        badge.innerHTML = `<i class="fa-solid fa-hard-drive"></i> <span>Offline</span>`;
         return;
       }
 
       db.ref('.info/connected').on('value', function(snap) {
         if (snap.val() === true) {
-          badge.className = "hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
-          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span>Firebase Jonli Bulut</span>`;
+          badge.className = "flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
+          badge.innerHTML = `<span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span>Jonli Bulut</span>`;
         } else {
-          badge.className = "hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200";
-          badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span> <span>Bulutga ulanmoqda...</span>`;
+          badge.className = "flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200";
+          badge.innerHTML = `<span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-500 animate-ping"></span> <span>Ulanmoqda...</span>`;
         }
       });
 
@@ -1124,16 +961,19 @@
       setInterval(() => {
         const now = new Date();
         const timeStr = now.toTimeString().split(' ')[0];
-        document.getElementById('liveClock').innerText = timeStr;
+        const clockEl = document.getElementById('liveClock');
+        if (clockEl) clockEl.innerText = timeStr;
 
         const curPeriod = getCurrentActivePeriod();
         const badge = document.getElementById('currentPeriodBadge');
-        if (curPeriod) {
-          badge.innerText = curPeriod.name;
-          badge.className = "bg-emerald-600 text-white px-2 py-0.5 rounded-lg text-[10px] ml-1 font-bold";
-        } else {
-          badge.innerText = "Dars vaqti emas";
-          badge.className = "bg-slate-400 text-white px-2 py-0.5 rounded-lg text-[10px] ml-1 font-bold";
+        if (badge) {
+          if (curPeriod) {
+            badge.innerText = curPeriod.name;
+            badge.className = "bg-emerald-600 text-white px-2 py-0.5 rounded-lg text-[10px] ml-1 font-bold";
+          } else {
+            badge.innerText = "Dars vaqti emas";
+            badge.className = "bg-slate-400 text-white px-2 py-0.5 rounded-lg text-[10px] ml-1 font-bold";
+          }
         }
       }, 1000);
     }
@@ -1172,12 +1012,12 @@
       const currentSelected = pSelect.value;
       pSelect.innerHTML = '';
 
-      pSelect.innerHTML += `<option value="morning">🌅 Ertalabki yig'in (Sinf rahbari)</option>`;
+      pSelect.innerHTML += `<option value="morning">🌅 Ertalabki yig'in</option>`;
 
       for (let i = 1; i <= maxLessons; i++) {
         const item = schedule.find(s => s.id === i.toString());
         if (item) {
-          pSelect.innerHTML += `<option value="${item.id}">${item.name} (${item.start} - ${item.end})</option>`;
+          pSelect.innerHTML += `<option value="${item.id}">${item.name} (${item.start})</option>`;
         }
       }
 
@@ -1226,10 +1066,10 @@
       setTimeout(() => {
         toast.classList.add('translate-y-[-100px]', 'opacity-0');
         toast.classList.remove('translate-y-0', 'opacity-100');
-      }, 3000);
+      }, 2500);
     }
 
-    // ================= LOGIN VA MAXFIY PIN TRIGGERI =================
+    // ================= LOGIN VA MAXFIY TRIGGER =================
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const u = document.getElementById('username').value.trim();
@@ -1282,7 +1122,6 @@
       const pinError = document.getElementById('pinError');
 
       if (pin === '0102') {
-        // Maxfiy rejimda ham asosiy Admin profili sifatida kiriladi (lekin to'liq super-huquq bilan)
         currentUser = { username: 'admin1', role: 'admin', name: users['admin1'] ? users['admin1'].name : 'Bosh Direktor', assignedClass: null };
         isOwnerMode = true;
         document.getElementById('ownerPinScreen').classList.add('hidden');
@@ -1304,7 +1143,7 @@
         const adminName = users['admin1'] ? users['admin1'].name : "Qodirov Jamshid Anvarovich (Bosh Direktor)";
         roleBadge.innerHTML = `👑 ${adminName}`;
       } else {
-        roleBadge.innerText = `👨‍🏫 ${currentUser.name} (${currentUser.assignedClass || 'Fan o\'qituvchisi'})`;
+        roleBadge.innerText = `👨‍🏫 ${currentUser.name} (${currentUser.assignedClass || 'O\'qituvchi'})`;
       }
     }
 
@@ -1313,14 +1152,17 @@
 
       const adminCol = document.getElementById('adminActionCol');
       const oqituvchilarTab = document.getElementById('tab-oqituvchilar');
+      const mOqituvchilarTab = document.getElementById('m-tab-oqituvchilar');
 
       updateUserRoleBadge();
 
       if (currentUser.role === 'admin' || isOwnerMode) {
         oqituvchilarTab.classList.remove('hidden');
+        mOqituvchilarTab.classList.remove('hidden');
         adminCol.classList.remove('hidden');
       } else {
         oqituvchilarTab.classList.add('hidden');
+        mOqituvchilarTab.classList.add('hidden');
         adminCol.classList.add('hidden');
       }
 
@@ -1352,20 +1194,32 @@
       ['davomat', 'oquvchilar', 'tahlil', 'jadval', 'oqituvchilar'].forEach(t => {
         const el = document.getElementById(`view-${t}`);
         if (el) el.classList.add('hidden');
+        
+        // Kompyuter nav
         const tabBtn = document.getElementById(`tab-${t}`);
-        if (tabBtn) {
-          tabBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold';
-        }
+        if (tabBtn) tabBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold';
+        
+        // Mobil nav
+        const mTabBtn = document.getElementById(`m-tab-${t}`);
+        if (mTabBtn) mTabBtn.className = 'flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition';
       });
 
       document.getElementById(`view-${tabId}`).classList.remove('hidden');
-      document.getElementById(`tab-${tabId}`).className = 'px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 font-bold transition flex items-center gap-1.5';
+
+      // Kompyuter faol tugma
+      const activeDesktop = document.getElementById(`tab-${tabId}`);
+      if (activeDesktop) activeDesktop.className = 'px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 font-bold transition flex items-center gap-1.5';
+
+      // Mobil faol tugma
+      const activeMobile = document.getElementById(`m-tab-${tabId}`);
+      if (activeMobile) activeMobile.className = 'flex flex-col items-center justify-center py-1 px-2 text-blue-600 font-bold transition';
 
       if (tabId === 'davomat') onClassOrDateChanged();
       if (tabId === 'oquvchilar') renderStudentManagementTable();
       if (tabId === 'tahlil') renderDeepAnalytics();
       if (tabId === 'jadval') { renderWeeklyDayCounters(); renderScheduleTable(); }
       if (tabId === 'oqituvchilar') renderAdminTeachersTable();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // ================= DARS JADVALI VA KUNLIK DARS SONI =================
@@ -1380,9 +1234,9 @@
       const notice = document.getElementById('schedulePermissionNotice');
 
       if (!canEdit) {
-        notice.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Siz faqat o'z sinfingiz dars sonini o'zgartira olasiz</span>`;
+        notice.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Cheklangan</span>`;
       } else {
-        notice.innerHTML = `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-pen"></i> Tahrirlash ruxsati mavjud</span>`;
+        notice.innerHTML = `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-pen"></i> Tahrirlash ochiq</span>`;
       }
 
       const container = document.getElementById('weeklyDaysContainer');
@@ -1394,26 +1248,26 @@
         let badgesHtml = '<div class="flex flex-wrap gap-1 mt-2 justify-center">';
         for (let i = 1; i <= 8; i++) {
           if (i <= count) {
-            badgesHtml += `<span class="w-5 h-5 rounded bg-blue-600 text-white font-black text-[10px] flex items-center justify-center">${i}</span>`;
+            badgesHtml += `<span class="w-4 h-4 rounded bg-blue-600 text-white font-black text-[9px] flex items-center justify-center">${i}</span>`;
           } else {
-            badgesHtml += `<span class="w-5 h-5 rounded bg-slate-200 text-slate-400 font-semibold text-[10px] flex items-center justify-center line-through">${i}</span>`;
+            badgesHtml += `<span class="w-4 h-4 rounded bg-slate-200 text-slate-400 font-semibold text-[9px] flex items-center justify-center line-through">${i}</span>`;
           }
         }
         badgesHtml += '</div>';
 
         container.innerHTML += `
-          <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm flex flex-col items-center justify-between text-center">
+          <div class="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-sm flex flex-col items-center justify-between text-center">
             <span class="text-xs font-black text-slate-700">${day.name}</span>
-            <div class="my-2">
-              <span class="text-2xl font-black text-blue-700">${count}</span>
-              <span class="text-[11px] font-bold text-slate-400">ta dars</span>
+            <div class="my-1.5">
+              <span class="text-xl sm:text-2xl font-black text-blue-700">${count}</span>
+              <span class="text-[10px] font-bold text-slate-400">ta dars</span>
             </div>
             
             <div class="flex items-center gap-1.5 w-full justify-center">
-              <button onclick="changeDayLessonCount('${targetClass}', ${day.key}, -1)" ${!canEdit || count <= 1 ? 'disabled' : ''} class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 font-black text-base hover:bg-rose-100 border border-rose-200 flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed" title="Oxirgi darsni olib tashlash">
+              <button onclick="changeDayLessonCount('${targetClass}', ${day.key}, -1)" ${!canEdit || count <= 1 ? 'disabled' : ''} class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 font-black text-sm hover:bg-rose-100 border border-rose-200 flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed">
                 <i class="fa-solid fa-minus"></i>
               </button>
-              <button onclick="changeDayLessonCount('${targetClass}', ${day.key}, 1)" ${!canEdit || count >= 8 ? 'disabled' : ''} class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 font-black text-base hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed" title="Dars qo'shish (8 gacha)">
+              <button onclick="changeDayLessonCount('${targetClass}', ${day.key}, 1)" ${!canEdit || count >= 8 ? 'disabled' : ''} class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 font-black text-sm hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed">
                 <i class="fa-solid fa-plus"></i>
               </button>
             </div>
@@ -1440,7 +1294,7 @@
 
       renderWeeklyDayCounters();
       updateAvailablePeriodsForDate();
-      showToast(`${targetClass} darslar soni yangilandi!`);
+      showToast(`${targetClass} yangilandi!`);
     }
 
     function renderScheduleTable() {
@@ -1454,25 +1308,25 @@
 
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50 transition ${isCurrent ? 'bg-blue-50/70 font-semibold' : ''}">
-            <td class="py-3 px-4 text-center font-bold text-slate-500">${index === 0 ? '🌅' : index}</td>
-            <td class="py-3 px-4">
+            <td class="py-2.5 px-3 text-center font-bold text-slate-500">${index === 0 ? '🌅' : index}</td>
+            <td class="py-2.5 px-3">
               <span class="font-bold text-slate-800">${item.name}</span>
-              ${isCurrent ? '<span class="ml-2 bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">Hozir dars ketmoqda</span>' : ''}
+              ${isCurrent ? '<span class="ml-1.5 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">Faol</span>' : ''}
             </td>
-            <td class="py-3 px-4 text-center">
+            <td class="py-2.5 px-3 text-center">
               ${isAdmin ? `
-                <input type="time" value="${item.start}" onchange="updateScheduleTime('${item.id}', 'start', this.value)" class="border rounded-lg px-2 py-1 text-xs font-mono font-bold bg-white">
+                <input type="time" value="${item.start}" onchange="updateScheduleTime('${item.id}', 'start', this.value)" class="border rounded-lg px-1.5 py-0.5 text-xs font-mono font-bold bg-white">
               ` : `<span class="font-mono font-bold text-slate-700">${item.start}</span>`}
             </td>
-            <td class="py-3 px-4 text-center">
+            <td class="py-2.5 px-3 text-center">
               ${isAdmin ? `
-                <input type="time" value="${item.end}" onchange="updateScheduleTime('${item.id}', 'end', this.value)" class="border rounded-lg px-2 py-1 text-xs font-mono font-bold bg-white">
+                <input type="time" value="${item.end}" onchange="updateScheduleTime('${item.id}', 'end', this.value)" class="border rounded-lg px-1.5 py-0.5 text-xs font-mono font-bold bg-white">
               ` : `<span class="font-mono font-bold text-slate-700">${item.end}</span>`}
             </td>
-            <td class="py-3 px-4 text-slate-500 text-xs">${item.desc}</td>
-            <td class="py-3 px-4 text-center">
-              <span class="px-2 py-1 rounded-md text-[11px] font-bold ${isCurrent ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">
-                ${isCurrent ? 'Faol dars' : 'Navbatda'}
+            <td class="py-2.5 px-3 text-slate-500 text-xs hidden sm:table-cell">${item.desc}</td>
+            <td class="py-2.5 px-3 text-center">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${isCurrent ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">
+                ${isCurrent ? 'Hozir' : 'Navbatda'}
               </span>
             </td>
           </tr>
@@ -1489,7 +1343,7 @@
       syncToFirebase('schedule', schedule);
       syncToFirebase('class_daily_lessons', classDailyLessons);
       updateAvailablePeriodsForDate();
-      showToast("Dars jadvali bulutda yangilandi! ⏰");
+      showToast("Jadval saqlandi! ⏰");
       renderScheduleTable();
     }
 
@@ -1506,7 +1360,6 @@
       const selectedDate = document.getElementById('attendanceDate').value;
       const today = new Date().toISOString().split('T')[0];
 
-      // O'qituvchilar faqat o'sha kunda (24 soat davomida) belgilaydi
       if (selectedDate !== today) {
         return { 
           allowed: false, 
@@ -1538,14 +1391,15 @@
     function updateSaveIndicator(isSaved) {
       const indicator = document.getElementById('saveStatusIndicator');
       if (isSaved) {
-        indicator.className = 'text-xs font-semibold text-emerald-700 flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl w-fit';
+        indicator.className = 'text-[11px] sm:text-xs font-semibold text-emerald-700 flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl w-full sm:w-fit';
         indicator.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Barcha ma\'lumotlar bulutda sinxronlangan';
       } else {
-        indicator.className = 'text-xs font-semibold text-amber-800 flex items-center gap-2 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl w-fit animate-pulse';
-        indicator.innerHTML = '<i class="fa-solid fa-circle-exclamation text-amber-600"></i> Diqqat: Saqlanmagan o\'zgarishlar bor! "Bulutga Saqlash" tugmasini bosing.';
+        indicator.className = 'text-[11px] sm:text-xs font-semibold text-amber-800 flex items-center gap-2 bg-amber-50 border border-amber-200 px-3 py-1 rounded-xl w-full sm:w-fit animate-pulse';
+        indicator.innerHTML = '<i class="fa-solid fa-circle-exclamation text-amber-600"></i> O\'zgarishlar bor! "Bulutga Saqlash"ni bosing.';
       }
     }
 
+    // DAVOMAT JADVALINI VA TELEFON UCHUN KARTOCHKALARNI CHIZISH
     function renderAttendanceTable() {
       const selectedClass = document.getElementById('classSelector').value;
       const date = document.getElementById('attendanceDate').value;
@@ -1580,7 +1434,9 @@
 
       let countBor = 0, countKelmadi = 0, countSababli = 0;
       const tbody = document.getElementById('attendanceTbody');
+      const mobileContainer = document.getElementById('mobileCardsContainer');
       tbody.innerHTML = '';
+      mobileContainer.innerHTML = '';
 
       classStudents.forEach((student, index) => {
         const hasAdminPermission = adminPermissions[date] && adminPermissions[date][student.id];
@@ -1597,12 +1453,13 @@
 
         const isDisabled = !perm.allowed || hasAdminPermission;
 
+        // 1. KOMPYUTER JADVALI UCHUN QATOR
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50/80 transition ${hasAdminPermission ? 'bg-indigo-50/40' : ''}">
             <td class="py-3 px-4 text-center font-bold text-slate-400 text-xs">${index + 1}</td>
             <td class="py-3 px-4">
               <div class="font-bold text-slate-800">${student.name}</div>
-              ${hasAdminPermission ? '<span class="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-md mt-0.5"><i class="fa-solid fa-star"></i> Admin Ruxsatida</span>' : ''}
+              ${hasAdminPermission ? '<span class="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 bg-indigo-100 px-1.5 py-0.5 rounded mt-0.5"><i class="fa-solid fa-star"></i> Admin Ruxsatida</span>' : ''}
             </td>
             <td class="py-3 px-4 text-slate-500 font-mono text-xs">
               <i class="fa-solid fa-phone text-slate-400 mr-1"></i> ${student.phone}
@@ -1632,12 +1489,61 @@
             </td>
             ${currentUser.role === 'admin' || isOwnerMode ? `
               <td class="py-3 px-4 text-center">
-                <button onclick="toggleAdminPermission('${student.id}')" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition ${hasAdminPermission ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-100'}">
+                <button onclick="toggleAdminPermission('${student.id}')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold border transition ${hasAdminPermission ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-100'}">
                   ${hasAdminPermission ? '⭐ Ruxsatda' : '⭐ Ruxsat berish'}
                 </button>
               </td>
             ` : ''}
           </tr>
+        `;
+
+        // 2. TELEFON UCHUN IXCHAM MOBIL KARTOCHKA
+        mobileContainer.innerHTML += `
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5 ${hasAdminPermission ? 'bg-indigo-50/40 border-indigo-200' : ''}">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-start gap-2">
+                <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-500 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">${index + 1}</span>
+                <div>
+                  <h4 class="font-black text-slate-800 text-xs sm:text-sm leading-snug">${student.name}</h4>
+                  <p class="text-[10px] text-slate-400 font-mono mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${student.phone}</p>
+                </div>
+              </div>
+              ${hasAdminPermission ? '<span class="text-[9px] font-black bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded shrink-0">⭐ Admin</span>' : ''}
+            </div>
+
+            <!-- Tugmalar bloki -->
+            <div class="grid grid-cols-3 gap-1.5 pt-1">
+              <button onclick="changeStatus('${student.id}', 'bor')" ${isDisabled ? 'disabled' : ''} class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition ${status === 'bor' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600'} ${isDisabled ? 'opacity-60' : ''}">
+                <i class="fa-solid fa-check text-[10px]"></i> Bor
+              </button>
+              <button onclick="changeStatus('${student.id}', 'kelmadi')" ${isDisabled ? 'disabled' : ''} class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition ${status === 'kelmadi' ? 'bg-rose-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600'} ${isDisabled ? 'opacity-60' : ''}">
+                <i class="fa-solid fa-xmark text-[10px]"></i> Yo'q
+              </button>
+              <button onclick="changeStatus('${student.id}', 'sababli')" ${isDisabled ? 'disabled' : ''} class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition ${status === 'sababli' ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600'} ${isDisabled ? 'opacity-60' : ''}">
+                <i class="fa-solid fa-file-medical text-[10px]"></i> Sababli
+              </button>
+            </div>
+
+            <!-- Agar kelmagan yoki sababli bo'lsa, sabab ochiladi -->
+            ${status !== 'bor' ? `
+              <div class="pt-1.5 border-t border-slate-100 space-y-1.5">
+                <select onchange="changeReasonType('${student.id}', this.value)" ${isDisabled ? 'disabled' : ''} class="w-full text-xs border border-slate-300 rounded-lg p-1.5 font-medium bg-white">
+                  <option value="oilaviy" ${reasonType === 'oilaviy' ? 'selected' : ''}>1. Oilaviy muammo</option>
+                  <option value="kasal" ${reasonType === 'kasal' ? 'selected' : ''}>2. Kasal / Tibbiy</option>
+                  <option value="custom" ${reasonType === 'custom' ? 'selected' : ''}>3. Qo'lda yozish ✍️</option>
+                </select>
+                <input type="text" onchange="changeCustomReason('${student.id}', this.value)" value="${customReason}" placeholder="Sababni yozing..." class="${reasonType === 'custom' ? '' : 'hidden'} w-full text-xs border border-slate-300 rounded-lg p-1.5">
+              </div>
+            ` : ''}
+
+            ${(currentUser.role === 'admin' || isOwnerMode) ? `
+              <div class="pt-1 flex justify-end">
+                <button onclick="toggleAdminPermission('${student.id}')" class="text-[10px] font-bold px-2 py-1 rounded-lg border ${hasAdminPermission ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200'}">
+                  ${hasAdminPermission ? '⭐ Ruxsat bekor qilish' : '⭐ Admin ruxsat berish'}
+                </button>
+              </div>
+            ` : ''}
+          </div>
         `;
       });
 
@@ -1679,7 +1585,7 @@
       renderAttendanceTable();
     }
 
-    // ANIQ VA KAFOLATLANGAN REALTIME SAQLASH
+    // REALTIME SAQLASH
     function saveAttendanceManual() {
       const periodKey = getPeriodKey();
       
@@ -1691,7 +1597,7 @@
         db.ref('attendance/' + periodKey).set(tempAttendanceBuffer)
           .then(() => {
             updateSaveIndicator(true);
-            showToast("Davomat bulutga muvaffaqiyatli saqlandi! ☁️️");
+            showToast("Davomat bulutga muvaffaqiyatli saqlandi! ☁️");
           })
           .catch((err) => {
             console.error("Firebase yozish xatosi:", err);
@@ -1699,7 +1605,7 @@
           });
       } else {
         updateSaveIndicator(true);
-        showToast("Lokal xotiraga saqlandi (Firebase ulanmagan)");
+        showToast("Lokal xotiraga saqlandi (Offline)");
       }
     }
 
@@ -1718,21 +1624,31 @@
       const tbody = document.getElementById('studentManagementTbody');
       tbody.innerHTML = '';
 
-      students.forEach((student, index) => {
+      const query = (document.getElementById('studentSearchInput')?.value || '').toLowerCase().trim();
+
+      const filtered = students.filter(s => {
+        if (!query) return true;
+        return s.name.toLowerCase().includes(query) || s.class.toLowerCase().includes(query);
+      });
+
+      filtered.forEach((student, index) => {
         const canEdit = currentUser.role === 'admin' || isOwnerMode || (currentUser.assignedClass === student.class);
 
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50">
-            <td class="py-3 px-4 text-center text-slate-400 font-bold text-xs">${index + 1}</td>
-            <td class="py-3 px-4 font-bold text-slate-800">${student.name}</td>
-            <td class="py-3 px-4"><span class="px-2.5 py-1 bg-slate-100 rounded-lg font-bold text-xs text-blue-700">${student.class}</span></td>
-            <td class="py-3 px-4 text-slate-600 font-mono text-xs">${student.phone}</td>
-            <td class="py-3 px-4 text-right">
+            <td class="py-2.5 px-3 text-center text-slate-400 font-bold text-xs">${index + 1}</td>
+            <td class="py-2.5 px-3 font-bold text-slate-800 text-xs sm:text-sm">
+              ${student.name}
+              <div class="sm:hidden text-[10px] text-slate-400 font-mono">${student.phone}</div>
+            </td>
+            <td class="py-2.5 px-2 sm:px-4 text-center sm:text-left"><span class="px-2 py-0.5 bg-slate-100 rounded-md font-bold text-[11px] text-blue-700">${student.class}</span></td>
+            <td class="py-2.5 px-3 font-mono text-xs hidden sm:table-cell text-slate-600">${student.phone}</td>
+            <td class="py-2.5 px-3 text-right">
               ${canEdit ? `
-                <button onclick="editStudent('${student.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition mr-1" title="Tahrirlash"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button onclick="deleteStudent('${student.id}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="O'chirish"><i class="fa-solid fa-trash"></i></button>
+                <button onclick="editStudent('${student.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition mr-1" title="Tahrirlash"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button onclick="deleteStudent('${student.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="O'chirish"><i class="fa-solid fa-trash"></i></button>
               ` : `
-                <span class="text-xs text-slate-400 font-medium italic"><i class="fa-solid fa-lock text-[10px]"></i> Qulflangan</span>
+                <span class="text-[10px] text-slate-400 font-medium italic"><i class="fa-solid fa-lock"></i></span>
               `}
             </td>
           </tr>
@@ -1854,7 +1770,7 @@
         else if (pNum < 90) { colorBadge = 'bg-amber-500'; textColor = 'text-amber-600'; }
 
         classCardsContainer.innerHTML += `
-          <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/50">
+          <div class="p-2.5 sm:p-3 rounded-xl border border-slate-200 bg-slate-50/50">
             <div class="flex justify-between items-center mb-1">
               <span class="font-black text-slate-800 text-xs">${c}</span>
               <span class="text-xs font-black ${textColor}">${pVal}%</span>
@@ -1862,7 +1778,7 @@
             <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden mb-1">
               <div class="${colorBadge} h-1.5 rounded-full transition-all duration-500" style="width: ${pVal}%"></div>
             </div>
-            <div class="flex justify-between text-[10px] font-semibold text-slate-500">
+            <div class="flex justify-between text-[9px] sm:text-[10px] font-semibold text-slate-500">
               <span>Bor: <b>${present}</b></span>
               <span>Yo'q: <b>${classStats[c].absent}</b></span>
             </div>
@@ -1926,7 +1842,7 @@
             fill: true,
             tension: 0.3,
             borderWidth: 2,
-            pointRadius: 3
+            pointRadius: 2
           }]
         },
         options: {
@@ -1957,11 +1873,11 @@
 
           if (status === 'bor') {
             presentLessons++;
-            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 font-bold inline-flex items-center justify-center text-[9px]">✓</span></td>`;
+            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-3.5 h-3.5 rounded-full bg-emerald-100 text-emerald-700 font-bold inline-flex items-center justify-center text-[8px]">✓</span></td>`;
           } else if (status === 'kelmadi') {
-            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-4 h-4 rounded-full bg-rose-100 text-rose-700 font-bold inline-flex items-center justify-center text-[9px]">✕</span></td>`;
+            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-3.5 h-3.5 rounded-full bg-rose-100 text-rose-700 font-bold inline-flex items-center justify-center text-[8px]">✕</span></td>`;
           } else {
-            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-4 h-4 rounded-full bg-amber-100 text-amber-700 font-bold inline-flex items-center justify-center text-[9px]">S</span></td>`;
+            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-3.5 h-3.5 rounded-full bg-amber-100 text-amber-700 font-bold inline-flex items-center justify-center text-[8px]">S</span></td>`;
           }
         });
 
@@ -1972,19 +1888,19 @@
 
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50 transition">
-            <td class="py-2 px-4 text-center font-bold text-slate-400">${idx + 1}</td>
-            <td class="py-2 px-4 font-bold text-slate-800">${student.name}</td>
-            <td class="py-2 px-4 font-semibold text-slate-600">${student.class}</td>
+            <td class="py-2 px-3 text-center font-bold text-slate-400">${idx + 1}</td>
+            <td class="py-2 px-3 font-bold text-slate-800 truncate max-w-[120px]">${student.name}</td>
+            <td class="py-2 px-2 font-semibold text-slate-600">${student.class}</td>
             ${periodBadges}
-            <td class="py-2 px-4 text-center">
-              <span class="px-2 py-0.5 rounded-lg text-xs font-black border ${colorClass}">${studentPercent}%</span>
+            <td class="py-2 px-3 text-center">
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-black border ${colorClass}">${studentPercent}%</span>
             </td>
           </tr>
         `;
       });
     }
 
-    // ================= TAHLIL QISMI UCHUN 2 TA EXCEL EKSPORTI =================
+    // ================= EXCEL EKSPORTI =================
     function exportClassesDailyAnalyticsToExcel() {
       const date = document.getElementById('attendanceDate').value;
       const morningData = attendanceData[`${date}_morning`] || {};
@@ -1993,7 +1909,7 @@
         <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
         <head><meta charset="UTF-8"></head>
         <body>
-          <h2 style="text-align:center;">Maktab Bo'yicha Barcha Sinflarning Kunlik Davomat Tahlili</h2>
+          <h2 style="text-align:center;">Maktab Sinflarining Kunlik Davomat Tahlili</h2>
           <p style="text-align:center;"><b>Sana:</b> ${date} | <b>Jami Sinflar:</b> ${classes.length} ta</p>
           <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; font-family:Arial, sans-serif;">
             <tr style="background-color:#0284c7; color:#ffffff; font-weight:bold; text-align:center;">
@@ -2002,10 +1918,10 @@
               <th>Jami O'quvchi</th>
               <th>Ertalab Bor</th>
               <th>Ertalab Yo'q</th>
-              <th>Ertalabki Davomat Foizi</th>
+              <th>Ertalabki Foiz</th>
               <th>Kun Oxiridagi Bor</th>
               <th>Kun Oxiridagi Yo'q</th>
-              <th>Kun Oxiridagi Davomat Foizi</th>
+              <th>Kun Oxiridagi Foiz</th>
             </tr>
       `;
 
@@ -2075,7 +1991,7 @@
         <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
         <head><meta charset="UTF-8"></head>
         <body>
-          <h2 style="text-align:center;">Barcha O'quvchilarning Dars Soatlari Kesimidagi Kunlik Davomati</h2>
+          <h2 style="text-align:center;">Dars Soatlari Kesimidagi Kunlik Davomat</h2>
           <p style="text-align:center;"><b>Sana:</b> ${date} | <b>Jami O'quvchilar:</b> ${students.length} ta</p>
           <table border="1" cellpadding="5" cellspacing="0" style="border-collapse:collapse; font-family:Arial, sans-serif;">
             <tr style="background-color:#4338ca; color:#ffffff; font-weight:bold; text-align:center;">
@@ -2091,7 +2007,7 @@
               <th>6-dars</th>
               <th>7-dars</th>
               <th>8-dars</th>
-              <th>Kunlik Davomat Foizi</th>
+              <th>Foiz</th>
             </tr>
       `;
 
@@ -2102,7 +2018,7 @@
 
         tableHtml += `
           <tr style="background-color:#e2e8f0; font-weight:bold;">
-            <td colspan="13" style="text-align:left; padding-left:10px;">🏫 ${c} SINF O'QUVCHILARI</td>
+            <td colspan="13" style="text-align:left; padding-left:10px;">🏫 ${c} SINF</td>
           </tr>
         `;
 
@@ -2151,17 +2067,16 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast("Darsbay davomat Excel fayli yuklandi! 📋");
+      showToast("Darsbay Excel fayli yuklandi! 📋");
     }
 
-    // ================= XODIMLAR VA ADMINLAR RO'YXATI (HAMMA ADMINLAR LOGIN PAROLI BILAN) =================
+    // ================= XODIMLAR VA ADMINLAR RO'YXATI =================
     function renderAdminTeachersTable() {
       if (!currentUser || (currentUser.role !== 'admin' && !isOwnerMode)) {
         document.getElementById('adminTeachersTbody').innerHTML = '';
         return;
       }
 
-      // Shaxsiy profil kartochkasi (o'z login-parolini o'zgartirish)
       const myCard = document.getElementById('myAdminAccountCard');
       if (myCard && currentUser) {
         myCard.classList.remove('hidden');
@@ -2179,32 +2094,31 @@
         const u = users[key];
         const isAdmin = u.role === 'admin';
         const roleBadge = isAdmin
-          ? `<span class="px-2.5 py-1 bg-amber-100 text-amber-900 border border-amber-300 rounded-lg text-xs font-bold flex items-center gap-1 w-fit"><i class="fa-solid fa-crown text-amber-600"></i> Administrator</span>`
-          : `<span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold w-fit">Sinf Rahbari</span>`;
+          ? `<span class="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 rounded text-[10px] font-bold inline-flex items-center gap-1"><i class="fa-solid fa-crown text-amber-600"></i> Admin</span>`
+          : `<span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-[10px] font-bold">O'qituvchi</span>`;
 
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50 ${isAdmin ? 'bg-amber-50/30' : ''}">
-            <td class="py-3 px-4 text-center text-slate-400 font-bold text-xs">${index + 1}</td>
-            <td class="py-3 px-4 font-bold text-slate-800">
+            <td class="py-2.5 px-3 text-center text-slate-400 font-bold text-xs">${index + 1}</td>
+            <td class="py-2.5 px-3 font-bold text-slate-800 text-xs sm:text-sm">
               ${u.name}
-              ${key === currentUser.username ? '<span class="ml-2 text-[10px] bg-slate-800 text-white px-2 py-0.5 rounded-full font-bold">Siz</span>' : ''}
+              ${key === currentUser.username ? '<span class="ml-1 text-[9px] bg-slate-800 text-white px-1.5 py-0.2 rounded font-bold">Siz</span>' : ''}
             </td>
-            <td class="py-3 px-4">${roleBadge}</td>
-            <td class="py-3 px-4"><span class="px-2.5 py-1 bg-slate-100 rounded-lg font-bold text-xs text-blue-700">${u.assignedClass || '—'}</span></td>
-            <td class="py-3 px-4 font-mono font-bold text-blue-700">${key}</td>
-            <td class="py-3 px-4 font-mono text-slate-700">
-              <span class="bg-slate-100 px-2.5 py-1 rounded-md font-bold">${u.password}</span>
+            <td class="py-2.5 px-3">${roleBadge}</td>
+            <td class="py-2.5 px-3"><span class="px-2 py-0.5 bg-slate-100 rounded text-[11px] font-bold text-blue-700">${u.assignedClass || '—'}</span></td>
+            <td class="py-2.5 px-3 font-mono font-bold text-blue-700 text-xs">${key}</td>
+            <td class="py-2.5 px-3 font-mono text-slate-700 text-xs">
+              <span class="bg-slate-100 px-2 py-0.5 rounded font-bold">${u.password}</span>
             </td>
-            <td class="py-3 px-4 text-right">
-              <button onclick="openUserCreateModal('all', '${key}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition mr-1" title="Tahrirlash"><i class="fa-solid fa-pen-to-square"></i></button>
-              <button onclick="deleteUserAccount('${key}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="O'chirish"><i class="fa-solid fa-trash"></i></button>
+            <td class="py-2.5 px-3 text-right">
+              <button onclick="openUserCreateModal('all', '${key}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded transition mr-1" title="Tahrirlash"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button onclick="deleteUserAccount('${key}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded transition" title="O'chirish"><i class="fa-solid fa-trash"></i></button>
             </td>
           </tr>
         `;
       });
     }
 
-    // ================= ADMIN O'Z PROFILINI TAHRIRLASH MODALI =================
     function openSelfEditModal() {
       if (!currentUser) return;
       const u = users[currentUser.username] || currentUser;
@@ -2248,7 +2162,7 @@
       closeSelfEditModal();
       updateUserRoleBadge();
       renderAdminTeachersTable();
-      showToast("Profilingiz muvaffaqiyatli yangilandi! 👤");
+      showToast("Profilingiz yangilandi! 👤");
     });
 
     function toggleUserClassSelect() {
@@ -2264,9 +2178,6 @@
       const modal = document.getElementById('userModal');
       const form = document.getElementById('userForm');
       form.reset();
-
-      const saveBtn = document.getElementById('userModalSaveBtn');
-      saveBtn.className = "px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 shadow-md";
 
       if (key) {
         const u = users[key];
@@ -2307,7 +2218,6 @@
 
       users[login] = { role, name, assignedClass, password };
 
-      // Agar o'zgartirilayotgan login admin1 bo'lsa yoki joriy admin o'zgartirilsa, sarlavha darhol yangilanadi
       if (login === 'admin1' || (currentUser && currentUser.username === login)) {
         if (users['admin1']) users['admin1'].name = name;
         if (currentUser && currentUser.username === login) currentUser.name = name;
@@ -2331,7 +2241,7 @@
       }
     }
 
-    // ================= YAKKA SINFNING EXCEL (.XLS) EKSPORTI =================
+    // ================= SINFNING EXCEL (.XLS) EKSPORTI =================
     function exportToExcel() {
       const selectedClass = document.getElementById('classSelector').value;
       const date = document.getElementById('attendanceDate').value;
