@@ -1137,13 +1137,23 @@
     }
 
     // KIRISH OYNASINING TO'LIQ YOPILISHINI TA'MINLAYDI
-    function enterApp() {
-      // 1. Kirish oynalari butunlay yopiladi
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('ownerPinScreen').classList.add('hidden');
+    function enterApp() function enterApp() {
+      const loginBox = document.getElementById('loginScreen');
+      const pinBox = document.getElementById('ownerPinScreen');
+      const app = document.getElementById('mainApp');
 
-      // 2. Asosiy ilova to'liq ko'rsatiladi
-      document.getElementById('mainApp').classList.remove('hidden');
+      if (loginBox) {
+        loginBox.classList.add('hidden');
+        loginBox.style.display = 'none';
+      }
+      if (pinBox) {
+        pinBox.classList.add('hidden');
+        pinBox.style.display = 'none';
+      }
+      if (app) {
+        app.classList.remove('hidden');
+        app.style.display = 'flex';
+      }
 
       const adminCol = document.getElementById('adminActionCol');
       const oqituvchilarTab = document.getElementById('tab-oqituvchilar');
@@ -1152,13 +1162,13 @@
       updateUserRoleBadge();
 
       if (currentUser.role === 'admin' || isOwnerMode) {
-        oqituvchilarTab.classList.remove('hidden');
-        mOqituvchilarTab.classList.remove('hidden');
-        adminCol.classList.remove('hidden');
+        if (oqituvchilarTab) oqituvchilarTab.classList.remove('hidden');
+        if (mOqituvchilarTab) mOqituvchilarTab.classList.remove('hidden');
+        if (adminCol) adminCol.classList.remove('hidden');
       } else {
-        oqituvchilarTab.classList.add('hidden');
-        mOqituvchilarTab.classList.add('hidden');
-        adminCol.classList.add('hidden');
+        if (oqituvchilarTab) oqituvchilarTab.classList.add('hidden');
+        if (mOqituvchilarTab) mOqituvchilarTab.classList.add('hidden');
+        if (adminCol) adminCol.classList.add('hidden');
       }
 
       if (currentUser.assignedClass) {
@@ -1170,22 +1180,14 @@
       onClassOrDateChanged();
     }
 
-    function logout() {
-      currentUser = null;
-      isOwnerMode = false;
-      document.getElementById('mainApp').classList.add('hidden');
-      document.getElementById('loginScreen').classList.remove('hidden');
-      document.getElementById('username').value = '';
-      document.getElementById('password').value = '';
-      document.getElementById('loginError').classList.add('hidden');
-    }
-
     // BO'LIMLARGA O'TISH (EKRAN YUQORIGA SAKRAMAYDI)
-    function switchTab(tabId) {
+    function switchTab(tabId) function switchTab(tabId) {
       if (tabId === 'oqituvchilar' && currentUser.role !== 'admin' && !isOwnerMode) {
         alert("Ruxsat berilmagan!");
         return;
       }
+
+      const currentScrollY = window.scrollY || document.documentElement.scrollTop;
 
       ['davomat', 'oquvchilar', 'tahlil', 'jadval', 'oqituvchilar'].forEach(t => {
         const el = document.getElementById(`view-${t}`);
@@ -1198,7 +1200,8 @@
         if (mTabBtn) mTabBtn.className = 'flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition';
       });
 
-      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      const targetView = document.getElementById(`view-${tabId}`);
+      if (targetView) targetView.classList.remove('hidden');
 
       const activeDesktop = document.getElementById(`tab-${tabId}`);
       if (activeDesktop) activeDesktop.className = 'px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 font-bold transition flex items-center gap-1.5';
@@ -1211,8 +1214,9 @@
       if (tabId === 'tahlil') setTimeout(renderDeepAnalytics, 10);
       if (tabId === 'jadval') { renderWeeklyDayCounters(); renderScheduleTable(); }
       if (tabId === 'oqituvchilar') renderAdminTeachersTable();
-    }
 
+      window.scrollTo({ top: currentScrollY, behavior: 'instant' });
+    }
     // ================= DARS JADVALI =================
     function canEditClassSchedule(targetClass) {
       if (currentUser.role === 'admin' || isOwnerMode) return true;
