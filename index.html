@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Maktab Nazorat PRO - Smart Davomat Platformasi</title>
+  <title>Maktab Nazorat PRO</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Excel o'qish va yozish uchun SheetJS -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <!-- Firebase SDK -->
@@ -33,7 +32,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen select-none">
 
-  <!-- Xabarnoma Toast -->
+  <!-- Toast Xabarnomasi -->
   <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-auto z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center justify-center sm:justify-start space-x-3 text-xs sm:text-sm font-semibold">
     <i class="fa-solid fa-circle-check text-base"></i>
     <span id="toastMsg">Amal bajarildi!</span>
@@ -62,7 +61,7 @@
           <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Parol</label>
           <div class="relative">
             <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-            <input type="password" id="password" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="••••••••" required>
+            <input type="password" id="password" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold" placeholder="••••••••" required>
           </div>
         </div>
         <p id="loginError" class="text-xs text-rose-600 font-semibold hidden text-center">Login yoki parol noto'g'ri!</p>
@@ -83,7 +82,7 @@
           </div>
           <div class="truncate">
             <h1 class="font-black text-xs sm:text-base text-slate-800 leading-tight">Maktab Nazorat</h1>
-            <p class="text-[11px] sm:text-xs font-semibold text-slate-600 truncate" id="userRoleBadge">O'qituvchi</p>
+            <p class="text-[11px] sm:text-xs font-semibold text-slate-600 truncate" id="userRoleBadge">Foydalanuvchi</p>
           </div>
         </div>
 
@@ -98,7 +97,7 @@
             <span id="liveClock">00:00:00</span>
           </div>
 
-          <!-- Kompyuter Navigatsiyasi -->
+          <!-- Kompyuter Menyusi -->
           <nav class="hidden md:flex space-x-1 bg-slate-100 p-1 rounded-xl text-xs sm:text-sm font-semibold" id="desktopNav">
             <button type="button" onclick="switchTab('davomat')" id="tab-davomat" class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 transition flex items-center gap-1.5 font-bold">
               <i class="fa-solid fa-clipboard-check"></i> Davomat
@@ -110,7 +109,7 @@
               <i class="fa-solid fa-users"></i> O'quvchilar
             </button>
             <button type="button" onclick="switchTab('jadval_import')" id="tab-jadval_import" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold">
-              <i class="fa-solid fa-file-excel"></i> Dars Jadvali (Excel)
+              <i class="fa-solid fa-file-excel"></i> Jadval Yuklash
             </button>
             <button type="button" onclick="switchTab('oqituvchilar')" id="tab-oqituvchilar" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold">
               <i class="fa-solid fa-chalkboard-user"></i> Xodimlar
@@ -126,7 +125,7 @@
 
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full mobile-bottom-space">
 
-      <!-- BO'LIM 1: DAVOMAT -->
+      <!-- ================= BO'LIM 1: DAVOMAT ================= -->
       <div id="view-davomat" class="space-y-4 sm:space-y-6">
         <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-slate-200 no-print space-y-3">
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
@@ -183,10 +182,10 @@
           </div>
         </div>
 
-        <!-- Telefon uchun kartochkalar -->
+        <!-- Mobil Kartochkalar -->
         <div id="mobileCardsContainer" class="block md:hidden space-y-2.5"></div>
 
-        <!-- Kompyuter uchun jadval -->
+        <!-- Kompyuter Jadvali -->
         <div id="printableArea" class="hidden md:block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-sm">
@@ -205,13 +204,13 @@
         </div>
       </div>
 
-      <!-- BO'LIM 2: TAHLIL -->
+      <!-- ================= BO'LIM 2: TO'LIQ TAHLIL ================= -->
       <div id="view-tahlil" class="hidden space-y-4 sm:space-y-6">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
           <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
               <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Jami O'quvchi</p>
-              <h3 class="text-lg sm:text-2xl font-black text-slate-800 mt-1" id="kpi-total">0 ta</h3>
+              <h3 class="text-lg sm:text-2xl font-black text-slate-800 mt-1" id="kpi-total">303 ta</h3>
             </div>
             <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-users"></i></div>
           </div>
@@ -231,35 +230,55 @@
           </div>
           <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
-              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Foiz</p>
+              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Aniq Foiz</p>
               <h3 class="text-lg sm:text-2xl font-black text-indigo-600 mt-1" id="kpi-percent">0.0%</h3>
             </div>
             <div class="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-chart-pie"></i></div>
           </div>
         </div>
 
-        <!-- Sinflar foiz kartochkalari (Faqat Admin uchun) -->
-        <div id="adminAnalyticsSection" class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <!-- Sinflar Foiz Kartochkalari (Admin va O'qituvchiga moslashgan) -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <h3 class="font-black text-slate-800 text-sm sm:text-base flex items-center gap-2">
-              <i class="fa-solid fa-chalkboard-user text-blue-600"></i> Barcha Sinflar Reytingi
+              <i class="fa-solid fa-chalkboard-user text-blue-600"></i> Sinf Davomat Foizlari
             </h3>
-            <span class="text-xs text-slate-400 font-semibold" id="analyticsClassDate">Bugungi sana</span>
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              <span class="text-xs text-slate-400 font-semibold" id="analyticsClassDate">Bugungi sana</span>
+              <button type="button" id="btnExportClasses" onclick="exportClassesDailyAnalyticsToExcel()" class="w-full sm:w-auto px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-file-excel"></i> 📊 Sinflar Tahlili (Excel)
+              </button>
+            </div>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3" id="classPercentageCards"></div>
         </div>
 
-        <!-- O'quvchilar tahlil jadvali -->
+        <!-- Diagrammalar (Faqat Admin uchun) -->
+        <div id="analyticsChartsWrapper" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-slate-800 text-xs sm:text-sm mb-3">Sinflar reytingi (Foizlar taqqoslashi)</h3>
+            <div class="h-56 sm:h-64"><canvas id="classBarChart"></canvas></div>
+          </div>
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-slate-800 text-xs sm:text-sm mb-3">Dars soatlari dinamikasi</h3>
+            <div class="h-56 sm:h-64"><canvas id="periodLineChart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Darsbay Davomat Jadvali -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div class="p-4 sm:p-5 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 class="font-black text-slate-800 text-sm sm:text-base flex items-center gap-2">
-                <i class="fa-solid fa-user-graduate text-indigo-600"></i> Darsbay Davomat Holati
+                <i class="fa-solid fa-user-graduate text-indigo-600"></i> Darsbay Davomat Jadvali
               </h3>
-              <p class="text-[11px] sm:text-xs text-slate-500 font-medium" id="analyticsSubtitleText">O'quvchilar kesimida</p>
+              <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Barcha soatlar kesimida</p>
             </div>
-            <div id="analyticsFilterClassWrapper">
+            <div class="flex items-center gap-2 w-full sm:w-auto">
               <select id="analyticsFilterClass" class="border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-blue-700 bg-white" onchange="renderStudentAnalyticsTable()"></select>
+              <button type="button" id="btnExportHourly" onclick="exportAllStudentsHourlyAnalyticsToExcel()" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-file-excel"></i> 📋 Darsbay Excel
+              </button>
             </div>
           </div>
           <div class="overflow-x-auto">
@@ -278,7 +297,7 @@
                   <th class="py-2.5 px-1 text-center">6</th>
                   <th class="py-2.5 px-1 text-center">7</th>
                   <th class="py-2.5 px-1 text-center">8</th>
-                  <th class="py-2.5 px-3 text-center">Foiz</th>
+                  <th class="py-2.5 px-3 text-center">Kunlik</th>
                 </tr>
               </thead>
               <tbody id="studentAnalyticsTbody" class="divide-y divide-slate-100"></tbody>
@@ -287,7 +306,7 @@
         </div>
       </div>
 
-      <!-- BO'LIM 3: O'QUVCHILAR (Faqat Admin) -->
+      <!-- ================= BO'LIM 3: O'QUVCHILAR (Faqat Admin) ================= -->
       <div id="view-oquvchilar" class="hidden space-y-4 sm:space-y-6">
         <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -323,7 +342,7 @@
         </div>
       </div>
 
-      <!-- BO'LIM 4: DARS JADVALI (EXCEL IMPORT) (Faqat Admin) -->
+      <!-- ================= BO'LIM 4: DARS JADVALI (EXCEL YUKLASH) (Faqat Admin) ================= -->
       <div id="view-jadval_import" class="hidden space-y-4 sm:space-y-6">
         <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -353,7 +372,6 @@
           </button>
         </div>
 
-        <!-- Yuklangan dars jadvali ko'rinishi -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="p-3.5 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
             <span class="text-xs font-black text-slate-700">Joriy Yuklangan Darslar Ro'yxati</span>
@@ -376,7 +394,7 @@
         </div>
       </div>
 
-      <!-- BO'LIM 5: XODIMLAR (Faqat Admin) -->
+      <!-- ================= BO'LIM 5: XODIMLAR (Faqat Admin) ================= -->
       <div id="view-oqituvchilar" class="hidden space-y-4 sm:space-y-6">
         <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -644,7 +662,7 @@
       ["8-B", "КУРБАНБАЕВА ШАХИДА ИЛХОМОВНА"], ["8-B", "РЕЙМБАЕВ АКМАЛБЕК БАХРАМОВИЧ"], ["8-B", "ПАРАХАТОВА ХАЁТХОН УТКИРОВНА"],
       ["8-B", "КДЫРБАЕВ АЗАМАТ АЗАТБАЕВИЧ"], ["8-B", "ШЕРИПБАЕВ ЗИЁДБЕК АМАНГЕЛДИ УҒЛИ"], ["8-B", "НАРБАЕВ ДИЯРБЕК АНВАРОВИЧ"],
       ["8-B", "ЭРГАШБАЕВА МУНИРА КАМИЛ КИЗИ"], ["8-B", "AXMEDINOV BAXITJAN BAUIRJAN ULI"], ["8-B", "ОРАЗМУХАММЕТДИНОВА ДИАНА ИЛХАМОВНА"],
-      ["8-B", "УРАЗБАЕВ БЕХРУЗ ИЛХОМ УЛЫ"], ["8-B", "ТОЛЫБАЕВ МАМАНБИЙ ЖОЛДАСБАЕВИЧ"], ["8-B", "МАХСЕТБАЕВА НАБИРА ЮСУПОВНА"],
+      ["8-B", "УРАЗБАЕВ БEХРУЗ ИЛХОМ УЛЫ"], ["8-B", "ТОЛЫБАЕВ МАМАНБИЙ ЖОЛДАСБАЕВИЧ"], ["8-B", "МАХСЕТБАЕВА НАБИРА ЮСУПОВНА"],
       ["8-B", "БАХТИЯРОВА ГОЗАЛ ОТАБЕК ҚЫЗЫ"], ["8-B", "РЕЙПНАЗАРОВ АЙНАЗАР БАХТИЯР УЛЫ"], ["8-B", "РАМАТУЛЛАЕВА КУНДУЗ АЗАМАТ КЫЗЫ"],
       ["8-B", "ЖАКСЫМУРАТОВ ИСАТАЙ САЛЫЙ УЛЫ"], ["8-B", "ЧАВДЫРБАЕВ САЛАВАТ ЮЛДАШБАЕВИЧ"], ["8-B", "МЕДЕТБАЕВ АНСАТБАЙ КУДИЯРОВИЧ"],
       ["8-B", "САКТАНОВА МАФТУНА ЖУМАБАЕВНА"], ["8-B", "АМАНГЕЛДИЕВ ЭЛБЕК ШУХРАТОВИЧ"], ["8-B", "НАРИМБЕТОВ ДАВРОНБЕК КАДЕМБАЕВИЧ"],
@@ -655,18 +673,18 @@
       ["9-B", "ГУЛМУРЗАЕВ ДИЁРБЕК РУСТАМОВИЧ"], ["9-B", "ГАЙПБАЕВА МЕХРИБАН ТУРСУНБАЙ КЫЗЫ"], ["9-B", "МАТКАРИМОВА ЗЕБО МАКСУД КЫЗЫ"],
       ["9-B", "РЕЙИМБАЕВ САИДБЕК ЮНУСОВИЧ"], ["9-B", "МУХТАРОВА МАДИНА АНВАРОВНА"], ["9-B", "МАРАТБАЕВ ДИДОР СEЙТНУРОВИЧ"],
       ["9-B", "АРТЫКБАЕВ АЗИЗБЕК РАХАТОВИЧ"], ["9-B", "РЕЖЕПБАЕВ КАКАМЫРАТ ЫХЛАСОВИЧ"], ["9-B", "КАДИРБЕРГЕНОВ ИЛДАР ЗАМИРОВИЧ"],
-      ["9-B", "ОВЕЗЖАНОВ СУЛТАНБЕК АЛЛАМУРАТОВИЧ"], ["9-B", "МАСАТИНОВА ЖАНЕРКЕ СEРИКБАЕВНА"], ["9-B", "РЕЖЕПОВА ДИЛШАДА АЛЛАБЕРДИЕВНА"],
+      ["9-B", "ОВЕЗЖАНОВ СУЛТАНБEК АЛЛАМУРАТОВИЧ"], ["9-B", "МАСАТИНОВА ЖАНЕРКЕ СEРИКБАЕВНА"], ["9-B", "РЕЖЕПОВА ДИЛШАДА АЛЛАБЕРДИЕВНА"],
       ["9-B", "ОРЫНБАЕВА ХИЛОЛА ГУЛОМЖАНОВНА"], ["9-B", "DANIYAROV DAVRANBEK SERIKBAYEVICH"], ["9-B", "АЗАТОВ ОРАЗАЛИ САЛАМАТОВИЧ"],
       ["9-V", "ЖАЛГАСОВ МИРАС ИСАТАЕВИЧ"], ["9-V", "ДАУЛЕТБАЕВА МАНЗУРА ГУЛАМЖАНОВНА"], ["9-V", "НАРБАЕВ АБДУЛАЗИЗ АРТЫКБАЕВИЧ"],
       ["9-V", "АБДИМУРАТОВ АЛЛАМУРАТ ТАТЛИМУРАТОВИЧ"], ["9-V", "МУРАТБАЕВА ФАРАНГИЗ МАНСУРОВНА"], ["9-V", "ХОЖАБАЕВ ОЗОДБЕК ДОВРАНБЕКОВИЧ"],
       ["9-V", "НАЗАРБАЕВ РУСЛАНБЕК РУСТАМОВИЧ"], ["9-V", "РАЖАПБАЕВ АБДУРАХМАН ИСЛАМОВИЧ"], ["9-V", "САПАРБАЕВА ИРОДА АНГСАТБАЕВНА"],
       ["9-V", "ЮСУПОВА АЙЖАМОЛ АМАНИЯЗ ҚИЗИ"], ["9-V", "ЖУМАБАЕВА ЛАЙЛО БАТИРЖАН КЫЗЫ"], ["9-V", "НУРАДДИНОВ АКБАР ШАМШЕДДИНОВИЧ"],
       ["9-V", "КАЗАХБАЕВ АХМАТЖАН АБДУЛЛАЕВИЧ"], ["9-V", "ЖАББАРБЕРГЕНОВА ФАРАНГИЗ ДАВРАНОВНА"], ["9-V", "КДЫРБАЕВ АЛПАМЫС ЖУМАТДИН УЛЫ"],
-      ["9-V", "ЮЛДАШЕВА ДИЛДОРА ГУЛМИРЗАЕВНА"], ["9-V", "ЮСУПОВА ДУРДАНА РАХИМОВНА"], ["9-V", "КЕНЕСОВ БЕГИС КУАНЫШОВИЧ"],
+      ["9-V", "ЮЛДАШЕВА ДИЛДОРА ГУЛМИРЗАЕВНА"], ["9-V", "ЮСУПОВА ДУРДАНА РАХИМОВНА"], ["9-V", "КЕНЕСОВ БEГИС КУАНЫШОВИЧ"],
       ["9-V", "ОТЕНИЯЗОВА ГУЛДАНА АЗАМАТ КЫЗЫ"], ["9-V", "ХАЙТБАЕВ ДАНИЁР МАДИЁРОВИЧ"], ["9-V", "ЕСБОСЫНОВА ГУЛАЙЫМ КУАНЫШБАЙ КЫЗЫ"],
       ["9-V", "ХОЖАНАЗАРОВА АЙНУРА ТАЖИБАЕВНА"], ["9-V", "ИБАДУЛЛАЕВА ИНОБАТ КУАТБАЕВНА"],
       ["10-A", "RUSDEMBAYEV SULTANBEK BATIROVICH"], ["10-A", "MAMETMURATOVA JASMINA ILYASJANOVNA"], ["10-A", "JUMABAYEVA SEVINCH DAVRONBEKOVNA"],
-      ["10-A", "ASHIRBAYEVA SHOHZODA SHUXRAT QIZI"], ["10-A", "NUKUSBAEVA MADINA ATABAY QÍZÍ"], ["10-A", "ФАЙЗУЛЛАЕВ ДОНИЁРБЕК ИСЛАМБЕКОВИЧ"],
+      ["10-A", "ASHIRBAYEVA SHOHZODA SHUXRAT QIZI"], ["10-A", "NUKUSBAEVA MADINA ATABAY QÍZÍ"], ["10-A", "ФАЙЗУЛЛАЕВ ДОНИЁРБЕК ИСЛАМБEКОВИЧ"],
       ["10-A", "PALTAYEV ATAGELDI DURDIBAYEVICH"], ["10-A", "MURATBAEV DAULET MARATOVICH"], ["10-A", "KÍDÍRBAEV ADILBEK PARAXATOVICH"],
       ["10-A", "SABUROV BEXRUZBEK RASHIDOVICH"], ["10-A", "REJEPOV BEKZOD PARAXATOVICH"], ["10-A", "KARIMBAYEVA OZODA ALIJANOVNA"],
       ["10-A", "TENELBAYEV SHAXZOD KOMEKBAY ULI"], ["10-A", "ALLABAEV ALÍMJAN MUXAMMETNAZAROVICH"], ["10-A", "SAATBAYEVA UMIDA PULATOVNA"],
@@ -682,7 +700,7 @@
       ["10-B", "REYPNAZAROVA BIBISARA BAXTIYAROVNA"], ["10-B", "МАТДУРДИЕВ АЗАТБЕК КАДАМБАЕВИЧ"], ["10-B", "ERKINOVA MUXLISA SHERZOTOVNA"],
       ["10-B", "SABITOVA KURALAY SABIT KIZI"], ["10-B", "SAPARBAYEV SHERZOD SHAUKATOVICH"],
       ["11-A", "ЭРКИНОВ ЖАВОҲИР АЛИШЕР УҒЛИ"], ["11-A", "РАДЖЕПОВА САРБИНАЗ РАШИДОВНА"], ["11-A", "КЫДЫРБАЕВ САМАНДАР ИЛХОМОВИЧ"],
-      ["11-A", "ГУЛМУРЗАЕВА МАРЖОНА ШАВКАТ ҚИЗИ"], ["11-A", "ДЖУМАМУРАТОВ ҚУДРАТ САБИТОВИЧ"], ["11-A", "АХМЕТОВ ЖУРАБЕК ОЙБЕКОВИЧ"],
+      ["11-A", "ГУЛМУРЗАЕВА МАРЖОНА ШАВКАТ ҚИЗИ"], ["11-A", "ДЖУМАМУРАТОВ ҚУДРАТ САБИТОВИЧ"], ["11-A", "АХМЕТОВ ЖУРАБЕК ОЙБEКОВИЧ"],
       ["11-A", "УРАЗБАЕВА СОГДИАНА СEЙТМЫРАТ ҚЫЗЫ"], ["11-A", "KURALBAEV JAVLONBEK DJALALATDINOVICH"], ["11-A", "YAKUBBAYEV JAVLONBEK ULUGBEK ULI"],
       ["11-B", "САПАРНИЯЗОВ АСАДБЕК УРАЗБАЙ УЛЫ"], ["11-B", "ДУРДЫБАЕВ ИСЛАМ КУВАНИЧ УЛЫ"], ["11-B", "АЖИМУРАТОВ КУТЛЫМУРАТ ОМИРЗАКОВИЧ"],
       ["11-B", "ЕШБАЕВ ДИЛШОД БАХАДИР УЛЫ"], ["11-B", "ҒАЙРАТОВ УМИДЖОН АЛЛАМБЕРГАН ЎҒЛИ"], ["11-B", "РАХМАНОВ БАТЫРБЕК АЛТЫ УЛЫ"],
@@ -709,6 +727,8 @@
 
     let currentUser = null;
     let tempAttendanceBuffer = {};
+    let classBarChart = null;
+    let periodLineChart = null;
 
     window.onload = function() {
       const today = new Date().toISOString().split('T')[0];
@@ -719,15 +739,12 @@
       }
 
       populateClassSelectors();
-      updateAvailablePeriods();
       startLiveClock();
       initFirebaseListeners();
     };
 
     function initFirebaseListeners() {
       const badge = document.getElementById('dbStatusBadge');
-      const text = document.getElementById('dbStatusText');
-
       if (!isFirebaseReady || !db) {
         if (badge) {
           badge.className = "flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200";
@@ -796,6 +813,26 @@
       }, 1000);
     }
 
+    function getCurrentDayName() {
+      const days = ['Yakshanba', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba'];
+      const now = new Date();
+      return days[now.getDay()];
+    }
+
+    function getCurrentActiveLessonPeriodId() {
+      const now = new Date();
+      const currentMin = now.getHours() * 60 + now.getMinutes();
+
+      for (let s of defaultSchedule) {
+        const [sh, sm] = s.start.split(':').map(Number);
+        const [eh, em] = s.end.split(':').map(Number);
+        if (currentMin >= (sh * 60 + sm) && currentMin <= (eh * 60 + em)) {
+          return s.id;
+        }
+      }
+      return '1';
+    }
+
     function populateClassSelectors() {
       const selector = document.getElementById('classSelector');
       const modalSelector = document.getElementById('modalClass');
@@ -815,20 +852,17 @@
       let optionsHtml = '';
 
       if (currentUser && currentUser.role === 'teacher' && !currentUser.assignedClass) {
-        // Sinfga biriktirilmagan fan o'qituvchisi faqat 1-8 darslarni ko'radi
         for (let i = 1; i <= 8; i++) {
           const item = defaultSchedule.find(s => s.id === i.toString());
           if (item) optionsHtml += `<option value="${item.id}">${item.name} (${item.start})</option>`;
         }
       } else {
-        // Sinf rahbari va Admin ertalabki yig'inni ham ko'radi
         optionsHtml = `<option value="morning">🌅 Ertalabki yig'in</option>`;
         for (let i = 1; i <= 8; i++) {
           const item = defaultSchedule.find(s => s.id === i.toString());
           if (item) optionsHtml += `<option value="${item.id}">${item.name} (${item.start})</option>`;
         }
       }
-
       pSelect.innerHTML = optionsHtml;
     }
 
@@ -850,7 +884,7 @@
       }
     }
 
-    // ================= LOGIN VA ROLLLARNI BO'LISH =================
+    // ================= LOGIN VA ROLLARNI MOSLASHTIRISH =================
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const u = document.getElementById('username').value.trim();
@@ -880,7 +914,6 @@
       }
     }
 
-    // 4 XIL ROLGA ASOSLANGAN INTERFEYSNI SOZLASH
     function applyRolePermissions() {
       const dDavomat = document.getElementById('tab-davomat');
       const dTahlil = document.getElementById('tab-tahlil');
@@ -894,7 +927,7 @@
       const mJadvalImport = document.getElementById('m-tab-jadval_import');
       const mOqituvchilar = document.getElementById('m-tab-oqituvchilar');
 
-      // Barchasini vaqtincha yashiramiz
+      // Barchasini vaqtincha yashirish
       [dDavomat, dTahlil, dOquvchilar, dJadvalImport, dOqituvchilar, mDavomat, mTahlil, mOquvchilar, mJadvalImport, mOqituvchilar].forEach(el => {
         if (el) el.classList.add('hidden');
       });
@@ -903,35 +936,67 @@
       const hasClass = !!currentUser.assignedClass;
 
       if (role === 'admin') {
-        // ADMIN INTERFEYSI: Tahlil, O'quvchilar, Jadval Import, Xodimlar (Davomat va Dars Jadvali YO'Q)
+        // 1. ADMIN: Tahlil, O'quvchilar, Jadval yuklash, Xodimlar
         [dTahlil, dOquvchilar, dJadvalImport, dOqituvchilar, mTahlil, mOquvchilar, mJadvalImport, mOqituvchilar].forEach(el => {
           if (el) el.classList.remove('hidden');
         });
-        document.getElementById('adminAnalyticsSection').classList.remove('hidden');
+
+        document.getElementById('analyticsChartsWrapper').classList.remove('hidden');
         document.getElementById('analyticsFilterClassWrapper').classList.remove('hidden');
+        document.getElementById('btnExportClasses').classList.remove('hidden');
+        document.getElementById('btnExportHourly').classList.remove('hidden');
         switchTab('tahlil');
       } 
       else if (role === 'teacher' && hasClass) {
-        // SINF BIRIKTIRILGAN O'QITUVCHI: Davomat va Tahlil (Faqat o'z sinfi)
+        // 2. SINF BIRIKTIRILGAN O'QITUVCHI: Davomat va Tahlil (faqat o'z sinfi)
         [dDavomat, dTahlil, mDavomat, mTahlil].forEach(el => {
           if (el) el.classList.remove('hidden');
         });
-        document.getElementById('adminAnalyticsSection').classList.add('hidden');
-        document.getElementById('analyticsFilterClassWrapper').classList.add('hidden');
-        
+
         document.getElementById('classSelector').value = currentUser.assignedClass;
-        document.getElementById('classSelector').disabled = true; // faqat o'z sinfini ko'radi
+        document.getElementById('classSelector').disabled = true;
+
+        document.getElementById('analyticsChartsWrapper').classList.add('hidden');
+        document.getElementById('analyticsFilterClassWrapper').classList.add('hidden');
+        document.getElementById('btnExportClasses').classList.add('hidden');
+        document.getElementById('btnExportHourly').classList.add('hidden');
+
         updateAvailablePeriods();
         switchTab('davomat');
       } 
       else {
-        // SINFGA BIRIKTIRILMAGAN O'QITUVCHI: Faqat Davomat
+        // 3. SINF BIRIKTIRILMAGAN FAN O'QITUVCHISI: Faqat Davomat (Avtomatik vaqt va dars bilan)
         [dDavomat, mDavomat].forEach(el => {
           if (el) el.classList.remove('hidden');
         });
-        document.getElementById('classSelector').disabled = false; // dars beradigan sinfini tanlaydi
+
+        document.getElementById('classSelector').disabled = false;
         updateAvailablePeriods();
+
+        // Avtomatlashtirilgan dars jadvali tizimi
+        autoSelectClassForCurrentTime();
         switchTab('davomat');
+      }
+    }
+
+    function autoSelectClassForCurrentTime() {
+      if (!currentUser || currentUser.role !== 'teacher' || currentUser.assignedClass) return;
+
+      const currentDay = getCurrentDayName();
+      const currentPeriodId = getCurrentActiveLessonPeriodId();
+
+      const matchedSchedule = teacherSchedules.find(item => 
+        (item.teacherUsername === currentUser.username) &&
+        (item.day.toLowerCase() === currentDay.toLowerCase()) &&
+        (item.period.toString() === currentPeriodId.toString())
+      );
+
+      if (matchedSchedule) {
+        document.getElementById('classSelector').value = matchedSchedule.class;
+        document.getElementById('lessonPeriod').value = matchedSchedule.period.toString();
+        showToast(`Hozirgi dars: ${matchedSchedule.class} (${matchedSchedule.subject}) ochildi ⏰`);
+      } else {
+        document.getElementById('lessonPeriod').value = currentPeriodId;
       }
     }
 
@@ -995,7 +1060,7 @@
       window.scrollTo({ top: currentScrollY, behavior: 'instant' });
     }
 
-    // ================= DAVOMAT MANTIQI =================
+    // ================= DAVOMAT TIZIMI =================
     function getPeriodKey() {
       const date = document.getElementById('attendanceDate').value;
       const period = document.getElementById('lessonPeriod').value;
@@ -1008,7 +1073,6 @@
 
       const selectedPeriod = document.getElementById('lessonPeriod').value;
 
-      // Sinf rahbari faqat o'z sinfining ertalabki yig'inini qo'ya oladi
       if (selectedPeriod === 'morning') {
         if (currentUser.assignedClass !== targetClass) {
           return { allowed: false, reason: "Ertalabki yig'inni faqat o'z sinf rahbari belgilashi mumkin!" };
@@ -1193,7 +1257,7 @@
       showToast("Davomat saqlandi! ☁️");
     }
 
-    // ================= CHUQUR TAHLIL =================
+    // ================= TO'LIQ TAHLIL BO'LIMI =================
     function renderDeepAnalytics() {
       const date = document.getElementById('attendanceDate').value;
       document.getElementById('analyticsClassDate').innerText = `${date} holatiga`;
@@ -1202,24 +1266,34 @@
       const userAssignedClass = currentUser ? currentUser.assignedClass : null;
 
       let targetStudents = students;
+      let displayClasses = classes;
+
       if (role === 'teacher' && userAssignedClass) {
-        // Sinf rahbari faqat o'z sinfini ko'radi
+        // Sinf rahbari faqat o'z sinfining ko'rsatkichlarini ko'radi
         targetStudents = students.filter(s => s.class === userAssignedClass);
-        document.getElementById('analyticsSubtitleText').innerText = `${userAssignedClass} sinf bo'yicha`;
-      } else {
-        document.getElementById('analyticsSubtitleText').innerText = `Barcha sinflar kesimida`;
+        displayClasses = [userAssignedClass];
       }
 
       let totalStudents = targetStudents.length;
       let presentCount = 0;
       let absentCount = 0;
 
+      let classStats = {};
+      displayClasses.forEach(c => classStats[c] = { total: 0, present: 0, absent: 0 });
+
       const morningData = attendanceData[`${date}_morning`] || {};
 
       targetStudents.forEach(s => {
+        if (classStats[s.class]) classStats[s.class].total++;
         let status = morningData[s.id]?.status || 'bor';
-        if (status === 'bor') presentCount++;
-        else absentCount++;
+
+        if (status === 'bor') {
+          presentCount++;
+          if (classStats[s.class]) classStats[s.class].present++;
+        } else {
+          absentCount++;
+          if (classStats[s.class]) classStats[s.class].absent++;
+        }
       });
 
       document.getElementById('kpi-total').innerText = `${totalStudents} ta`;
@@ -1228,40 +1302,105 @@
       const overallPercent = totalStudents > 0 ? ((presentCount / totalStudents) * 100).toFixed(1) : '0.0';
       document.getElementById('kpi-percent').innerText = `${overallPercent}%`;
 
-      // Agar admin bo'lsa, barcha sinflar kartochkalarini chiqarish
-      if (role === 'admin') {
-        let classStats = {};
-        classes.forEach(c => classStats[c] = { total: 0, present: 0 });
+      const classCardsContainer = document.getElementById('classPercentageCards');
+      let cardsHtml = displayClasses.map(c => {
+        const total = classStats[c].total;
+        const present = classStats[c].present;
+        const pVal = total > 0 ? ((present / total) * 100).toFixed(1) : '0.0';
+        const pNum = parseFloat(pVal);
 
-        students.forEach(s => {
-          if (classStats[s.class]) {
-            classStats[s.class].total++;
-            let status = morningData[s.id]?.status || 'bor';
-            if (status === 'bor') classStats[s.class].present++;
-          }
-        });
+        let colorBadge = 'bg-emerald-500';
+        let textColor = 'text-emerald-600';
+        if (pNum < 80) { colorBadge = 'bg-rose-500'; textColor = 'text-rose-600'; }
+        else if (pNum < 90) { colorBadge = 'bg-amber-500'; textColor = 'text-amber-600'; }
 
-        const classCardsContainer = document.getElementById('classPercentageCards');
-        let cardsHtml = classes.map(c => {
-          const total = classStats[c].total;
-          const present = classStats[c].present;
-          const pVal = total > 0 ? ((present / total) * 100).toFixed(1) : '0.0';
-          return `
-            <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/50">
-              <div class="flex justify-between items-center mb-1">
-                <span class="font-black text-slate-800 text-xs">${c}</span>
-                <span class="text-xs font-black text-blue-600">${pVal}%</span>
-              </div>
-              <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${pVal}%"></div>
-              </div>
+        return `
+          <div class="p-2.5 sm:p-3 rounded-xl border border-slate-200 bg-slate-50/50">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-black text-slate-800 text-xs">${c}</span>
+              <span class="text-xs font-black ${textColor}">${pVal}%</span>
             </div>
-          `;
-        });
-        classCardsContainer.innerHTML = cardsHtml.join('');
-      }
+            <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden mb-1">
+              <div class="${colorBadge} h-1.5 rounded-full transition-all duration-300" style="width: ${pVal}%"></div>
+            </div>
+            <div class="flex justify-between text-[9px] sm:text-[10px] font-semibold text-slate-500">
+              <span>Bor: <b>${present}</b></span>
+              <span>Yo'q: <b>${classStats[c].absent}</b></span>
+            </div>
+          </div>
+        `;
+      });
 
+      classCardsContainer.innerHTML = cardsHtml.join('');
+
+      if (role === 'admin') {
+        renderCharts(date, classStats);
+      }
       renderStudentAnalyticsTable();
+    }
+
+    function renderCharts(date, classStats) {
+      const barLabels = classes;
+      const barValues = classes.map(c => {
+        const total = classStats[c]?.total || 0;
+        return total > 0 ? parseFloat(((classStats[c].present / total) * 100).toFixed(1)) : 0;
+      });
+
+      if (classBarChart) classBarChart.destroy();
+      const ctxBar = document.getElementById('classBarChart').getContext('2d');
+      classBarChart = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+          labels: barLabels,
+          datasets: [{
+            label: 'Davomat foizi (%)',
+            data: barValues,
+            backgroundColor: '#3b82f6',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          scales: { y: { min: 0, max: 100 } }
+        }
+      });
+
+      const periodPercents = defaultSchedule.map(p => {
+        const pData = attendanceData[`${date}_${p.id}`] || {};
+        let present = 0;
+        students.forEach(s => {
+          let status = pData[s.id]?.status || 'bor';
+          if (status === 'bor') present++;
+        });
+        return students.length > 0 ? parseFloat(((present / students.length) * 100).toFixed(1)) : 100;
+      });
+
+      if (periodLineChart) periodLineChart.destroy();
+      const ctxLine = document.getElementById('periodLineChart').getContext('2d');
+      periodLineChart = new Chart(ctxLine, {
+        type: 'line',
+        data: {
+          labels: defaultSchedule.map(s => s.name),
+          datasets: [{
+            label: 'Dinamika (%)',
+            data: periodPercents,
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            fill: true,
+            tension: 0.2,
+            borderWidth: 2,
+            pointRadius: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          scales: { y: { min: 0, max: 100 } }
+        }
+      });
     }
 
     function renderStudentAnalyticsTable() {
@@ -1298,6 +1437,10 @@
         });
 
         const studentPercent = ((presentLessons / defaultSchedule.length) * 100).toFixed(1);
+        let colorClass = 'text-emerald-700 bg-emerald-50 border-emerald-200';
+        if (studentPercent < 80) colorClass = 'text-rose-700 bg-rose-50 border-rose-200';
+        else if (studentPercent < 100) colorClass = 'text-amber-700 bg-amber-50 border-amber-200';
+
         return `
           <tr class="hover:bg-slate-50 transition">
             <td class="py-2 px-3 text-center font-bold text-slate-400">${idx + 1}</td>
@@ -1305,13 +1448,179 @@
             <td class="py-2 px-2 font-semibold text-slate-600">${student.class}</td>
             ${periodBadges}
             <td class="py-2 px-3 text-center">
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-black border text-blue-700 bg-blue-50 border-blue-200">${studentPercent}%</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-black border ${colorClass}">${studentPercent}%</span>
             </td>
           </tr>
         `;
       });
 
       tbody.innerHTML = rowsHtml.join('');
+    }
+
+    // 2 XIL TO'LIQ EXCEL EKSPORTI
+    function exportClassesDailyAnalyticsToExcel() {
+      const date = document.getElementById('attendanceDate').value;
+      const morningData = attendanceData[`${date}_morning`] || {};
+
+      let tableHtml = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="UTF-8"></head>
+        <body>
+          <h2 style="text-align:center;">Maktab Sinflarining Kunlik Davomat Tahlili</h2>
+          <p style="text-align:center;"><b>Sana:</b> ${date} | <b>Jami Sinflar:</b> ${classes.length} ta</p>
+          <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; font-family:Arial, sans-serif;">
+            <tr style="background-color:#0284c7; color:#ffffff; font-weight:bold; text-align:center;">
+              <th>#</th>
+              <th>Sinf</th>
+              <th>Jami O'quvchi</th>
+              <th>Ertalab Bor</th>
+              <th>Ertalab Yo'q</th>
+              <th>Ertalabki Foiz</th>
+              <th>Kun Oxiridagi Bor</th>
+              <th>Kun Oxiridagi Yo'q</th>
+              <th>Kun Oxiridagi Foiz</th>
+            </tr>
+      `;
+
+      classes.forEach((c, idx) => {
+        const classStudents = students.filter(s => s.class === c);
+        const total = classStudents.length;
+
+        let morningBor = 0;
+        classStudents.forEach(s => {
+          const st = morningData[s.id]?.status || 'bor';
+          if (st === 'bor') morningBor++;
+        });
+        const morningYoq = total - morningBor;
+        const morningPercent = total > 0 ? ((morningBor / total) * 100).toFixed(1) : '0.0';
+
+        let totalLessonSlots = 0;
+        let totalPresentSlots = 0;
+
+        defaultSchedule.forEach(p => {
+          const pData = attendanceData[`${date}_${p.id}`] || {};
+          classStudents.forEach(s => {
+            totalLessonSlots++;
+            const st = pData[s.id]?.status || 'bor';
+            if (st === 'bor') totalPresentSlots++;
+          });
+        });
+
+        const dayEndPercent = totalLessonSlots > 0 ? ((totalPresentSlots / totalLessonSlots) * 100).toFixed(1) : '0.0';
+        const dayEndPresentAvg = (totalPresentSlots / (defaultSchedule.length || 1)).toFixed(0);
+        const dayEndAbsentAvg = total - dayEndPresentAvg;
+
+        tableHtml += `
+          <tr>
+            <td style="text-align:center;">${idx + 1}</td>
+            <td style="text-align:center; font-weight:bold; background-color:#f1f5f9;">${c} sinf</td>
+            <td style="text-align:center; font-weight:bold;">${total} ta</td>
+            <td style="text-align:center; background-color:#dcfce7; color:#166534; font-weight:bold;">${morningBor}</td>
+            <td style="text-align:center; background-color:#fee2e2; color:#991b1b; font-weight:bold;">${morningYoq}</td>
+            <td style="text-align:center; font-weight:bold; color:#1e40af;">${morningPercent}%</td>
+            <td style="text-align:center; background-color:#dcfce7; color:#166534; font-weight:bold;">${dayEndPresentAvg}</td>
+            <td style="text-align:center; background-color:#fee2e2; color:#991b1b; font-weight:bold;">${dayEndAbsentAvg}</td>
+            <td style="text-align:center; font-weight:bold; color:#4338ca; background-color:#e0e7ff;">${dayEndPercent}%</td>
+          </tr>
+        `;
+      });
+
+      tableHtml += `</table></body></html>`;
+
+      const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Sinflar_Kunlik_Tahlili_${date}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Sinflar tahlili Excel fayli yuklandi! 📊");
+    }
+
+    function exportAllStudentsHourlyAnalyticsToExcel() {
+      const date = document.getElementById('attendanceDate').value;
+
+      let tableHtml = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="UTF-8"></head>
+        <body>
+          <h2 style="text-align:center;">Dars Soatlari Kesimidagi Kunlik Davomat</h2>
+          <p style="text-align:center;"><b>Sana:</b> ${date} | <b>Jami O'quvchilar:</b> ${students.length} ta</p>
+          <table border="1" cellpadding="5" cellspacing="0" style="border-collapse:collapse; font-family:Arial, sans-serif;">
+            <tr style="background-color:#4338ca; color:#ffffff; font-weight:bold; text-align:center;">
+              <th>#</th>
+              <th>O'quvchi F.I.SH.</th>
+              <th>Sinfi</th>
+              <th>Ertalab</th>
+              <th>1-dars</th>
+              <th>2-dars</th>
+              <th>3-dars</th>
+              <th>4-dars</th>
+              <th>5-dars</th>
+              <th>6-dars</th>
+              <th>7-dars</th>
+              <th>8-dars</th>
+              <th>Foiz</th>
+            </tr>
+      `;
+
+      let globalCounter = 1;
+
+      classes.forEach(c => {
+        const classStudents = students.filter(s => s.class === c);
+
+        tableHtml += `
+          <tr style="background-color:#e2e8f0; font-weight:bold;">
+            <td colspan="13" style="text-align:left; padding-left:10px;">🏫 ${c} SINF</td>
+          </tr>
+        `;
+
+        classStudents.forEach(student => {
+          let presentCount = 0;
+          let hourCells = '';
+
+          defaultSchedule.forEach(p => {
+            const pData = attendanceData[`${date}_${p.id}`] || {};
+            let status = pData[student.id]?.status || 'bor';
+
+            if (status === 'bor') {
+              presentCount++;
+              hourCells += `<td style="text-align:center; color:#166534; font-weight:bold; background-color:#dcfce7;">✓</td>`;
+            } else if (status === 'kelmadi') {
+              hourCells += `<td style="text-align:center; color:#991b1b; font-weight:bold; background-color:#fee2e2;">✕</td>`;
+            } else {
+              hourCells += `<td style="text-align:center; color:#b45309; font-weight:bold; background-color:#fef3c7;">S</td>`;
+            }
+          });
+
+          const percent = ((presentCount / defaultSchedule.length) * 100).toFixed(1);
+
+          tableHtml += `
+            <tr>
+              <td style="text-align:center;">${globalCounter++}</td>
+              <td style="font-weight:bold;">${student.name}</td>
+              <td style="text-align:center;">${student.class}</td>
+              ${hourCells}
+              <td style="text-align:center; font-weight:bold; background-color:#e0e7ff; color:#3730a3;">${percent}%</td>
+            </tr>
+          `;
+        });
+      });
+
+      tableHtml += `</table></body></html>`;
+
+      const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Oquvchilar_Darsbay_Davomat_${date}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Darsbay Excel fayli yuklandi! 📋");
     }
 
     // ================= EXCEL DARS JADVALINI IMPORT QILISH =================
@@ -1342,7 +1651,7 @@
           const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
           if (!jsonData || jsonData.length === 0) {
-            alert("Excel fayl bo'sh yoki noto'g'ri formatda!");
+            alert("Excel fayl bo'sh yoki formati noto'g'ri!");
             return;
           }
 
@@ -1356,7 +1665,7 @@
 
           syncToFirebase('teacher_schedules', teacherSchedules);
           renderImportedScheduleTable();
-          showToast(`Muvaffaqiyatli! ${teacherSchedules.length} ta dars yuklandi ✅`);
+          showToast(`Muvaffaqiyatli! ${teacherSchedules.length} ta dars jadvalga yuklandi ✅`);
         } catch (err) {
           console.error("Excel o'qishda xato:", err);
           alert("Excel faylni o'qishda xatolik yuz berdi: " + err.message);
