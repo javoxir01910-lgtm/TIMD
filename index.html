@@ -27,12 +27,13 @@
       20%, 60% { transform: translateX(-8px); }
       40%, 80% { transform: translateX(8px); }
     }
+    /* Pastki menyu ostida oxirgi qator yopilib qolmasligi uchun kengaytirilgan bo'shliq */
     .mobile-bottom-space {
-      padding-bottom: 5.5rem;
+      padding-bottom: 9rem !important;
     }
     @media (min-width: 768px) {
       .mobile-bottom-space {
-        padding-bottom: 2rem;
+        padding-bottom: 2.5rem !important;
       }
     }
   </style>
@@ -482,6 +483,8 @@
         </div>
       </div>
 
+      <!-- Xavfsiz bo'sh joy bloki: Sahifa oxiridagi element menyu tagida qolib ketmasligini 100% kafolatlaydi -->
+      <div class="h-16 md:hidden"></div>
     </main>
 
     <!-- TELEFON UCHUN PASTKI NAVIGATSIYA (Bottom Nav) -->
@@ -606,7 +609,7 @@
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT VA OPTIMALLASHTIRILGAN BAZA ================= -->
+  <!-- ================= JAVASCRIPT VA BAZA ================= -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAoJDOABktpOPA-5G_T2oQqFNsA4tSO1qI",
@@ -881,12 +884,11 @@
           badge.className = "flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200";
           badge.innerHTML = `<span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span>Jonli Bulut</span>`;
         } else {
-          badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200";
+          badge.className = "flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200";
           badge.innerHTML = `<span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-500 animate-ping"></span> <span>Ulanmoqda...</span>`;
         }
       });
 
-      // OPTIMIZATSIYA: Tahlilni har safar yuklamaymiz, faqat o'sha oyna ochiq bo'lsa yangilaymiz
       db.ref('attendance').on('value', snapshot => {
         const val = snapshot.val();
         attendanceData = val || {};
@@ -1173,7 +1175,6 @@
       document.getElementById('loginError').classList.add('hidden');
     }
 
-    // BO'LIMLARGA O'TISHNI TEZLASHTIRISH
     function switchTab(tabId) {
       if (tabId === 'oqituvchilar' && currentUser.role !== 'admin' && !isOwnerMode) {
         alert("Ruxsat berilmagan!");
@@ -1199,10 +1200,9 @@
       const activeMobile = document.getElementById(`m-tab-${tabId}`);
       if (activeMobile) activeMobile.className = 'flex flex-col items-center justify-center py-1 px-2 text-blue-600 font-bold transition';
 
-      // Tezkor chaqiruvlar
       if (tabId === 'davomat') onClassOrDateChanged();
       if (tabId === 'oquvchilar') renderStudentManagementTable();
-      if (tabId === 'tahlil') setTimeout(renderDeepAnalytics, 10); // Donmasdan bir zumda ochadi
+      if (tabId === 'tahlil') setTimeout(renderDeepAnalytics, 10);
       if (tabId === 'jadval') { renderWeeklyDayCounters(); renderScheduleTable(); }
       if (tabId === 'oqituvchilar') renderAdminTeachersTable();
       
@@ -1390,7 +1390,6 @@
       }
     }
 
-    // OPTIMALLASHTIRILGAN TEZKOR DAVOMAT CHIZISH (Yagona HTML massivida yig'ish)
     function renderAttendanceTable() {
       const selectedClass = document.getElementById('classSelector').value;
       const date = document.getElementById('attendanceDate').value;
@@ -1442,7 +1441,6 @@
 
         const isDisabled = !perm.allowed || hasAdminPermission;
 
-        // Kompyuter qatori
         desktopRows.push(`
           <tr class="hover:bg-slate-50/80 transition ${hasAdminPermission ? 'bg-indigo-50/40' : ''}">
             <td class="py-3 px-4 text-center font-bold text-slate-400 text-xs">${index + 1}</td>
@@ -1486,7 +1484,6 @@
           </tr>
         `);
 
-        // Mobil kartochka
         mobileCards.push(`
           <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5 ${hasAdminPermission ? 'bg-indigo-50/40 border-indigo-200' : ''}">
             <div class="flex items-start justify-between gap-2">
@@ -1534,7 +1531,6 @@
         `);
       });
 
-      // DOM’ga faqat bitta marta yuklash — bu qotishni butunlay to'xtatadi
       document.getElementById('attendanceTbody').innerHTML = desktopRows.join('');
       document.getElementById('mobileCardsContainer').innerHTML = mobileCards.join('');
 
@@ -1709,7 +1705,7 @@
       }
     }
 
-    // ================= OPTIMALLASHTIRILGAN TAHLIL VA DIAGRAMMALAR =================
+    // ================= TAHLIL VA DIAGRAMMALAR =================
     function renderDeepAnalytics() {
       const date = document.getElementById('attendanceDate').value;
       document.getElementById('analyticsClassDate').innerText = `${date} holatiga`;
@@ -1803,7 +1799,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          animation: false, // Grafik animatsiyasini o'chirish tezlikni oshiradi
+          animation: false,
           scales: { y: { min: 0, max: 100 } }
         }
       });
@@ -2234,7 +2230,6 @@
       }
     }
 
-    // ================= SINFNING EXCEL (.XLS) EKSPORTI =================
     function exportToExcel() {
       const selectedClass = document.getElementById('classSelector').value;
       const date = document.getElementById('attendanceDate').value;
