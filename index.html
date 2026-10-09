@@ -27,7 +27,6 @@
       20%, 60% { transform: translateX(-8px); }
       40%, 80% { transform: translateX(8px); }
     }
-    /* Pastki menyu ostida oxirgi qator yopilib qolmasligi uchun kengaytirilgan bo'shliq */
     .mobile-bottom-space {
       padding-bottom: 9rem !important;
     }
@@ -483,7 +482,7 @@
         </div>
       </div>
 
-      <!-- Xavfsiz bo'sh joy bloki: Sahifa oxiridagi element menyu tagida qolib ketmasligini 100% kafolatlaydi -->
+      <!-- Xavfsiz bo'sh joy bloki -->
       <div class="h-16 md:hidden"></div>
     </main>
 
@@ -659,7 +658,7 @@
     ];
 
     const defaultUsers = {
-      'admin1': { role: 'admin', name: ' (Bosh Direktor)', assignedClass: null, password: 'admin123' },
+      'admin1': { role: 'admin', name: 'Qodirov Jamshid Anvarovich (Bosh Direktor)', assignedClass: null, password: 'admin123' },
       '5a_rahbar': { role: 'teacher', name: 'Sırımbetova Ulzira Jaksilik qızı', assignedClass: '5-A', password: 'maktab2026' },
       '5b_rahbar': { role: 'teacher', name: 'Bazarbaeva Gumshagul Nazarbaevna', assignedClass: '5-B', password: 'maktab2026' },
       '6a_rahbar': { role: 'teacher', name: 'Adilov Murat Oralbay ulı', assignedClass: '6-A', password: 'maktab2026' },
@@ -764,7 +763,7 @@
       ["9-B", "АЗАТОВА УЛМЕКЕН ШУХРАТОВНА"], ["9-B", "ХАЛИЛЛАЕВ ДАУЛЕТМУРАТ ДЖАЛГАСБАЕВИЧ"], ["9-B", "НЫШАНБАЕВА АСЕЛЯ КОСЖАНБАЕВНА"],
       ["9-B", "ОРАЗИМБЕТОВА ЖАСМИНА ГУЛОМОВНА"], ["9-B", "ДЖУМАБАЕВ ШОХИМАРДОН ГАФУРЖАН УҒЛИ"], ["9-B", "СУЛТАНМУРАДОВ ЭЛБЕК БАТЫРОВИЧ"],
       ["9-B", "ДЖУМАБАЕВА НАФИСА АЛИМЖОН КЫЗЫ"], ["9-B", "АХМЕТОВ БАУЫРЖАН ЖАНИБЕК УЛЫ"], ["9-B", "МАТКАРИМОВА РОЗА МАВЛАНОВНА"],
-      ["9-B", "ГУЛМУРАТОВ ДИЁРБЕК РУСТАМОВИЧ"], ["9-B", "ГАЙПБАЕВА МЕХРИБАН ТУРСУНБАЙ КЫЗЫ"], ["9-B", "МАТКАРИМОВА ЗЕБО МАКСУД КЫЗЫ"],
+      ["9-B", "ГУЛМУРЗАЕВ ДИЁРБЕК РУСТАМОВИЧ"], ["9-B", "ГАЙПБАЕВА МЕХРИБАН ТУРСУНБАЙ КЫЗЫ"], ["9-B", "МАТКАРИМОВА ЗЕБО МАКСУД КЫЗЫ"],
       ["9-B", "РЕЙИМБАЕВ САИДБЕК ЮНУСОВИЧ"], ["9-B", "МУХТАРОВА МАДИНА АНВАРОВНА"], ["9-B", "МАРАТБАЕВ ДИДОР СЕЙТНУРОВИЧ"],
       ["9-B", "АРТЫКБАЕВ АЗИЗБЕК РАХАТОВИЧ"], ["9-B", "РЕЖЕПБАЕВ КАКАМЫРАТ ЫХЛАСОВИЧ"], ["9-B", "КАДИРБЕРГЕНОВ ИЛДАР ЗАМИРОВИЧ"],
       ["9-B", "ОВЕЗЖАНОВ СУЛТАНБЕК АЛЛАМУРАТОВИЧ"], ["9-B", "МАСАТИНОВА ЖАНЕРКЕ СЕРИКБАЕВНА"], ["9-B", "РЕЖЕПОВА ДИЛШАДА АЛЛАБЕРДИЕВНА"],
@@ -1137,7 +1136,13 @@
       }
     }
 
+    // KIRISH OYNASINING TO'LIQ YOPILISHINI TA'MINLAYDI
     function enterApp() {
+      // 1. Kirish oynalari butunlay yopiladi
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('ownerPinScreen').classList.add('hidden');
+
+      // 2. Asosiy ilova to'liq ko'rsatiladi
       document.getElementById('mainApp').classList.remove('hidden');
 
       const adminCol = document.getElementById('adminActionCol');
@@ -1175,6 +1180,7 @@
       document.getElementById('loginError').classList.add('hidden');
     }
 
+    // BO'LIMLARGA O'TISH (EKRAN YUQORIGA SAKRAMAYDI)
     function switchTab(tabId) {
       if (tabId === 'oqituvchilar' && currentUser.role !== 'admin' && !isOwnerMode) {
         alert("Ruxsat berilmagan!");
@@ -1205,8 +1211,6 @@
       if (tabId === 'tahlil') setTimeout(renderDeepAnalytics, 10);
       if (tabId === 'jadval') { renderWeeklyDayCounters(); renderScheduleTable(); }
       if (tabId === 'oqituvchilar') renderAdminTeachersTable();
-      
-      window.scrollTo({ top: 0, behavior: 'instant' });
     }
 
     // ================= DARS JADVALI =================
