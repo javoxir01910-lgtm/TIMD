@@ -7,8 +7,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Excel o'qish va yozish uchun SheetJS -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <!-- Firebase SDK kutubxonalari -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -19,33 +21,25 @@
       #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
       .no-print { display: none !important; }
     }
-    .shake-animation {
-      animation: shake 0.4s ease-in-out;
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-8px); }
-      40%, 80% { transform: translateX(8px); }
-    }
     .mobile-bottom-space {
-      padding-bottom: 9rem !important;
+      padding-bottom: 7.5rem !important;
     }
     @media (min-width: 768px) {
       .mobile-bottom-space {
-        padding-bottom: 2.5rem !important;
+        padding-bottom: 2rem !important;
       }
     }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen select-none">
 
-  <!-- Toast Xabarnomasi -->
+  <!-- Xabarnoma Toast -->
   <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-auto z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center justify-center sm:justify-start space-x-3 text-xs sm:text-sm font-semibold">
     <i class="fa-solid fa-circle-check text-base"></i>
     <span id="toastMsg">Amal bajarildi!</span>
   </div>
 
-  <!-- ================= 1. LOGIN OYNASI ================= -->
+  <!-- 1. LOGIN OYNASI -->
   <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-900">
     <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-md border border-white/20">
       <div class="text-center mb-6">
@@ -61,65 +55,35 @@
           <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Login</label>
           <div class="relative">
             <i class="fa-solid fa-user absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-            <input type="text" id="username" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="Loginni kiriting">
+            <input type="text" id="username" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-semibold" placeholder="Loginni kiriting" required>
           </div>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Parol</label>
           <div class="relative">
             <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-            <input type="password" id="password" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="••••••••">
+            <input type="password" id="password" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="••••••••" required>
           </div>
         </div>
         <p id="loginError" class="text-xs text-rose-600 font-semibold hidden text-center">Login yoki parol noto'g'ri!</p>
-        <button type="submit" id="loginSubmitBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold rounded-xl transition duration-200 shadow-lg shadow-blue-600/30 text-sm flex items-center justify-center gap-2">
+        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold rounded-xl transition duration-200 shadow-lg shadow-blue-600/30 text-sm flex items-center justify-center gap-2">
           <span>Tizimga kirish</span> <i class="fa-solid fa-arrow-right text-xs"></i>
         </button>
       </form>
-
-      <div class="mt-6 pt-4 border-t border-slate-200 text-center">
-        <p class="text-[11px] text-slate-400">Maktab elektron axborot tizimi &copy; 2026</p>
-      </div>
     </div>
   </div>
 
-  <!-- ================= 2. MAXFIY PIN OYNASI ================= -->
-  <div id="ownerPinScreen" class="hidden min-h-screen flex items-center justify-center p-4 bg-slate-950">
-    <div id="pinBox" class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 w-full max-w-sm text-center shadow-2xl space-y-5">
-      <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-tr from-amber-500 to-indigo-600 rounded-3xl flex items-center justify-center text-white mx-auto shadow-xl shadow-amber-500/20">
-        <i class="fa-solid fa-shield-halved text-2xl sm:text-3xl"></i>
-      </div>
-      <div>
-        <h2 class="text-xl sm:text-2xl font-black text-white tracking-widest uppercase">Xavfsiz Kirish</h2>
-        <p class="text-xs text-slate-400 mt-1">Boshqaruv PIN-kodini kiriting</p>
-      </div>
-
-      <div class="space-y-4">
-        <div>
-          <input type="password" id="ownerPinInput" maxlength="4" class="w-40 sm:w-44 mx-auto text-center text-2xl font-mono tracking-[0.5em] py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="••••" autofocus>
-        </div>
-        <p id="pinError" class="text-xs text-rose-500 font-bold hidden">PIN-kod noto'g'ri!</p>
-        <button onclick="verifyOwnerPin()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 active:scale-95 text-slate-950 font-black rounded-xl transition duration-200 shadow-lg shadow-amber-500/20 text-sm">
-          Tasdiqlash
-        </button>
-        <button onclick="cancelOwnerPin()" class="text-xs text-slate-500 hover:text-slate-300 transition">
-          Ortga qaytish
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= 3. ASOSIY ILOVA ================= -->
+  <!-- 2. ASOSIY ILOVA -->
   <div id="mainApp" class="hidden min-h-screen flex flex-col">
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
         <div class="flex items-center space-x-2 sm:space-x-3 overflow-hidden pr-2">
-          <div id="navbarLogoBg" class="w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md">
-            <i id="navbarLogoIcon" class="fa-solid fa-school text-sm sm:text-lg"></i>
+          <div class="w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md">
+            <i class="fa-solid fa-school text-sm sm:text-lg"></i>
           </div>
           <div class="truncate">
             <h1 class="font-black text-xs sm:text-base text-slate-800 leading-tight">Maktab Nazorat</h1>
-            <p class="text-[11px] sm:text-xs font-semibold text-slate-600 truncate" id="userRoleBadge">👑 Qodirov Jamshid Anvarovich (Bosh Direktor)</p>
+            <p class="text-[11px] sm:text-xs font-semibold text-slate-600 truncate" id="userRoleBadge">O'qituvchi</p>
           </div>
         </div>
 
@@ -132,24 +96,23 @@
           <div class="hidden lg:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">
             <i class="fa-regular fa-clock text-blue-600"></i>
             <span id="liveClock">00:00:00</span>
-            <span id="currentPeriodBadge" class="bg-blue-600 text-white px-2 py-0.5 rounded-lg text-[10px] ml-1">Dars</span>
           </div>
 
-          <!-- Kompyuter uchun tablar -->
-          <nav class="hidden md:flex space-x-1 bg-slate-100 p-1 rounded-xl text-xs sm:text-sm font-semibold">
+          <!-- Kompyuter Navigatsiyasi -->
+          <nav class="hidden md:flex space-x-1 bg-slate-100 p-1 rounded-xl text-xs sm:text-sm font-semibold" id="desktopNav">
             <button type="button" onclick="switchTab('davomat')" id="tab-davomat" class="px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 transition flex items-center gap-1.5 font-bold">
               <i class="fa-solid fa-clipboard-check"></i> Davomat
-            </button>
-            <button type="button" onclick="switchTab('oquvchilar')" id="tab-oquvchilar" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold">
-              <i class="fa-solid fa-users"></i> O'quvchilar
             </button>
             <button type="button" onclick="switchTab('tahlil')" id="tab-tahlil" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold">
               <i class="fa-solid fa-chart-line"></i> Tahlil
             </button>
-            <button type="button" onclick="switchTab('jadval')" id="tab-jadval" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold">
-              <i class="fa-regular fa-calendar-days"></i> Dars Jadvali
+            <button type="button" onclick="switchTab('oquvchilar')" id="tab-oquvchilar" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold">
+              <i class="fa-solid fa-users"></i> O'quvchilar
             </button>
-            <button type="button" onclick="switchTab('oqituvchilar')" id="tab-oqituvchilar" class="hidden px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold">
+            <button type="button" onclick="switchTab('jadval_import')" id="tab-jadval_import" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold">
+              <i class="fa-solid fa-file-excel"></i> Dars Jadvali (Excel)
+            </button>
+            <button type="button" onclick="switchTab('oqituvchilar')" id="tab-oqituvchilar" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold">
               <i class="fa-solid fa-chalkboard-user"></i> Xodimlar
             </button>
           </nav>
@@ -163,7 +126,7 @@
 
     <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full mobile-bottom-space">
 
-      <!-- ================= A. DAVOMAT BO'LIMI ================= -->
+      <!-- BO'LIM 1: DAVOMAT -->
       <div id="view-davomat" class="space-y-4 sm:space-y-6">
         <div class="bg-white p-3.5 sm:p-5 rounded-2xl shadow-sm border border-slate-200 no-print space-y-3">
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
@@ -190,12 +153,6 @@
               <button type="button" id="markAllPresentBtn" onclick="markAllPresent()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-1.5 border border-slate-300">
                 <i class="fa-solid fa-check-double text-emerald-600"></i> <span class="hidden sm:inline">Hammasi</span> bor
               </button>
-              <button type="button" onclick="exportToExcel()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-emerald-700 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-1.5 border border-emerald-300">
-                <i class="fa-solid fa-file-excel"></i> Excel
-              </button>
-              <button type="button" onclick="window.print()" class="hidden sm:flex px-3.5 py-2 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 rounded-xl font-semibold text-xs sm:text-sm transition items-center gap-1.5 border border-slate-300">
-                <i class="fa-solid fa-print"></i> Chop etish
-              </button>
             </div>
 
             <button type="button" id="saveAttendanceBtn" onclick="saveAttendanceManual()" class="px-4 py-1.5 sm:px-5 sm:py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 shadow-lg shadow-blue-500/30">
@@ -209,14 +166,14 @@
             <i class="fa-solid fa-cloud-arrow-up"></i> Barcha ma'lumotlar bulutda sinxronlangan
           </div>
           <div id="permissionWarning" class="hidden text-[11px] sm:text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-xl flex items-center gap-2 w-full sm:w-fit">
-            <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> <span id="warningMessageText">Vaqt cheklovi mavjud!</span>
+            <i class="fa-solid fa-lock text-amber-600"></i> <span id="warningMessageText">Ruxsat cheklangan!</span>
           </div>
         </div>
 
         <div class="bg-white p-3.5 sm:p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-2">
           <div>
             <h2 class="font-black text-slate-800 text-sm sm:text-base" id="tableClassTitle">Sinf Davomati</h2>
-            <p class="text-[11px] sm:text-xs text-slate-500 font-medium" id="tableSubtitle">Sana va dars vaqti</p>
+            <p class="text-[11px] sm:text-xs text-slate-500 font-medium" id="tableSubtitle">Sana va dars</p>
           </div>
           <div class="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs font-bold bg-slate-50 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200">
             <span class="text-emerald-700 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Bor: <b id="count-bor">0</b></span>
@@ -226,10 +183,10 @@
           </div>
         </div>
 
-        <!-- TELEFON UCHUN TEZKOR MOBIL KARTOCHKALAR (block md:hidden) -->
+        <!-- Telefon uchun kartochkalar -->
         <div id="mobileCardsContainer" class="block md:hidden space-y-2.5"></div>
 
-        <!-- KOMPYUTER UCHUN JADVAL (hidden md:block) -->
+        <!-- Kompyuter uchun jadval -->
         <div id="printableArea" class="hidden md:block bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-sm">
@@ -240,7 +197,6 @@
                   <th class="py-3 px-4">Ota-ona telefoni</th>
                   <th class="py-3 px-4 text-center">Davomat Statusi</th>
                   <th class="py-3 px-4 w-64">Sabab / Izoh</th>
-                  <th class="py-3 px-4 text-center" id="adminActionCol">Admin Ruxsati</th>
                 </tr>
               </thead>
               <tbody id="attendanceTbody" class="divide-y divide-slate-100"></tbody>
@@ -249,18 +205,97 @@
         </div>
       </div>
 
-      <!-- ================= B. O'QUVCHILAR RO'YXATI BO'LIMI ================= -->
+      <!-- BO'LIM 2: TAHLIL -->
+      <div id="view-tahlil" class="hidden space-y-4 sm:space-y-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Jami O'quvchi</p>
+              <h3 class="text-lg sm:text-2xl font-black text-slate-800 mt-1" id="kpi-total">0 ta</h3>
+            </div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-users"></i></div>
+          </div>
+          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Bugun Bor</p>
+              <h3 class="text-lg sm:text-2xl font-black text-emerald-600 mt-1" id="kpi-present">0 ta</h3>
+            </div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-user-check"></i></div>
+          </div>
+          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Bugun Yo'q</p>
+              <h3 class="text-lg sm:text-2xl font-black text-rose-600 mt-1" id="kpi-absent">0 ta</h3>
+            </div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-user-xmark"></i></div>
+          </div>
+          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Foiz</p>
+              <h3 class="text-lg sm:text-2xl font-black text-indigo-600 mt-1" id="kpi-percent">0.0%</h3>
+            </div>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-chart-pie"></i></div>
+          </div>
+        </div>
+
+        <!-- Sinflar foiz kartochkalari (Faqat Admin uchun) -->
+        <div id="adminAnalyticsSection" class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h3 class="font-black text-slate-800 text-sm sm:text-base flex items-center gap-2">
+              <i class="fa-solid fa-chalkboard-user text-blue-600"></i> Barcha Sinflar Reytingi
+            </h3>
+            <span class="text-xs text-slate-400 font-semibold" id="analyticsClassDate">Bugungi sana</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3" id="classPercentageCards"></div>
+        </div>
+
+        <!-- O'quvchilar tahlil jadvali -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-4 sm:p-5 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="font-black text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                <i class="fa-solid fa-user-graduate text-indigo-600"></i> Darsbay Davomat Holati
+              </h3>
+              <p class="text-[11px] sm:text-xs text-slate-500 font-medium" id="analyticsSubtitleText">O'quvchilar kesimida</p>
+            </div>
+            <div id="analyticsFilterClassWrapper">
+              <select id="analyticsFilterClass" class="border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-blue-700 bg-white" onchange="renderStudentAnalyticsTable()"></select>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                  <th class="py-2.5 px-3 w-8 text-center">#</th>
+                  <th class="py-2.5 px-3">O'quvchi</th>
+                  <th class="py-2.5 px-2">Sinf</th>
+                  <th class="py-2.5 px-1 text-center">Ert</th>
+                  <th class="py-2.5 px-1 text-center">1</th>
+                  <th class="py-2.5 px-1 text-center">2</th>
+                  <th class="py-2.5 px-1 text-center">3</th>
+                  <th class="py-2.5 px-1 text-center">4</th>
+                  <th class="py-2.5 px-1 text-center">5</th>
+                  <th class="py-2.5 px-1 text-center">6</th>
+                  <th class="py-2.5 px-1 text-center">7</th>
+                  <th class="py-2.5 px-1 text-center">8</th>
+                  <th class="py-2.5 px-3 text-center">Foiz</th>
+                </tr>
+              </thead>
+              <tbody id="studentAnalyticsTbody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- BO'LIM 3: O'QUVCHILAR (Faqat Admin) -->
       <div id="view-oquvchilar" class="hidden space-y-4 sm:space-y-6">
         <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="font-black text-slate-800 text-base sm:text-lg">O'quvchilar Boshqaruvi (303 nafar)</h2>
             <p class="text-xs text-slate-500 font-medium">Barcha sinf o'quvchilari ro'yxati</p>
           </div>
-          <div class="flex items-center gap-2 w-full sm:w-auto">
-            <button type="button" onclick="forceResetTo303Students()" class="flex-1 sm:flex-initial px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-amber-300">
-              <i class="fa-solid fa-arrows-rotate"></i> 303 o'quvchini tiklash
-            </button>
-            <button type="button" onclick="openStudentModal()" class="flex-1 sm:flex-initial px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 shadow-sm">
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="openStudentModal()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 shadow-sm">
               <i class="fa-solid fa-user-plus"></i> Yangi qo'shish
             </button>
           </div>
@@ -288,168 +323,61 @@
         </div>
       </div>
 
-      <!-- ================= C. CHUQUR TAHLIL BO'LIMI ================= -->
-      <div id="view-tahlil" class="hidden space-y-4 sm:space-y-6">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Jami O'quvchi</p>
-              <h3 class="text-lg sm:text-2xl font-black text-slate-800 mt-1" id="kpi-total">303 ta</h3>
-            </div>
-            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-users"></i></div>
-          </div>
-          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Bugun Bor</p>
-              <h3 class="text-lg sm:text-2xl font-black text-emerald-600 mt-1" id="kpi-present">0 ta</h3>
-            </div>
-            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-user-check"></i></div>
-          </div>
-          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Bugun Yo'q</p>
-              <h3 class="text-lg sm:text-2xl font-black text-rose-600 mt-1" id="kpi-absent">0 ta</h3>
-            </div>
-            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-user-xmark"></i></div>
-          </div>
-          <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <p class="text-[10px] sm:text-xs text-slate-500 uppercase font-bold tracking-wider">Aniq Foiz</p>
-              <h3 class="text-lg sm:text-2xl font-black text-indigo-600 mt-1" id="kpi-percent">0.0%</h3>
-            </div>
-            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg sm:text-xl"><i class="fa-solid fa-chart-pie"></i></div>
-          </div>
-        </div>
-
-        <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <h3 class="font-black text-slate-800 text-sm sm:text-base flex items-center gap-2">
-              <i class="fa-solid fa-chalkboard-user text-blue-600"></i> Sinf Davomat Foizlari
-            </h3>
-            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              <span class="text-xs text-slate-400 font-semibold" id="analyticsClassDate">Bugungi sana</span>
-              <button type="button" onclick="exportClassesDailyAnalyticsToExcel()" class="w-full sm:w-auto px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-file-excel"></i> 📊 Sinflar Tahlili (Excel)
-              </button>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3" id="classPercentageCards"></div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="font-bold text-slate-800 text-xs sm:text-sm mb-3">Sinflar reytingi (Foizlar taqqoslashi)</h3>
-            <div class="h-56 sm:h-64"><canvas id="classBarChart"></canvas></div>
-          </div>
-          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="font-bold text-slate-800 text-xs sm:text-sm mb-3">Dars soatlari dinamikasi</h3>
-            <div class="h-56 sm:h-64"><canvas id="periodLineChart"></canvas></div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="p-4 sm:p-5 bg-slate-50/80 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h3 class="font-black text-slate-800 text-sm sm:text-base flex items-center gap-2">
-                <i class="fa-solid fa-user-graduate text-indigo-600"></i> Darsbay Davomat Jadvali
-              </h3>
-              <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Barcha soatlar kesimida</p>
-            </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-              <select id="analyticsFilterClass" class="flex-1 sm:flex-initial border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-blue-700 bg-white" onchange="renderStudentAnalyticsTable()"></select>
-              <button type="button" onclick="exportAllStudentsHourlyAnalyticsToExcel()" class="flex-1 sm:flex-initial px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-file-excel"></i> 📋 Darsbay Excel
-              </button>
-            </div>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
-                  <th class="py-2.5 px-3 w-8 text-center">#</th>
-                  <th class="py-2.5 px-3">O'quvchi</th>
-                  <th class="py-2.5 px-2">Sinf</th>
-                  <th class="py-2.5 px-1 text-center">Ert</th>
-                  <th class="py-2.5 px-1 text-center">1</th>
-                  <th class="py-2.5 px-1 text-center">2</th>
-                  <th class="py-2.5 px-1 text-center">3</th>
-                  <th class="py-2.5 px-1 text-center">4</th>
-                  <th class="py-2.5 px-1 text-center">5</th>
-                  <th class="py-2.5 px-1 text-center">6</th>
-                  <th class="py-2.5 px-1 text-center">7</th>
-                  <th class="py-2.5 px-1 text-center">8</th>
-                  <th class="py-2.5 px-3 text-center">Kunlik</th>
-                </tr>
-              </thead>
-              <tbody id="studentAnalyticsTbody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ================= D. DARS JADVALI BO'LIMI ================= -->
-      <div id="view-jadval" class="hidden space-y-4 sm:space-y-6">
+      <!-- BO'LIM 4: DARS JADVALI (EXCEL IMPORT) (Faqat Admin) -->
+      <div id="view-jadval_import" class="hidden space-y-4 sm:space-y-6">
         <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="font-black text-slate-800 text-base sm:text-lg flex items-center gap-2">
-              <i class="fa-regular fa-clock text-blue-600"></i> Qo'ng'iroqlar Jadvali
+              <i class="fa-solid fa-file-excel text-emerald-600"></i> O'qituvchilar Dars Jadvalini Yuklash
             </h2>
-            <p class="text-xs text-slate-500 font-medium">Haftalik kunlik darslar sonini boshqarish</p>
+            <p class="text-xs text-slate-500 font-medium">Yangi chorak jadvalini Excel orqali bitta faylda yangilang</p>
           </div>
-          <div class="flex items-center gap-2 w-full sm:w-auto">
-            <select id="scheduleClassSelector" class="flex-1 sm:flex-initial border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-bold text-blue-700 bg-white" onchange="renderWeeklyDayCounters()">
-            </select>
-            <button type="button" onclick="saveScheduleChanges()" class="flex-1 sm:flex-initial px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
-              <i class="fa-solid fa-floppy-disk"></i> Saqlash
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="downloadScheduleTemplate()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-300">
+              <i class="fa-solid fa-download text-blue-600"></i> Namuna Excelni olish
             </button>
           </div>
         </div>
 
-        <div class="bg-gradient-to-r from-blue-50/70 via-indigo-50/50 to-purple-50/70 p-4 sm:p-5 rounded-2xl border border-blue-200 shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-black text-slate-800">📅 Haftalik darslar soni (1–8)</span>
-            <span class="text-[11px] font-semibold text-slate-500" id="schedulePermissionNotice"></span>
+        <div class="bg-gradient-to-br from-emerald-50 to-blue-50 p-6 rounded-2xl border-2 border-dashed border-emerald-300 text-center space-y-3">
+          <div class="w-12 h-12 bg-emerald-600 text-white rounded-2xl flex items-center justify-center mx-auto text-xl shadow-md">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
           </div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3" id="weeklyDaysContainer"></div>
+          <div>
+            <h4 class="font-black text-slate-800 text-sm">Chorak Dars Jadvalini Tanlang</h4>
+            <p class="text-xs text-slate-500 mt-0.5">Fayl formati: .xlsx yoki .csv</p>
+          </div>
+          <input type="file" id="excelScheduleFile" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelScheduleUpload(event)">
+          <button type="button" onclick="document.getElementById('excelScheduleFile').click()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs shadow-md transition">
+            Excel Faylni Tanlash
+          </button>
         </div>
 
+        <!-- Yuklangan dars jadvali ko'rinishi -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs sm:text-sm">
-              <thead>
-                <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 text-xs uppercase font-bold">
-                  <th class="py-3 px-3 w-12 text-center">Soat</th>
-                  <th class="py-3 px-3">Dars Nomi</th>
-                  <th class="py-3 px-3 text-center">Boshlanish</th>
-                  <th class="py-3 px-3 text-center">Tugash</th>
-                  <th class="py-3 px-3 hidden sm:table-cell">Tavsif</th>
-                  <th class="py-3 px-3 text-center">Holat</th>
+          <div class="p-3.5 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+            <span class="text-xs font-black text-slate-700">Joriy Yuklangan Darslar Ro'yxati</span>
+            <span class="text-xs font-bold text-slate-500" id="importedScheduleCount">0 ta dars biriktirilgan</span>
+          </div>
+          <div class="overflow-x-auto max-h-96">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="sticky top-0 bg-slate-100 text-slate-600 font-bold uppercase">
+                <tr>
+                  <th class="py-2.5 px-3">Kun</th>
+                  <th class="py-2.5 px-3">Soat</th>
+                  <th class="py-2.5 px-3">Sinf</th>
+                  <th class="py-2.5 px-3">Fan nomi</th>
+                  <th class="py-2.5 px-3">O'qituvchi Logini</th>
                 </tr>
               </thead>
-              <tbody id="scheduleTbody" class="divide-y divide-slate-100"></tbody>
+              <tbody id="importedScheduleTbody" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- ================= E. XODIMLAR BO'LIMI ================= -->
+      <!-- BO'LIM 5: XODIMLAR (Faqat Admin) -->
       <div id="view-oqituvchilar" class="hidden space-y-4 sm:space-y-6">
-        <div id="myAdminAccountCard" class="hidden bg-gradient-to-r from-amber-50 to-indigo-50 border border-amber-200 p-4 sm:p-5 rounded-2xl flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-500 text-white rounded-xl flex items-center justify-center text-lg sm:text-xl shadow-md">
-              <i class="fa-solid fa-id-card-clip"></i>
-            </div>
-            <div>
-              <span class="text-[10px] font-black uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Shaxsiy Profil</span>
-              <h3 class="font-black text-slate-800 text-sm sm:text-base" id="myAccountName">Admin</h3>
-              <p class="text-[11px] sm:text-xs text-slate-500 font-mono mt-0.5" id="myAccountLoginDetails">Login: admin | Parol: ********</p>
-            </div>
-          </div>
-          <button type="button" onclick="openSelfEditModal()" class="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
-            <i class="fa-solid fa-key text-amber-400"></i> O'z login-parolimni o'zgartirish
-          </button>
-        </div>
-
         <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="font-black text-slate-800 text-base sm:text-lg flex items-center gap-2">
@@ -457,7 +385,7 @@
             </h2>
             <p class="text-xs text-slate-500 font-medium">Barcha xodimlar va administratorlar</p>
           </div>
-          <button type="button" onclick="openUserCreateModal('all')" class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm">
+          <button type="button" onclick="openUserCreateModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm">
             <i class="fa-solid fa-user-plus"></i> Yangi hisob qo'shish
           </button>
         </div>
@@ -470,7 +398,7 @@
                   <th class="py-3 px-3 w-10 text-center">#</th>
                   <th class="py-3 px-3">F.I.SH.</th>
                   <th class="py-3 px-3">Roli</th>
-                  <th class="py-3 px-3">Sinf</th>
+                  <th class="py-3 px-3">Biriktirilgan Sinf</th>
                   <th class="py-3 px-3 font-mono">Login</th>
                   <th class="py-3 px-3 font-mono">Parol</th>
                   <th class="py-3 px-3 text-right">Amallar</th>
@@ -482,36 +410,34 @@
         </div>
       </div>
 
-      <!-- Xavfsiz bo'sh joy bloki -->
-      <div class="h-16 md:hidden"></div>
     </main>
 
-    <!-- TELEFON UCHUN PASTKI NAVIGATSIYA (Bottom Nav) -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex items-center justify-around py-1.5 px-2 shadow-lg no-print">
+    <!-- Mobil uchun Pastki Navigatsiya -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 flex items-center justify-around py-1.5 px-2 shadow-lg no-print" id="mobileNav">
       <button type="button" onclick="switchTab('davomat')" id="m-tab-davomat" class="flex flex-col items-center justify-center py-1 px-2 text-blue-600 font-bold transition">
         <i class="fa-solid fa-clipboard-check text-lg"></i>
         <span class="text-[10px] mt-0.5">Davomat</span>
-      </button>
-      <button type="button" onclick="switchTab('oquvchilar')" id="m-tab-oquvchilar" class="flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
-        <i class="fa-solid fa-users text-lg"></i>
-        <span class="text-[10px] mt-0.5">O'quvchilar</span>
       </button>
       <button type="button" onclick="switchTab('tahlil')" id="m-tab-tahlil" class="flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
         <i class="fa-solid fa-chart-line text-lg"></i>
         <span class="text-[10px] mt-0.5">Tahlil</span>
       </button>
-      <button type="button" onclick="switchTab('jadval')" id="m-tab-jadval" class="flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
-        <i class="fa-regular fa-calendar-days text-lg"></i>
+      <button type="button" onclick="switchTab('oquvchilar')" id="m-tab-oquvchilar" class="flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
+        <i class="fa-solid fa-users text-lg"></i>
+        <span class="text-[10px] mt-0.5">O'quvchilar</span>
+      </button>
+      <button type="button" onclick="switchTab('jadval_import')" id="m-tab-jadval_import" class="flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
+        <i class="fa-solid fa-file-excel text-lg"></i>
         <span class="text-[10px] mt-0.5">Jadval</span>
       </button>
-      <button type="button" onclick="switchTab('oqituvchilar')" id="m-tab-oqituvchilar" class="hidden flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
+      <button type="button" onclick="switchTab('oqituvchilar')" id="m-tab-oqituvchilar" class="flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition">
         <i class="fa-solid fa-chalkboard-user text-lg"></i>
         <span class="text-[10px] mt-0.5">Xodimlar</span>
       </button>
     </nav>
   </div>
 
-  <!-- Modallar -->
+  <!-- MODALLAR -->
   <div id="studentModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl">
       <div class="flex justify-between items-center mb-4">
@@ -549,19 +475,21 @@
       <form id="userForm" class="space-y-3.5">
         <input type="hidden" id="userFormKey">
         <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">F.I.SH. va Lavozimi</label>
-          <input type="text" id="userFormName" placeholder="Qodirov Jamshid Anvarovich (Bosh Direktor)" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold" required>
+          <label class="block text-xs font-bold text-slate-600 mb-1">F.I.SH.</label>
+          <input type="text" id="userFormName" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold" required>
         </div>
-        <div id="userFormRoleWrapper">
+        <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Roli</label>
           <select id="userFormRole" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" onchange="toggleUserClassSelect()">
-            <option value="teacher" selected>Sinf Rahbari / O'qituvchi</option>
+            <option value="teacher" selected>O'qituvchi</option>
             <option value="admin">Administrator (Direktor / Zavuch)</option>
           </select>
         </div>
         <div id="userFormClassWrapper">
-          <label class="block text-xs font-bold text-slate-600 mb-1">Biriktirilgan Sinf</label>
-          <select id="userFormClass" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold"></select>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Biriktirilgan Sinf (Agar sinf rahbari bo'lsa)</label>
+          <select id="userFormClass" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold">
+            <option value="">Biriktirilmagan (Oddiy fan o'qituvchisi)</option>
+          </select>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Login</label>
@@ -573,42 +501,13 @@
         </div>
         <div class="flex justify-end gap-2 pt-3">
           <button type="button" onclick="closeUserModal()" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-50">Bekor qilish</button>
-          <button type="submit" id="userModalSaveBtn" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold hover:bg-blue-700 shadow-md">Saqlash</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div id="selfEditModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-md shadow-2xl">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2">
-          <i class="fa-solid fa-user-pen text-blue-600"></i> Profilni tahrirlash
-        </h3>
-        <button type="button" onclick="closeSelfEditModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-      <form id="selfEditForm" class="space-y-3.5">
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">F.I.SH. va Lavozim</label>
-          <input type="text" id="selfNameInput" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" required>
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">Yangi Login</label>
-          <input type="text" id="selfLoginInput" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono font-bold" required>
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">Yangi Parol</label>
-          <input type="text" id="selfPasswordInput" class="w-full px-3 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono font-bold" required>
-        </div>
-        <div class="flex justify-end gap-2 pt-3">
-          <button type="button" onclick="closeSelfEditModal()" class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-50">Bekor qilish</button>
           <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-bold hover:bg-blue-700 shadow-md">Saqlash</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT VA BAZA ================= -->
+  <!-- JAVASCRIPT VA MANTIQ -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAoJDOABktpOPA-5G_T2oQqFNsA4tSO1qI",
@@ -629,28 +528,19 @@
       db = firebase.database();
       isFirebaseReady = true;
     } catch (e) {
-      console.warn("Firebase ulanmadi, lokal rejim:", e);
+      console.warn("Firebase ulanish xatosi:", e);
     }
 
-    const weekDaysList = [
-      { key: 1, name: 'Dushanba' },
-      { key: 2, name: 'Seshanba' },
-      { key: 3, name: 'Chorshanba' },
-      { key: 4, name: 'Payshanba' },
-      { key: 5, name: 'Juma' },
-      { key: 6, name: 'Shanba' }
-    ];
-
     const defaultSchedule = [
-      { id: 'morning', name: "Ertalabki yig'in", start: '08:00', end: '08:29', desc: 'Sinf rahbari nazorati' },
-      { id: '1', name: '1-dars', start: '08:30', end: '09:15', desc: '45 daqiqa (5 daq tanaffus)' },
-      { id: '2', name: '2-dars', start: '09:20', end: '10:05', desc: '45 daqiqa (5 daq tanaffus)' },
-      { id: '3', name: '3-dars', start: '10:10', end: '10:55', desc: '45 daqiqa (5 daq tanaffus)' },
-      { id: '4', name: '4-dars', start: '11:00', end: '11:45', desc: '45 daqiqa (5 daq tanaffus)' },
-      { id: '5', name: '5-dars', start: '11:50', end: '12:35', desc: '45 daqiqa (Katta tanaffus)' },
-      { id: '6', name: '6-dars', start: '13:20', end: '14:05', desc: '45 daqiqa (5 daq tanaffus)' },
-      { id: '7', name: '7-dars', start: '14:10', end: '14:55', desc: '45 daqiqa (5 daq tanaffus)' },
-      { id: '8', name: '8-dars', start: '15:00', end: '15:45', desc: '45 daqiqa dars' }
+      { id: 'morning', name: "Ertalabki yig'in", start: '08:00', end: '08:29' },
+      { id: '1', name: '1-dars', start: '08:30', end: '09:15' },
+      { id: '2', name: '2-dars', start: '09:20', end: '10:05' },
+      { id: '3', name: '3-dars', start: '10:10', end: '10:55' },
+      { id: '4', name: '4-dars', start: '11:00', end: '11:45' },
+      { id: '5', name: '5-dars', start: '11:50', end: '12:35' },
+      { id: '6', name: '6-dars', start: '13:20', end: '14:05' },
+      { id: '7', name: '7-dars', start: '14:10', end: '14:55' },
+      { id: '8', name: '8-dars', start: '15:00', end: '15:45' }
     ];
 
     const initialClasses = [
@@ -694,7 +584,6 @@
       'xodim_33': { role: 'teacher', name: 'JUMABAYEVA MAFTUNA IKRAM QIZI', assignedClass: null, password: 'maktab2026' }
     };
 
-    // 303 nafar haqiqiy o'quvchi
     const rawStudentsData = [
       ["9-A", "НОРМАТОВА ГУЛЗОДА РУСТАМ ҚИЗИ"], ["9-A", "ХОЖАМУРАДОВ РАСУЛБЕК ФАРХАДОВИЧ"], ["9-A", "РАЙИМОВА ШАХРИЗОДА РУФАТОВНА"],
       ["9-A", "РЗАМБЕТОВА ФЕРУЗА АЗАТОВНА"], ["9-A", "НУРИМБЕТОВ БУНЁДБЕК ДИЛМУРАТОВИЧ"], ["9-A", "АБАТОВ ДАМИР ИЛХАМОВИЧ"],
@@ -766,7 +655,7 @@
       ["9-B", "ГУЛМУРЗАЕВ ДИЁРБЕК РУСТАМОВИЧ"], ["9-B", "ГАЙПБАЕВА МЕХРИБАН ТУРСУНБАЙ КЫЗЫ"], ["9-B", "МАТКАРИМОВА ЗЕБО МАКСУД КЫЗЫ"],
       ["9-B", "РЕЙИМБАЕВ САИДБЕК ЮНУСОВИЧ"], ["9-B", "МУХТАРОВА МАДИНА АНВАРОВНА"], ["9-B", "МАРАТБАЕВ ДИДОР СEЙТНУРОВИЧ"],
       ["9-B", "АРТЫКБАЕВ АЗИЗБЕК РАХАТОВИЧ"], ["9-B", "РЕЖЕПБАЕВ КАКАМЫРАТ ЫХЛАСОВИЧ"], ["9-B", "КАДИРБЕРГЕНОВ ИЛДАР ЗАМИРОВИЧ"],
-      ["9-B", "ОВЕЗЖАНОВ СУЛТАНБЕК АЛЛАМУРАТОВИЧ"], ["9-B", "МАСАТИНОВА ЖАНЕРКЕ СЕРИКБАЕВНА"], ["9-B", "РЕЖЕПОВА ДИЛШАДА АЛЛАБЕРДИЕВНА"],
+      ["9-B", "ОВЕЗЖАНОВ СУЛТАНБЕК АЛЛАМУРАТОВИЧ"], ["9-B", "МАСАТИНОВА ЖАНЕРКЕ СEРИКБАЕВНА"], ["9-B", "РЕЖЕПОВА ДИЛШАДА АЛЛАБЕРДИЕВНА"],
       ["9-B", "ОРЫНБАЕВА ХИЛОЛА ГУЛОМЖАНОВНА"], ["9-B", "DANIYAROV DAVRANBEK SERIKBAYEVICH"], ["9-B", "АЗАТОВ ОРАЗАЛИ САЛАМАТОВИЧ"],
       ["9-V", "ЖАЛГАСОВ МИРАС ИСАТАЕВИЧ"], ["9-V", "ДАУЛЕТБАЕВА МАНЗУРА ГУЛАМЖАНОВНА"], ["9-V", "НАРБАЕВ АБДУЛАЗИЗ АРТЫКБАЕВИЧ"],
       ["9-V", "АБДИМУРАТОВ АЛЛАМУРАТ ТАТЛИМУРАТОВИЧ"], ["9-V", "МУРАТБАЕВА ФАРАНГИЗ МАНСУРОВНА"], ["9-V", "ХОЖАБАЕВ ОЗОДБЕК ДОВРАНБЕКОВИЧ"],
@@ -794,7 +683,7 @@
       ["10-B", "SABITOVA KURALAY SABIT KIZI"], ["10-B", "SAPARBAYEV SHERZOD SHAUKATOVICH"],
       ["11-A", "ЭРКИНОВ ЖАВОҲИР АЛИШЕР УҒЛИ"], ["11-A", "РАДЖЕПОВА САРБИНАЗ РАШИДОВНА"], ["11-A", "КЫДЫРБАЕВ САМАНДАР ИЛХОМОВИЧ"],
       ["11-A", "ГУЛМУРЗАЕВА МАРЖОНА ШАВКАТ ҚИЗИ"], ["11-A", "ДЖУМАМУРАТОВ ҚУДРАТ САБИТОВИЧ"], ["11-A", "АХМЕТОВ ЖУРАБЕК ОЙБЕКОВИЧ"],
-      ["11-A", "УРАЗБАЕВА СОГДИАНА СЕЙТМЫРАТ ҚЫЗЫ"], ["11-A", "KURALBAEV JAVLONBEK DJALALATDINOVICH"], ["11-A", "YAKUBBAYEV JAVLONBEK ULUGBEK ULI"],
+      ["11-A", "УРАЗБАЕВА СОГДИАНА СEЙТМЫРАТ ҚЫЗЫ"], ["11-A", "KURALBAEV JAVLONBEK DJALALATDINOVICH"], ["11-A", "YAKUBBAYEV JAVLONBEK ULUGBEK ULI"],
       ["11-B", "САПАРНИЯЗОВ АСАДБЕК УРАЗБАЙ УЛЫ"], ["11-B", "ДУРДЫБАЕВ ИСЛАМ КУВАНИЧ УЛЫ"], ["11-B", "АЖИМУРАТОВ КУТЛЫМУРАТ ОМИРЗАКОВИЧ"],
       ["11-B", "ЕШБАЕВ ДИЛШОД БАХАДИР УЛЫ"], ["11-B", "ҒАЙРАТОВ УМИДЖОН АЛЛАМБЕРГАН ЎҒЛИ"], ["11-B", "РАХМАНОВ БАТЫРБЕК АЛТЫ УЛЫ"],
       ["11-B", "ХАЙБУЛЛАЕВ ИБРОХИМ МАХМУД УЛЫ"], ["11-B", "БАЛТАБАЕВА ФАРАНГИЗ ХАМЗА ҚЫЗЫ"], ["11-B", "ИСЛАМОВА МАФТУНА МАМУР КИЗИ"],
@@ -812,65 +701,32 @@
       }));
     }
 
-    let schedule = JSON.parse(localStorage.getItem('mn_schedule')) || defaultSchedule;
     let users = JSON.parse(localStorage.getItem('mn_users')) || defaultUsers;
     let students = build303Students();
     let classes = initialClasses;
     let attendanceData = JSON.parse(localStorage.getItem('mn_attendance')) || {};
-    let adminPermissions = JSON.parse(localStorage.getItem('mn_permissions')) || {}; 
-    let classDailyLessons = JSON.parse(localStorage.getItem('mn_class_daily_lessons')) || {};
+    let teacherSchedules = JSON.parse(localStorage.getItem('mn_teacher_schedules')) || [];
 
     let currentUser = null;
-    let isOwnerMode = false;
     let tempAttendanceBuffer = {};
 
-    let classBarChart = null;
-    let periodLineChart = null;
-
-    let emptyClickCount = 0;
-    let emptyClickTimer = null;
-
-    function forceResetTo303Students() {
-      students = build303Students();
-      localStorage.setItem('mn_students', JSON.stringify(students));
-      if (isFirebaseReady && db) {
-        db.ref('students').set(students);
-      }
-      if (!document.getElementById('view-oquvchilar').classList.contains('hidden')) {
-        renderStudentManagementTable();
-      }
-      loadAttendanceForCurrentSelection();
-      showToast("Baza 303 nafar haqiqiy o'quvchiga qayta o'rnatildi! ✅");
-    }
-
     window.onload = function() {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.getElementById('attendanceDate');
-        if (dateInput) {
-          dateInput.value = today;
-          dateInput.addEventListener('change', onClassOrDateChanged);
-        }
-
-        students = build303Students();
-        localStorage.setItem('mn_students', JSON.stringify(students));
-
-        populateClassSelectors();
-        updateAvailablePeriodsForDate();
-        startLiveClock();
-        loadAttendanceForCurrentSelection();
-        initFirebaseRealtimeListeners();
-
-        if (isFirebaseReady && db) {
-          db.ref('students').set(students);
-        }
-      } catch (err) {
-        console.error("Yuklanishda xatolik:", err);
+      const today = new Date().toISOString().split('T')[0];
+      const dateInput = document.getElementById('attendanceDate');
+      if (dateInput) {
+        dateInput.value = today;
+        dateInput.addEventListener('change', onClassOrDateChanged);
       }
+
+      populateClassSelectors();
+      updateAvailablePeriods();
+      startLiveClock();
+      initFirebaseListeners();
     };
 
-    function initFirebaseRealtimeListeners() {
+    function initFirebaseListeners() {
       const badge = document.getElementById('dbStatusBadge');
+      const text = document.getElementById('dbStatusText');
 
       if (!isFirebaseReady || !db) {
         if (badge) {
@@ -891,11 +747,9 @@
         }
       });
 
-      db.ref('attendance').on('value', snapshot => {
-        const val = snapshot.val();
-        attendanceData = val || {};
+      db.ref('attendance').on('value', snap => {
+        attendanceData = snap.val() || {};
         localStorage.setItem('mn_attendance', JSON.stringify(attendanceData));
-        
         const curKey = getPeriodKey();
         tempAttendanceBuffer = JSON.parse(JSON.stringify(attendanceData[curKey] || {}));
         renderAttendanceTable();
@@ -906,45 +760,22 @@
         }
       });
 
-      db.ref('adminPermissions').on('value', snapshot => {
-        const val = snapshot.val();
-        adminPermissions = val || {};
-        localStorage.setItem('mn_permissions', JSON.stringify(adminPermissions));
-        renderAttendanceTable();
+      db.ref('teacher_schedules').on('value', snap => {
+        teacherSchedules = snap.val() || [];
+        localStorage.setItem('mn_teacher_schedules', JSON.stringify(teacherSchedules));
+        renderImportedScheduleTable();
       });
 
-      db.ref('students').on('value', snapshot => {
-        const val = snapshot.val();
-        if (val && Array.isArray(val) && val.length === 303) {
-          students = val;
-          localStorage.setItem('mn_students', JSON.stringify(students));
-          if (!document.getElementById('view-oquvchilar').classList.contains('hidden')) renderStudentManagementTable();
-          loadAttendanceForCurrentSelection();
-        } else {
-          forceResetTo303Students();
-        }
-      });
-
-      db.ref('users').on('value', snapshot => {
-        const val = snapshot.val();
+      db.ref('users').on('value', snap => {
+        const val = snap.val();
         if (val) {
           users = val;
           localStorage.setItem('mn_users', JSON.stringify(users));
           if (currentUser && users[currentUser.username]) {
-            currentUser.name = users[currentUser.username].name;
+            currentUser = { username: currentUser.username, ...users[currentUser.username] };
             updateUserRoleBadge();
           }
           if (!document.getElementById('view-oqituvchilar').classList.contains('hidden')) renderAdminTeachersTable();
-        }
-      });
-
-      db.ref('class_daily_lessons').on('value', snapshot => {
-        const val = snapshot.val();
-        if (val) {
-          classDailyLessons = val;
-          localStorage.setItem('mn_class_daily_lessons', JSON.stringify(classDailyLessons));
-          updateAvailablePeriodsForDate();
-          if (!document.getElementById('view-jadval').classList.contains('hidden')) renderWeeklyDayCounters();
         }
       });
     }
@@ -962,83 +793,13 @@
         const timeStr = now.toTimeString().split(' ')[0];
         const clockEl = document.getElementById('liveClock');
         if (clockEl) clockEl.innerText = timeStr;
-
-        const curPeriod = getCurrentActivePeriod();
-        const badge = document.getElementById('currentPeriodBadge');
-        if (badge) {
-          if (curPeriod) {
-            badge.innerText = curPeriod.name;
-            badge.className = "bg-emerald-600 text-white px-2 py-0.5 rounded-lg text-[10px] ml-1 font-bold";
-          } else {
-            badge.innerText = "Dars vaqti emas";
-            badge.className = "bg-slate-400 text-white px-2 py-0.5 rounded-lg text-[10px] ml-1 font-bold";
-          }
-        }
       }, 1000);
-    }
-
-    function getCurrentActivePeriod() {
-      const now = new Date();
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-      for (let item of schedule) {
-        const [sh, sm] = item.start.split(':').map(Number);
-        const [eh, em] = item.end.split(':').map(Number);
-        const startMin = sh * 60 + sm;
-        const endMin = eh * 60 + em;
-
-        if (currentMinutes >= startMin && currentMinutes <= endMin) return item;
-      }
-      return null;
-    }
-
-    function getClassLessonCount(className, dayIndex) {
-      if (!classDailyLessons[className]) {
-        classDailyLessons[className] = { 1: 8, 2: 8, 3: 8, 4: 8, 5: 8, 6: 8 };
-      }
-      return classDailyLessons[className][dayIndex] !== undefined ? classDailyLessons[className][dayIndex] : 8;
-    }
-
-    function updateAvailablePeriodsForDate() {
-      const dateVal = document.getElementById('attendanceDate').value;
-      const selectedClass = document.getElementById('classSelector').value;
-      const d = new Date(dateVal);
-      let dayIndex = d.getDay();
-      if (dayIndex === 0) dayIndex = 1;
-
-      const maxLessons = getClassLessonCount(selectedClass, dayIndex);
-      const pSelect = document.getElementById('lessonPeriod');
-      const currentSelected = pSelect.value;
-      
-      let optionsHtml = `<option value="morning">🌅 Ertalabki yig'in</option>`;
-      for (let i = 1; i <= maxLessons; i++) {
-        const item = schedule.find(s => s.id === i.toString());
-        if (item) {
-          optionsHtml += `<option value="${item.id}">${item.name} (${item.start})</option>`;
-        }
-      }
-      pSelect.innerHTML = optionsHtml;
-
-      if (currentSelected && pSelect.querySelector(`option[value="${currentSelected}"]`)) {
-        pSelect.value = currentSelected;
-      } else {
-        const active = getCurrentActivePeriod();
-        if (active && pSelect.querySelector(`option[value="${active.id}"]`)) {
-          pSelect.value = active.id;
-        }
-      }
-    }
-
-    function onClassOrDateChanged() {
-      updateAvailablePeriodsForDate();
-      loadAttendanceForCurrentSelection();
     }
 
     function populateClassSelectors() {
       const selector = document.getElementById('classSelector');
       const modalSelector = document.getElementById('modalClass');
       const filterSelector = document.getElementById('analyticsFilterClass');
-      const schedSelector = document.getElementById('scheduleClassSelector');
       const userFormClass = document.getElementById('userFormClass');
 
       let classOpts = classes.map(c => `<option value="${c}">${c} sinf</option>`).join('');
@@ -1046,8 +807,33 @@
       if (selector) selector.innerHTML = classOpts;
       if (modalSelector) modalSelector.innerHTML = classOpts;
       if (filterSelector) filterSelector.innerHTML = '<option value="all">Barcha Sinflar</option>' + classOpts;
-      if (schedSelector) schedSelector.innerHTML = classOpts;
-      if (userFormClass) userFormClass.innerHTML = classOpts;
+      if (userFormClass) userFormClass.innerHTML = '<option value="">Biriktirilmagan (Oddiy fan o\'qituvchisi)</option>' + classOpts;
+    }
+
+    function updateAvailablePeriods() {
+      const pSelect = document.getElementById('lessonPeriod');
+      let optionsHtml = '';
+
+      if (currentUser && currentUser.role === 'teacher' && !currentUser.assignedClass) {
+        // Sinfga biriktirilmagan fan o'qituvchisi faqat 1-8 darslarni ko'radi
+        for (let i = 1; i <= 8; i++) {
+          const item = defaultSchedule.find(s => s.id === i.toString());
+          if (item) optionsHtml += `<option value="${item.id}">${item.name} (${item.start})</option>`;
+        }
+      } else {
+        // Sinf rahbari va Admin ertalabki yig'inni ham ko'radi
+        optionsHtml = `<option value="morning">🌅 Ertalabki yig'in</option>`;
+        for (let i = 1; i <= 8; i++) {
+          const item = defaultSchedule.find(s => s.id === i.toString());
+          if (item) optionsHtml += `<option value="${item.id}">${item.name} (${item.start})</option>`;
+        }
+      }
+
+      pSelect.innerHTML = optionsHtml;
+    }
+
+    function onClassOrDateChanged() {
+      loadAttendanceForCurrentSelection();
     }
 
     function showToast(msg) {
@@ -1064,33 +850,16 @@
       }
     }
 
-    // ================= LOGIN VA MAXFIY PIN TRIGGERI =================
+    // ================= LOGIN VA ROLLLARNI BO'LISH =================
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const u = document.getElementById('username').value.trim();
       const p = document.getElementById('password').value.trim();
       const err = document.getElementById('loginError');
 
-      if (u === '' && p === '') {
-        emptyClickCount++;
-        clearTimeout(emptyClickTimer);
-        emptyClickTimer = setTimeout(() => { emptyClickCount = 0; }, 1500);
-
-        if (emptyClickCount >= 3) {
-          emptyClickCount = 0;
-          openOwnerPinScreen();
-          return;
-        } else {
-          err.innerText = "Iltimos, login va parolni kiriting!";
-          err.classList.remove('hidden');
-          return;
-        }
-      }
-
       if (users[u] && users[u].password === p) {
         err.classList.add('hidden');
         currentUser = { username: u, ...users[u] };
-        isOwnerMode = false;
         enterApp();
       } else {
         err.innerText = "Login yoki parol noto'g'ri!";
@@ -1098,338 +867,155 @@
       }
     });
 
-    function openOwnerPinScreen() {
-      const loginScreen = document.getElementById('loginScreen');
-      const pinScreen = document.getElementById('ownerPinScreen');
-      if (loginScreen) {
-        loginScreen.classList.add('hidden');
-        loginScreen.style.display = 'none';
-      }
-      if (pinScreen) {
-        pinScreen.classList.remove('hidden');
-        pinScreen.style.display = 'flex';
-      }
-      document.getElementById('ownerPinInput').value = '';
-      document.getElementById('pinError').classList.add('hidden');
-      document.getElementById('ownerPinInput').focus();
-    }
-
-    function cancelOwnerPin() {
-      const pinScreen = document.getElementById('ownerPinScreen');
-      const loginScreen = document.getElementById('loginScreen');
-      if (pinScreen) {
-        pinScreen.classList.add('hidden');
-        pinScreen.style.display = 'none';
-      }
-      if (loginScreen) {
-        loginScreen.classList.remove('hidden');
-        loginScreen.style.display = 'flex';
-      }
-    }
-
-    function verifyOwnerPin() {
-      const pin = document.getElementById('ownerPinInput').value.trim();
-      const pinBox = document.getElementById('pinBox');
-      const pinError = document.getElementById('pinError');
-
-      if (pin === '0102') {
-        currentUser = { username: 'admin1', role: 'admin', name: users['admin1'] ? users['admin1'].name : 'Bosh Direktor', assignedClass: null };
-        isOwnerMode = true;
-        enterApp();
-      } else {
-        pinError.classList.remove('hidden');
-        pinBox.classList.add('shake-animation');
-        setTimeout(() => pinBox.classList.remove('shake-animation'), 400);
-      }
-    }
-
-    document.getElementById('ownerPinInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') verifyOwnerPin();
-    });
-
     function updateUserRoleBadge() {
       const roleBadge = document.getElementById('userRoleBadge');
-      if (!roleBadge) return;
-      if (currentUser && (currentUser.role === 'admin' || isOwnerMode)) {
-        const adminName = users['admin1'] ? users['admin1'].name : "Qodirov Jamshid Anvarovich (Bosh Direktor)";
-        roleBadge.innerHTML = `👑 ${adminName}`;
-      } else if (currentUser) {
-        roleBadge.innerText = `👨‍🏫 ${currentUser.name} (${currentUser.assignedClass || 'O\'qituvchi'})`;
+      if (!roleBadge || !currentUser) return;
+
+      if (currentUser.role === 'admin') {
+        roleBadge.innerText = `👑 ${currentUser.name} (Admin)`;
+      } else if (currentUser.assignedClass) {
+        roleBadge.innerText = `👨‍🏫 ${currentUser.name} (${currentUser.assignedClass} Rahbari)`;
+      } else {
+        roleBadge.innerText = `📖 ${currentUser.name} (Fan O'qituvchisi)`;
       }
     }
 
-    // ================= KIRISH VA ILovaga O'TISH =================
-    function enterApp() {
-      try {
-        const loginBox = document.getElementById('loginScreen');
-        const pinBox = document.getElementById('ownerPinScreen');
-        const app = document.getElementById('mainApp');
+    // 4 XIL ROLGA ASOSLANGAN INTERFEYSNI SOZLASH
+    function applyRolePermissions() {
+      const dDavomat = document.getElementById('tab-davomat');
+      const dTahlil = document.getElementById('tab-tahlil');
+      const dOquvchilar = document.getElementById('tab-oquvchilar');
+      const dJadvalImport = document.getElementById('tab-jadval_import');
+      const dOqituvchilar = document.getElementById('tab-oqituvchilar');
 
-        // Kirish oynalari butunlay yashiriladi
-        if (loginBox) {
-          loginBox.classList.add('hidden');
-          loginBox.style.display = 'none';
-        }
-        if (pinBox) {
-          pinBox.classList.add('hidden');
-          pinBox.style.display = 'none';
-        }
-        if (app) {
-          app.classList.remove('hidden');
-          app.style.display = 'flex';
-        }
+      const mDavomat = document.getElementById('m-tab-davomat');
+      const mTahlil = document.getElementById('m-tab-tahlil');
+      const mOquvchilar = document.getElementById('m-tab-oquvchilar');
+      const mJadvalImport = document.getElementById('m-tab-jadval_import');
+      const mOqituvchilar = document.getElementById('m-tab-oqituvchilar');
 
-        const adminCol = document.getElementById('adminActionCol');
-        const oqituvchilarTab = document.getElementById('tab-oqituvchilar');
-        const mOqituvchilarTab = document.getElementById('m-tab-oqituvchilar');
+      // Barchasini vaqtincha yashiramiz
+      [dDavomat, dTahlil, dOquvchilar, dJadvalImport, dOqituvchilar, mDavomat, mTahlil, mOquvchilar, mJadvalImport, mOqituvchilar].forEach(el => {
+        if (el) el.classList.add('hidden');
+      });
 
-        updateUserRoleBadge();
+      const role = currentUser.role;
+      const hasClass = !!currentUser.assignedClass;
 
-        if (currentUser && (currentUser.role === 'admin' || isOwnerMode)) {
-          if (oqituvchilarTab) oqituvchilarTab.classList.remove('hidden');
-          if (mOqituvchilarTab) mOqituvchilarTab.classList.remove('hidden');
-          if (adminCol) adminCol.classList.remove('hidden');
-        } else {
-          if (oqituvchilarTab) oqituvchilarTab.classList.add('hidden');
-          if (mOqituvchilarTab) mOqituvchilarTab.classList.add('hidden');
-          if (adminCol) adminCol.classList.add('hidden');
-        }
-
-        if (currentUser && currentUser.assignedClass) {
-          const cSel = document.getElementById('classSelector');
-          const sSel = document.getElementById('scheduleClassSelector');
-          if (cSel) cSel.value = currentUser.assignedClass;
-          if (sSel) sSel.value = currentUser.assignedClass;
-        }
-
+      if (role === 'admin') {
+        // ADMIN INTERFEYSI: Tahlil, O'quvchilar, Jadval Import, Xodimlar (Davomat va Dars Jadvali YO'Q)
+        [dTahlil, dOquvchilar, dJadvalImport, dOqituvchilar, mTahlil, mOquvchilar, mJadvalImport, mOqituvchilar].forEach(el => {
+          if (el) el.classList.remove('hidden');
+        });
+        document.getElementById('adminAnalyticsSection').classList.remove('hidden');
+        document.getElementById('analyticsFilterClassWrapper').classList.remove('hidden');
+        switchTab('tahlil');
+      } 
+      else if (role === 'teacher' && hasClass) {
+        // SINF BIRIKTIRILGAN O'QITUVCHI: Davomat va Tahlil (Faqat o'z sinfi)
+        [dDavomat, dTahlil, mDavomat, mTahlil].forEach(el => {
+          if (el) el.classList.remove('hidden');
+        });
+        document.getElementById('adminAnalyticsSection').classList.add('hidden');
+        document.getElementById('analyticsFilterClassWrapper').classList.add('hidden');
+        
+        document.getElementById('classSelector').value = currentUser.assignedClass;
+        document.getElementById('classSelector').disabled = true; // faqat o'z sinfini ko'radi
+        updateAvailablePeriods();
         switchTab('davomat');
-        onClassOrDateChanged();
-      } catch (err) {
-        console.error("Kirishda xatolik:", err);
+      } 
+      else {
+        // SINFGA BIRIKTIRILMAGAN O'QITUVCHI: Faqat Davomat
+        [dDavomat, mDavomat].forEach(el => {
+          if (el) el.classList.remove('hidden');
+        });
+        document.getElementById('classSelector').disabled = false; // dars beradigan sinfini tanlaydi
+        updateAvailablePeriods();
+        switchTab('davomat');
       }
+    }
+
+    function enterApp() {
+      const loginBox = document.getElementById('loginScreen');
+      const app = document.getElementById('mainApp');
+
+      if (loginBox) {
+        loginBox.classList.add('hidden');
+        loginBox.style.display = 'none';
+      }
+      if (app) {
+        app.classList.remove('hidden');
+        app.style.display = 'flex';
+      }
+
+      updateUserRoleBadge();
+      applyRolePermissions();
+      onClassOrDateChanged();
     }
 
     function logout() {
       currentUser = null;
-      isOwnerMode = false;
-      const app = document.getElementById('mainApp');
-      const login = document.getElementById('loginScreen');
-      if (app) {
-        app.classList.add('hidden');
-        app.style.display = 'none';
-      }
-      if (login) {
-        login.classList.remove('hidden');
-        login.style.display = 'flex';
-      }
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('loginScreen').style.display = 'flex';
       document.getElementById('username').value = '';
       document.getElementById('password').value = '';
-      document.getElementById('loginError').classList.add('hidden');
     }
 
-    // BO'LIMLARGA O'TISH (EKRAN SAQIRIB KETMAYDI)
     function switchTab(tabId) {
-      try {
-        if (tabId === 'oqituvchilar' && currentUser && currentUser.role !== 'admin' && !isOwnerMode) {
-          alert("Ruxsat berilmagan!");
-          return;
-        }
+      const currentScrollY = window.scrollY || document.documentElement.scrollTop;
 
-        const currentScrollY = window.scrollY || document.documentElement.scrollTop;
+      ['davomat', 'tahlil', 'oquvchilar', 'jadval_import', 'oqituvchilar'].forEach(t => {
+        const el = document.getElementById(`view-${t}`);
+        if (el) el.classList.add('hidden');
 
-        ['davomat', 'oquvchilar', 'tahlil', 'jadval', 'oqituvchilar'].forEach(t => {
-          const el = document.getElementById(`view-${t}`);
-          if (el) el.classList.add('hidden');
-          
-          const tabBtn = document.getElementById(`tab-${t}`);
-          if (tabBtn) tabBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold';
-          
-          const mTabBtn = document.getElementById(`m-tab-${t}`);
-          if (mTabBtn) mTabBtn.className = 'flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition';
-        });
+        const tabBtn = document.getElementById(`tab-${t}`);
+        if (tabBtn) tabBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 font-semibold';
 
-        const targetView = document.getElementById(`view-${tabId}`);
-        if (targetView) targetView.classList.remove('hidden');
-
-        const activeDesktop = document.getElementById(`tab-${tabId}`);
-        if (activeDesktop) activeDesktop.className = 'px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 font-bold transition flex items-center gap-1.5';
-
-        const activeMobile = document.getElementById(`m-tab-${tabId}`);
-        if (activeMobile) activeMobile.className = 'flex flex-col items-center justify-center py-1 px-2 text-blue-600 font-bold transition';
-
-        if (tabId === 'davomat') onClassOrDateChanged();
-        if (tabId === 'oquvchilar') renderStudentManagementTable();
-        if (tabId === 'tahlil') setTimeout(renderDeepAnalytics, 10);
-        if (tabId === 'jadval') { renderWeeklyDayCounters(); renderScheduleTable(); }
-        if (tabId === 'oqituvchilar') renderAdminTeachersTable();
-
-        window.scrollTo({ top: currentScrollY, behavior: 'instant' });
-      } catch (err) {
-        console.error("Tab almashtirishda xatolik:", err);
-      }
-    }
-
-    // ================= DARS JADVALI =================
-    function canEditClassSchedule(targetClass) {
-      if (currentUser.role === 'admin' || isOwnerMode) return true;
-      return currentUser.assignedClass === targetClass;
-    }
-
-    function renderWeeklyDayCounters() {
-      const targetClass = document.getElementById('scheduleClassSelector').value;
-      const canEdit = canEditClassSchedule(targetClass);
-      const notice = document.getElementById('schedulePermissionNotice');
-
-      if (!canEdit) {
-        notice.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-lock"></i> Cheklangan</span>`;
-      } else {
-        notice.innerHTML = `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-pen"></i> Tahrirlash ochiq</span>`;
-      }
-
-      const container = document.getElementById('weeklyDaysContainer');
-      let cardsHtml = [];
-
-      weekDaysList.forEach(day => {
-        const count = getClassLessonCount(targetClass, day.key);
-
-        let badgesHtml = '<div class="flex flex-wrap gap-1 mt-2 justify-center">';
-        for (let i = 1; i <= 8; i++) {
-          if (i <= count) {
-            badgesHtml += `<span class="w-4 h-4 rounded bg-blue-600 text-white font-black text-[9px] flex items-center justify-center">${i}</span>`;
-          } else {
-            badgesHtml += `<span class="w-4 h-4 rounded bg-slate-200 text-slate-400 font-semibold text-[9px] flex items-center justify-center line-through">${i}</span>`;
-          }
-        }
-        badgesHtml += '</div>';
-
-        cardsHtml.push(`
-          <div class="bg-white rounded-xl p-2.5 sm:p-3 border border-slate-200 shadow-sm flex flex-col items-center justify-between text-center">
-            <span class="text-xs font-black text-slate-700">${day.name}</span>
-            <div class="my-1.5">
-              <span class="text-xl sm:text-2xl font-black text-blue-700">${count}</span>
-              <span class="text-[10px] font-bold text-slate-400">ta dars</span>
-            </div>
-            
-            <div class="flex items-center gap-1.5 w-full justify-center">
-              <button type="button" onclick="changeDayLessonCount('${targetClass}', ${day.key}, -1)" ${!canEdit || count <= 1 ? 'disabled' : ''} class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 font-black text-sm hover:bg-rose-100 border border-rose-200 flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed">
-                <i class="fa-solid fa-minus"></i>
-              </button>
-              <button type="button" onclick="changeDayLessonCount('${targetClass}', ${day.key}, 1)" ${!canEdit || count >= 8 ? 'disabled' : ''} class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 font-black text-sm hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center transition disabled:opacity-30 disabled:cursor-not-allowed">
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </div>
-            ${badgesHtml}
-          </div>
-        `);
+        const mTabBtn = document.getElementById(`m-tab-${t}`);
+        if (mTabBtn) mTabBtn.className = 'flex flex-col items-center justify-center py-1 px-2 text-slate-500 font-medium transition';
       });
 
-      container.innerHTML = cardsHtml.join('');
+      const targetView = document.getElementById(`view-${tabId}`);
+      if (targetView) targetView.classList.remove('hidden');
+
+      const activeDesktop = document.getElementById(`tab-${tabId}`);
+      if (activeDesktop) activeDesktop.className = 'px-3 py-1.5 rounded-lg bg-white shadow-sm text-blue-600 font-bold transition flex items-center gap-1.5';
+
+      const activeMobile = document.getElementById(`m-tab-${tabId}`);
+      if (activeMobile) activeMobile.className = 'flex flex-col items-center justify-center py-1 px-2 text-blue-600 font-bold transition';
+
+      if (tabId === 'davomat') onClassOrDateChanged();
+      if (tabId === 'tahlil') setTimeout(renderDeepAnalytics, 10);
+      if (tabId === 'oquvchilar') renderStudentManagementTable();
+      if (tabId === 'jadval_import') renderImportedScheduleTable();
+      if (tabId === 'oqituvchilar') renderAdminTeachersTable();
+
+      window.scrollTo({ top: currentScrollY, behavior: 'instant' });
     }
 
-    function changeDayLessonCount(targetClass, dayKey, delta) {
-      if (!canEditClassSchedule(targetClass)) return;
-
-      if (!classDailyLessons[targetClass]) {
-        classDailyLessons[targetClass] = { 1: 8, 2: 8, 3: 8, 4: 8, 5: 8, 6: 8 };
-      }
-
-      let current = classDailyLessons[targetClass][dayKey] || 8;
-      let newCount = current + delta;
-      if (newCount < 1) newCount = 1;
-      if (newCount > 8) newCount = 8;
-
-      classDailyLessons[targetClass][dayKey] = newCount;
-      syncToFirebase('class_daily_lessons', classDailyLessons);
-
-      renderWeeklyDayCounters();
-      updateAvailablePeriodsForDate();
-      showToast(`${targetClass} yangilandi!`);
-    }
-
-    function renderScheduleTable() {
-      const tbody = document.getElementById('scheduleTbody');
-      const isAdmin = currentUser.role === 'admin' || isOwnerMode;
-      let rowsHtml = [];
-
-      schedule.forEach((item, index) => {
-        const active = getCurrentActivePeriod();
-        const isCurrent = active && active.id === item.id;
-
-        rowsHtml.push(`
-          <tr class="hover:bg-slate-50 transition ${isCurrent ? 'bg-blue-50/70 font-semibold' : ''}">
-            <td class="py-2.5 px-3 text-center font-bold text-slate-500">${index === 0 ? '🌅' : index}</td>
-            <td class="py-2.5 px-3">
-              <span class="font-bold text-slate-800">${item.name}</span>
-              ${isCurrent ? '<span class="ml-1.5 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">Faol</span>' : ''}
-            </td>
-            <td class="py-2.5 px-3 text-center">
-              ${isAdmin ? `
-                <input type="time" value="${item.start}" onchange="updateScheduleTime('${item.id}', 'start', this.value)" class="border rounded-lg px-1.5 py-0.5 text-xs font-mono font-bold bg-white">
-              ` : `<span class="font-mono font-bold text-slate-700">${item.start}</span>`}
-            </td>
-            <td class="py-2.5 px-3 text-center">
-              ${isAdmin ? `
-                <input type="time" value="${item.end}" onchange="updateScheduleTime('${item.id}', 'end', this.value)" class="border rounded-lg px-1.5 py-0.5 text-xs font-mono font-bold bg-white">
-              ` : `<span class="font-mono font-bold text-slate-700">${item.end}</span>`}
-            </td>
-            <td class="py-2.5 px-3 text-slate-500 text-xs hidden sm:table-cell">${item.desc}</td>
-            <td class="py-2.5 px-3 text-center">
-              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${isCurrent ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">
-                ${isCurrent ? 'Hozir' : 'Navbatda'}
-              </span>
-            </td>
-          </tr>
-        `);
-      });
-
-      tbody.innerHTML = rowsHtml.join('');
-    }
-
-    function updateScheduleTime(id, field, value) {
-      const item = schedule.find(s => s.id === id);
-      if (item) item[field] = value;
-    }
-
-    function saveScheduleChanges() {
-      syncToFirebase('schedule', schedule);
-      syncToFirebase('class_daily_lessons', classDailyLessons);
-      updateAvailablePeriodsForDate();
-      showToast("Jadval saqlandi! ⏰");
-      renderScheduleTable();
-    }
-
-    // ================= 24 SOATLIK KUNLIK DAVOMAT =================
+    // ================= DAVOMAT MANTIQI =================
     function getPeriodKey() {
       const date = document.getElementById('attendanceDate').value;
       const period = document.getElementById('lessonPeriod').value;
       return `${date}_${period}`;
     }
 
-    function checkPermissionAndTiming(selectedClass) {
-      if (currentUser.role === 'admin' || isOwnerMode) return { allowed: true, reason: '' };
+    function checkAttendancePermission(targetClass) {
+      if (!currentUser) return { allowed: false, reason: "Tizimga kiring!" };
+      if (currentUser.role === 'admin') return { allowed: true, reason: "" };
 
-      const selectedDate = document.getElementById('attendanceDate').value;
-      const today = new Date().toISOString().split('T')[0];
+      const selectedPeriod = document.getElementById('lessonPeriod').value;
 
-      if (selectedDate !== today) {
-        return { 
-          allowed: false, 
-          reason: "Eski kunlar davomatini faqat administrator o'zgartira oladi!" 
-        };
-      }
-
-      const selectedPeriodId = document.getElementById('lessonPeriod').value;
-
-      if (selectedPeriodId === 'morning') {
-        if (currentUser.assignedClass !== selectedClass) {
-          return { 
-            allowed: false, 
-            reason: "Siz faqat o'z sinfingizning ertalabki yig'inini belgilay olasiz!" 
-          };
+      // Sinf rahbari faqat o'z sinfining ertalabki yig'inini qo'ya oladi
+      if (selectedPeriod === 'morning') {
+        if (currentUser.assignedClass !== targetClass) {
+          return { allowed: false, reason: "Ertalabki yig'inni faqat o'z sinf rahbari belgilashi mumkin!" };
         }
       }
 
-      return { allowed: true, reason: '' };
+      return { allowed: true, reason: "" };
     }
 
     function loadAttendanceForCurrentSelection() {
@@ -1461,7 +1047,7 @@
       document.getElementById('tableSubtitle').innerText = `${date} | ${periodName}`;
 
       const classStudents = students.filter(s => s.class === selectedClass);
-      const perm = checkPermissionAndTiming(selectedClass);
+      const perm = checkAttendancePermission(selectedClass);
 
       const warningEl = document.getElementById('permissionWarning');
       const warningText = document.getElementById('warningMessageText');
@@ -1488,11 +1074,7 @@
       let mobileCards = [];
 
       classStudents.forEach((student, index) => {
-        const hasAdminPermission = adminPermissions[date] && adminPermissions[date][student.id];
-
         let status = tempAttendanceBuffer[student.id]?.status || 'bor';
-        if (hasAdminPermission) status = 'bor';
-
         let reasonType = tempAttendanceBuffer[student.id]?.reasonType || 'oilaviy';
         let customReason = tempAttendanceBuffer[student.id]?.customReason || '';
 
@@ -1500,53 +1082,41 @@
         else if (status === 'kelmadi') countKelmadi++;
         else if (status === 'sababli') countSababli++;
 
-        const isDisabled = !perm.allowed || hasAdminPermission;
+        const isDisabled = !perm.allowed;
 
         desktopRows.push(`
-          <tr class="hover:bg-slate-50/80 transition ${hasAdminPermission ? 'bg-indigo-50/40' : ''}">
+          <tr class="hover:bg-slate-50/80 transition">
             <td class="py-3 px-4 text-center font-bold text-slate-400 text-xs">${index + 1}</td>
-            <td class="py-3 px-4">
-              <div class="font-bold text-slate-800">${student.name}</div>
-              ${hasAdminPermission ? '<span class="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 bg-indigo-100 px-1.5 py-0.5 rounded mt-0.5"><i class="fa-solid fa-star"></i> Admin Ruxsatida</span>' : ''}
-            </td>
-            <td class="py-3 px-4 text-slate-500 font-mono text-xs">
-              <i class="fa-solid fa-phone text-slate-400 mr-1"></i> ${student.phone}
-            </td>
-            <td class="py-3 px-4">
+            <td class="py-3 px-4 font-bold text-slate-800">${student.name}</td>
+            <td class="py-3 px-4 text-slate-500 font-mono text-xs"><i class="fa-solid fa-phone text-slate-400 mr-1"></i> ${student.phone}</td>
+            <td class="py-3 px-4 text-center">
               <div class="flex items-center justify-center gap-1">
-                <button type="button" onclick="changeStatus('${student.id}', 'bor')" ${isDisabled ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition ${status === 'bor' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'} ${isDisabled ? 'opacity-60 cursor-not-allowed' : ''}">
+                <button type="button" onclick="changeStatus('${student.id}', 'bor')" ${isDisabled ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition ${status === 'bor' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
                   <i class="fa-solid fa-check mr-1"></i> Bor
                 </button>
-                <button type="button" onclick="changeStatus('${student.id}', 'kelmadi')" ${isDisabled ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition ${status === 'kelmadi' ? 'bg-rose-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'} ${isDisabled ? 'opacity-60 cursor-not-allowed' : ''}">
+                <button type="button" onclick="changeStatus('${student.id}', 'kelmadi')" ${isDisabled ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition ${status === 'kelmadi' ? 'bg-rose-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
                   <i class="fa-solid fa-xmark mr-1"></i> Kelmadi
                 </button>
-                <button type="button" onclick="changeStatus('${student.id}', 'sababli')" ${isDisabled ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition ${status === 'sababli' ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'} ${isDisabled ? 'opacity-60 cursor-not-allowed' : ''}">
+                <button type="button" onclick="changeStatus('${student.id}', 'sababli')" ${isDisabled ? 'disabled' : ''} class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition ${status === 'sababli' ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
                   <i class="fa-solid fa-file-medical mr-1"></i> Sababli
                 </button>
               </div>
             </td>
             <td class="py-3 px-4">
               <div class="space-y-1.5">
-                <select onchange="changeReasonType('${student.id}', this.value)" ${isDisabled || status === 'bor' ? 'disabled' : ''} class="w-full text-xs border border-slate-300 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 font-medium bg-white ${isDisabled || status === 'bor' ? 'bg-slate-50 text-slate-400' : ''}">
+                <select onchange="changeReasonType('${student.id}', this.value)" ${isDisabled || status === 'bor' ? 'disabled' : ''} class="w-full text-xs border border-slate-300 rounded-lg p-1.5 font-medium bg-white ${isDisabled || status === 'bor' ? 'bg-slate-50 text-slate-400' : ''}">
                   <option value="oilaviy" ${reasonType === 'oilaviy' ? 'selected' : ''}>1. Oilaviy muammo</option>
                   <option value="kasal" ${reasonType === 'kasal' ? 'selected' : ''}>2. Kasal</option>
-                  <option value="custom" ${reasonType === 'custom' ? 'selected' : ''}>3. Qo'lda yozish ✍️</option>
+                  <option value="custom" ${reasonType === 'custom' ? 'selected' : ''}>3. Boshqa sabab</option>
                 </select>
-                <input type="text" id="customInput-${student.id}" onchange="changeCustomReason('${student.id}', this.value)" value="${customReason}" placeholder="Sababni yozing..." class="${reasonType === 'custom' && status !== 'bor' && !isDisabled ? '' : 'hidden'} w-full text-xs border border-slate-300 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <input type="text" onchange="changeCustomReason('${student.id}', this.value)" value="${customReason}" placeholder="Sababni yozing..." class="${reasonType === 'custom' && status !== 'bor' && !isDisabled ? '' : 'hidden'} w-full text-xs border border-slate-300 rounded-lg p-1.5">
               </div>
             </td>
-            ${currentUser.role === 'admin' || isOwnerMode ? `
-              <td class="py-3 px-4 text-center">
-                <button type="button" onclick="toggleAdminPermission('${student.id}')" class="px-2.5 py-1.5 rounded-lg text-xs font-bold border transition ${hasAdminPermission ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-100'}">
-                  ${hasAdminPermission ? '⭐ Ruxsatda' : '⭐ Ruxsat berish'}
-                </button>
-              </td>
-            ` : ''}
           </tr>
         `);
 
         mobileCards.push(`
-          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5 ${hasAdminPermission ? 'bg-indigo-50/40 border-indigo-200' : ''}">
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
             <div class="flex items-start justify-between gap-2">
               <div class="flex items-start gap-2">
                 <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-500 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">${index + 1}</span>
@@ -1555,39 +1125,19 @@
                   <p class="text-[10px] text-slate-400 font-mono mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${student.phone}</p>
                 </div>
               </div>
-              ${hasAdminPermission ? '<span class="text-[9px] font-black bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded shrink-0">⭐ Admin</span>' : ''}
             </div>
 
             <div class="grid grid-cols-3 gap-1.5 pt-1">
-              <button type="button" onclick="changeStatus('${student.id}', 'bor')" ${isDisabled ? 'disabled' : ''} class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition ${status === 'bor' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600'} ${isDisabled ? 'opacity-60' : ''}">
+              <button type="button" onclick="changeStatus('${student.id}', 'bor')" ${isDisabled ? 'disabled' : ''} class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition ${status === 'bor' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600'}">
                 <i class="fa-solid fa-check text-[10px]"></i> Bor
               </button>
-              <button type="button" onclick="changeStatus('${student.id}', 'kelmadi')" ${isDisabled ? 'disabled' : ''} class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition ${status === 'kelmadi' ? 'bg-rose-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600'} ${isDisabled ? 'opacity-60' : ''}">
+              <button type="button" onclick="changeStatus('${student.id}', 'kelmadi')" ${isDisabled ? 'disabled' : ''} class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition ${status === 'kelmadi' ? 'bg-rose-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600'}">
                 <i class="fa-solid fa-xmark text-[10px]"></i> Yo'q
               </button>
-              <button type="button" onclick="changeStatus('${student.id}', 'sababli')" ${isDisabled ? 'disabled' : ''} class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition ${status === 'sababli' ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600'} ${isDisabled ? 'opacity-60' : ''}">
+              <button type="button" onclick="changeStatus('${student.id}', 'sababli')" ${isDisabled ? 'disabled' : ''} class="py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition ${status === 'sababli' ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600'}">
                 <i class="fa-solid fa-file-medical text-[10px]"></i> Sababli
               </button>
             </div>
-
-            ${status !== 'bor' ? `
-              <div class="pt-1.5 border-t border-slate-100 space-y-1.5">
-                <select onchange="changeReasonType('${student.id}', this.value)" ${isDisabled ? 'disabled' : ''} class="w-full text-xs border border-slate-300 rounded-lg p-1.5 font-medium bg-white">
-                  <option value="oilaviy" ${reasonType === 'oilaviy' ? 'selected' : ''}>1. Oilaviy muammo</option>
-                  <option value="kasal" ${reasonType === 'kasal' ? 'selected' : ''}>2. Kasal / Tibbiy</option>
-                  <option value="custom" ${reasonType === 'custom' ? 'selected' : ''}>3. Qo'lda yozish ✍️</option>
-                </select>
-                <input type="text" onchange="changeCustomReason('${student.id}', this.value)" value="${customReason}" placeholder="Sababni yozing..." class="${reasonType === 'custom' ? '' : 'hidden'} w-full text-xs border border-slate-300 rounded-lg p-1.5">
-              </div>
-            ` : ''}
-
-            ${(currentUser.role === 'admin' || isOwnerMode) ? `
-              <div class="pt-1 flex justify-end">
-                <button type="button" onclick="toggleAdminPermission('${student.id}')" class="text-[10px] font-bold px-2 py-1 rounded-lg border ${hasAdminPermission ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200'}">
-                  ${hasAdminPermission ? '⭐ Ruxsat bekor qilish' : '⭐ Admin ruxsat berish'}
-                </button>
-              </div>
-            ` : ''}
           </div>
         `);
       });
@@ -1635,35 +1185,204 @@
 
     function saveAttendanceManual() {
       const periodKey = getPeriodKey();
-      
       if (!attendanceData) attendanceData = {};
       attendanceData[periodKey] = JSON.parse(JSON.stringify(tempAttendanceBuffer));
-      localStorage.setItem('mn_attendance', JSON.stringify(attendanceData));
-
-      if (isFirebaseReady && db) {
-        db.ref('attendance/' + periodKey).set(tempAttendanceBuffer)
-          .then(() => {
-            updateSaveIndicator(true);
-            showToast("Davomat bulutga muvaffaqiyatli saqlandi! ☁️");
-          })
-          .catch((err) => {
-            console.error("Firebase yozish xatosi:", err);
-            alert("Bulutga saqlanmadi: " + err.message);
-          });
-      } else {
-        updateSaveIndicator(true);
-        showToast("Lokal xotiraga saqlandi (Offline)");
-      }
+      
+      syncToFirebase(`attendance/${periodKey}`, tempAttendanceBuffer);
+      updateSaveIndicator(true);
+      showToast("Davomat saqlandi! ☁️");
     }
 
-    function toggleAdminPermission(studentId) {
+    // ================= CHUQUR TAHLIL =================
+    function renderDeepAnalytics() {
       const date = document.getElementById('attendanceDate').value;
-      if (!adminPermissions[date]) adminPermissions[date] = {};
+      document.getElementById('analyticsClassDate').innerText = `${date} holatiga`;
 
-      adminPermissions[date][studentId] = !adminPermissions[date][studentId];
-      syncToFirebase('adminPermissions', adminPermissions);
-      saveAttendanceManual();
-      renderAttendanceTable();
+      const role = currentUser ? currentUser.role : 'teacher';
+      const userAssignedClass = currentUser ? currentUser.assignedClass : null;
+
+      let targetStudents = students;
+      if (role === 'teacher' && userAssignedClass) {
+        // Sinf rahbari faqat o'z sinfini ko'radi
+        targetStudents = students.filter(s => s.class === userAssignedClass);
+        document.getElementById('analyticsSubtitleText').innerText = `${userAssignedClass} sinf bo'yicha`;
+      } else {
+        document.getElementById('analyticsSubtitleText').innerText = `Barcha sinflar kesimida`;
+      }
+
+      let totalStudents = targetStudents.length;
+      let presentCount = 0;
+      let absentCount = 0;
+
+      const morningData = attendanceData[`${date}_morning`] || {};
+
+      targetStudents.forEach(s => {
+        let status = morningData[s.id]?.status || 'bor';
+        if (status === 'bor') presentCount++;
+        else absentCount++;
+      });
+
+      document.getElementById('kpi-total').innerText = `${totalStudents} ta`;
+      document.getElementById('kpi-present').innerText = `${presentCount} ta`;
+      document.getElementById('kpi-absent').innerText = `${absentCount} ta`;
+      const overallPercent = totalStudents > 0 ? ((presentCount / totalStudents) * 100).toFixed(1) : '0.0';
+      document.getElementById('kpi-percent').innerText = `${overallPercent}%`;
+
+      // Agar admin bo'lsa, barcha sinflar kartochkalarini chiqarish
+      if (role === 'admin') {
+        let classStats = {};
+        classes.forEach(c => classStats[c] = { total: 0, present: 0 });
+
+        students.forEach(s => {
+          if (classStats[s.class]) {
+            classStats[s.class].total++;
+            let status = morningData[s.id]?.status || 'bor';
+            if (status === 'bor') classStats[s.class].present++;
+          }
+        });
+
+        const classCardsContainer = document.getElementById('classPercentageCards');
+        let cardsHtml = classes.map(c => {
+          const total = classStats[c].total;
+          const present = classStats[c].present;
+          const pVal = total > 0 ? ((present / total) * 100).toFixed(1) : '0.0';
+          return `
+            <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50/50">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-black text-slate-800 text-xs">${c}</span>
+                <span class="text-xs font-black text-blue-600">${pVal}%</span>
+              </div>
+              <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${pVal}%"></div>
+              </div>
+            </div>
+          `;
+        });
+        classCardsContainer.innerHTML = cardsHtml.join('');
+      }
+
+      renderStudentAnalyticsTable();
+    }
+
+    function renderStudentAnalyticsTable() {
+      const date = document.getElementById('attendanceDate').value;
+      const role = currentUser ? currentUser.role : 'teacher';
+      const userAssignedClass = currentUser ? currentUser.assignedClass : null;
+
+      let filterClass = 'all';
+      if (role === 'teacher' && userAssignedClass) {
+        filterClass = userAssignedClass;
+      } else {
+        filterClass = document.getElementById('analyticsFilterClass').value;
+      }
+
+      const tbody = document.getElementById('studentAnalyticsTbody');
+      const filteredStudents = filterClass === 'all' ? students : students.filter(s => s.class === filterClass);
+
+      let rowsHtml = filteredStudents.map((student, idx) => {
+        let presentLessons = 0;
+        let periodBadges = '';
+
+        defaultSchedule.forEach(p => {
+          const pData = attendanceData[`${date}_${p.id}`] || {};
+          let status = pData[student.id]?.status || 'bor';
+
+          if (status === 'bor') {
+            presentLessons++;
+            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-3.5 h-3.5 rounded-full bg-emerald-100 text-emerald-700 font-bold inline-flex items-center justify-center text-[8px]">✓</span></td>`;
+          } else if (status === 'kelmadi') {
+            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-3.5 h-3.5 rounded-full bg-rose-100 text-rose-700 font-bold inline-flex items-center justify-center text-[8px]">✕</span></td>`;
+          } else {
+            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-3.5 h-3.5 rounded-full bg-amber-100 text-amber-700 font-bold inline-flex items-center justify-center text-[8px]">S</span></td>`;
+          }
+        });
+
+        const studentPercent = ((presentLessons / defaultSchedule.length) * 100).toFixed(1);
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-2 px-3 text-center font-bold text-slate-400">${idx + 1}</td>
+            <td class="py-2 px-3 font-bold text-slate-800 truncate max-w-[120px]">${student.name}</td>
+            <td class="py-2 px-2 font-semibold text-slate-600">${student.class}</td>
+            ${periodBadges}
+            <td class="py-2 px-3 text-center">
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-black border text-blue-700 bg-blue-50 border-blue-200">${studentPercent}%</span>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = rowsHtml.join('');
+    }
+
+    // ================= EXCEL DARS JADVALINI IMPORT QILISH =================
+    function downloadScheduleTemplate() {
+      const templateData = [
+        { "Hafta Kuni": "Dushanba", "Dars Soati": 1, "Sinf": "5-A", "Fan Nomi": "Matematika", "Oqituvchi Logini": "xodim_15" },
+        { "Hafta Kuni": "Dushanba", "Dars Soati": 2, "Sinf": "5-A", "Fan Nomi": "Ona tili", "Oqituvchi Logini": "5a_rahbar" },
+        { "Hafta Kuni": "Dushanba", "Dars Soati": 1, "Sinf": "6-A", "Fan Nomi": "Tarix", "Oqituvchi Logini": "6a_rahbar" }
+      ];
+
+      const ws = XLSX.utils.json_to_sheet(templateData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Jadval");
+      XLSX.writeFile(wb, "Dars_Jadvali_Namuna.xlsx");
+      showToast("Namuna fayli yuklab olindi! 📥");
+    }
+
+    function handleExcelScheduleUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const data = new Uint8Array(evt.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+          if (!jsonData || jsonData.length === 0) {
+            alert("Excel fayl bo'sh yoki noto'g'ri formatda!");
+            return;
+          }
+
+          teacherSchedules = jsonData.map(row => ({
+            day: row["Hafta Kuni"] || row["day"] || "Dushanba",
+            period: row["Dars Soati"] || row["period"] || 1,
+            class: row["Sinf"] || row["class"] || "5-A",
+            subject: row["Fan Nomi"] || row["subject"] || "Dars",
+            teacherUsername: row["Oqituvchi Logini"] || row["teacherUsername"] || ""
+          }));
+
+          syncToFirebase('teacher_schedules', teacherSchedules);
+          renderImportedScheduleTable();
+          showToast(`Muvaffaqiyatli! ${teacherSchedules.length} ta dars yuklandi ✅`);
+        } catch (err) {
+          console.error("Excel o'qishda xato:", err);
+          alert("Excel faylni o'qishda xatolik yuz berdi: " + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function renderImportedScheduleTable() {
+      const tbody = document.getElementById('importedScheduleTbody');
+      const countEl = document.getElementById('importedScheduleCount');
+      if (countEl) countEl.innerText = `${teacherSchedules.length} ta dars biriktirilgan`;
+
+      if (!tbody) return;
+
+      let rowsHtml = teacherSchedules.map(item => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-2 px-3 font-bold text-slate-700">${item.day}</td>
+          <td class="py-2 px-3 font-black text-blue-600">${item.period}-dars</td>
+          <td class="py-2 px-3 font-bold text-slate-800">${item.class}</td>
+          <td class="py-2 px-3 font-medium text-slate-600">${item.subject}</td>
+          <td class="py-2 px-3 font-mono font-bold text-indigo-700">${item.teacherUsername}</td>
+        </tr>
+      `);
+
+      tbody.innerHTML = rowsHtml.join('');
     }
 
     // ================= O'QUVCHILAR RO'YXATI =================
@@ -1676,29 +1395,18 @@
         return s.name.toLowerCase().includes(query) || s.class.toLowerCase().includes(query);
       });
 
-      let rowsHtml = filtered.map((student, index) => {
-        const canEdit = currentUser.role === 'admin' || isOwnerMode || (currentUser.assignedClass === student.class);
-
-        return `
-          <tr class="hover:bg-slate-50">
-            <td class="py-2.5 px-3 text-center text-slate-400 font-bold text-xs">${index + 1}</td>
-            <td class="py-2.5 px-3 font-bold text-slate-800 text-xs sm:text-sm">
-              ${student.name}
-              <div class="sm:hidden text-[10px] text-slate-400 font-mono">${student.phone}</div>
-            </td>
-            <td class="py-2.5 px-2 sm:px-4 text-center sm:text-left"><span class="px-2 py-0.5 bg-slate-100 rounded-md font-bold text-[11px] text-blue-700">${student.class}</span></td>
-            <td class="py-2.5 px-3 font-mono text-xs hidden sm:table-cell text-slate-600">${student.phone}</td>
-            <td class="py-2.5 px-3 text-right">
-              ${canEdit ? `
-                <button type="button" onclick="editStudent('${student.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition mr-1" title="Tahrirlash"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button type="button" onclick="deleteStudent('${student.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="O'chirish"><i class="fa-solid fa-trash"></i></button>
-              ` : `
-                <span class="text-[10px] text-slate-400 font-medium italic"><i class="fa-solid fa-lock"></i></span>
-              `}
-            </td>
-          </tr>
-        `;
-      });
+      let rowsHtml = filtered.map((student, index) => `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2.5 px-3 text-center text-slate-400 font-bold text-xs">${index + 1}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-800 text-xs sm:text-sm">${student.name}</td>
+          <td class="py-2.5 px-2 sm:px-4 text-center sm:text-left"><span class="px-2 py-0.5 bg-slate-100 rounded-md font-bold text-[11px] text-blue-700">${student.class}</span></td>
+          <td class="py-2.5 px-3 font-mono text-xs hidden sm:table-cell text-slate-600">${student.phone}</td>
+          <td class="py-2.5 px-3 text-right">
+            <button type="button" onclick="editStudent('${student.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition mr-1" title="Tahrirlash"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button type="button" onclick="deleteStudent('${student.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="O'chirish"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      `);
 
       tbody.innerHTML = rowsHtml.join('');
     }
@@ -1707,14 +1415,6 @@
       const modal = document.getElementById('studentModal');
       const form = document.getElementById('studentForm');
       form.reset();
-
-      const modalClassSelect = document.getElementById('modalClass');
-      if (currentUser.role !== 'admin' && !isOwnerMode && currentUser.assignedClass) {
-        modalClassSelect.value = currentUser.assignedClass;
-        modalClassSelect.disabled = true;
-      } else {
-        modalClassSelect.disabled = false;
-      }
 
       if (id) {
         const student = students.find(s => s.id === id);
@@ -1758,7 +1458,7 @@
     function editStudent(id) { openStudentModal(id); }
 
     function deleteStudent(id) {
-      if (confirm("Ushbu o'quvchini o'chirishga ishonchingiz komilmi?")) {
+      if (confirm("O'quvchini o'chirishga ishonchingiz komilmi?")) {
         students = students.filter(s => s.id !== id);
         syncToFirebase('students', students);
         renderStudentManagementTable();
@@ -1766,375 +1466,8 @@
       }
     }
 
-    // ================= TAHLIL VA DIAGRAMMALAR =================
-    function renderDeepAnalytics() {
-      const date = document.getElementById('attendanceDate').value;
-      document.getElementById('analyticsClassDate').innerText = `${date} holatiga`;
-
-      let totalStudents = students.length;
-      let presentCount = 0;
-      let absentCount = 0;
-
-      let classStats = {};
-      classes.forEach(c => classStats[c] = { total: 0, present: 0, absent: 0 });
-
-      const morningData = attendanceData[`${date}_morning`] || {};
-
-      students.forEach(s => {
-        if (classStats[s.class]) classStats[s.class].total++;
-        const hasAdminPermission = adminPermissions[date] && adminPermissions[date][s.id];
-
-        let status = morningData[s.id]?.status || 'bor';
-        if (hasAdminPermission) status = 'bor';
-
-        if (status === 'bor') {
-          presentCount++;
-          if (classStats[s.class]) classStats[s.class].present++;
-        } else {
-          absentCount++;
-          if (classStats[s.class]) classStats[s.class].absent++;
-        }
-      });
-
-      document.getElementById('kpi-total').innerText = `${totalStudents} ta`;
-      document.getElementById('kpi-present').innerText = `${presentCount} ta`;
-      document.getElementById('kpi-absent').innerText = `${absentCount} ta`;
-      const overallPercent = totalStudents > 0 ? ((presentCount / totalStudents) * 100).toFixed(1) : '0.0';
-      document.getElementById('kpi-percent').innerText = `${overallPercent}%`;
-
-      const classCardsContainer = document.getElementById('classPercentageCards');
-      let cardsHtml = classes.map(c => {
-        const total = classStats[c].total;
-        const present = classStats[c].present;
-        const pVal = total > 0 ? ((present / total) * 100).toFixed(1) : '0.0';
-        const pNum = parseFloat(pVal);
-
-        let colorBadge = 'bg-emerald-500';
-        let textColor = 'text-emerald-600';
-        if (pNum < 80) { colorBadge = 'bg-rose-500'; textColor = 'text-rose-600'; }
-        else if (pNum < 90) { colorBadge = 'bg-amber-500'; textColor = 'text-amber-600'; }
-
-        return `
-          <div class="p-2.5 sm:p-3 rounded-xl border border-slate-200 bg-slate-50/50">
-            <div class="flex justify-between items-center mb-1">
-              <span class="font-black text-slate-800 text-xs">${c}</span>
-              <span class="text-xs font-black ${textColor}">${pVal}%</span>
-            </div>
-            <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden mb-1">
-              <div class="${colorBadge} h-1.5 rounded-full transition-all duration-300" style="width: ${pVal}%"></div>
-            </div>
-            <div class="flex justify-between text-[9px] sm:text-[10px] font-semibold text-slate-500">
-              <span>Bor: <b>${present}</b></span>
-              <span>Yo'q: <b>${classStats[c].absent}</b></span>
-            </div>
-          </div>
-        `;
-      });
-
-      classCardsContainer.innerHTML = cardsHtml.join('');
-
-      renderCharts(date, classStats);
-      renderStudentAnalyticsTable();
-    }
-
-    function renderCharts(date, classStats) {
-      const barLabels = classes;
-      const barValues = classes.map(c => {
-        const total = classStats[c].total;
-        return total > 0 ? parseFloat(((classStats[c].present / total) * 100).toFixed(1)) : 0;
-      });
-
-      if (classBarChart) classBarChart.destroy();
-      const ctxBar = document.getElementById('classBarChart').getContext('2d');
-      classBarChart = new Chart(ctxBar, {
-        type: 'bar',
-        data: {
-          labels: barLabels,
-          datasets: [{
-            label: 'Davomat foizi (%)',
-            data: barValues,
-            backgroundColor: '#3b82f6',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          scales: { y: { min: 0, max: 100 } }
-        }
-      });
-
-      const periodPercents = schedule.map(p => {
-        const pData = attendanceData[`${date}_${p.id}`] || {};
-        let present = 0;
-        students.forEach(s => {
-          const hasAdminPermission = adminPermissions[date] && adminPermissions[date][s.id];
-          let status = pData[s.id]?.status || 'bor';
-          if (hasAdminPermission || status === 'bor') present++;
-        });
-        return students.length > 0 ? parseFloat(((present / students.length) * 100).toFixed(1)) : 100;
-      });
-
-      if (periodLineChart) periodLineChart.destroy();
-      const ctxLine = document.getElementById('periodLineChart').getContext('2d');
-      periodLineChart = new Chart(ctxLine, {
-        type: 'line',
-        data: {
-          labels: schedule.map(s => s.name),
-          datasets: [{
-            label: 'Dinamika (%)',
-            data: periodPercents,
-            borderColor: '#6366f1',
-            backgroundColor: 'rgba(99, 102, 241, 0.1)',
-            fill: true,
-            tension: 0.2,
-            borderWidth: 2,
-            pointRadius: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          scales: { y: { min: 0, max: 100 } }
-        }
-      });
-    }
-
-    function renderStudentAnalyticsTable() {
-      const date = document.getElementById('attendanceDate').value;
-      const filterClass = document.getElementById('analyticsFilterClass').value;
-      const tbody = document.getElementById('studentAnalyticsTbody');
-
-      const filteredStudents = filterClass === 'all' ? students : students.filter(s => s.class === filterClass);
-
-      let rowsHtml = filteredStudents.map((student, idx) => {
-        const hasAdminPermission = adminPermissions[date] && adminPermissions[date][student.id];
-        let presentLessons = 0;
-        let periodBadges = '';
-
-        schedule.forEach(p => {
-          const pData = attendanceData[`${date}_${p.id}`] || {};
-          let status = pData[student.id]?.status || 'bor';
-          if (hasAdminPermission) status = 'bor';
-
-          if (status === 'bor') {
-            presentLessons++;
-            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-3.5 h-3.5 rounded-full bg-emerald-100 text-emerald-700 font-bold inline-flex items-center justify-center text-[8px]">✓</span></td>`;
-          } else if (status === 'kelmadi') {
-            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-3.5 h-3.5 rounded-full bg-rose-100 text-rose-700 font-bold inline-flex items-center justify-center text-[8px]">✕</span></td>`;
-          } else {
-            periodBadges += `<td class="py-2 px-1 text-center"><span class="w-3.5 h-3.5 rounded-full bg-amber-100 text-amber-700 font-bold inline-flex items-center justify-center text-[8px]">S</span></td>`;
-          }
-        });
-
-        const studentPercent = ((presentLessons / schedule.length) * 100).toFixed(1);
-        let colorClass = 'text-emerald-700 bg-emerald-50 border-emerald-200';
-        if (studentPercent < 80) colorClass = 'text-rose-700 bg-rose-50 border-rose-200';
-        else if (studentPercent < 100) colorClass = 'text-amber-700 bg-amber-50 border-amber-200';
-
-        return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-2 px-3 text-center font-bold text-slate-400">${idx + 1}</td>
-            <td class="py-2 px-3 font-bold text-slate-800 truncate max-w-[120px]">${student.name}</td>
-            <td class="py-2 px-2 font-semibold text-slate-600">${student.class}</td>
-            ${periodBadges}
-            <td class="py-2 px-3 text-center">
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-black border ${colorClass}">${studentPercent}%</span>
-            </td>
-          </tr>
-        `;
-      });
-
-      tbody.innerHTML = rowsHtml.join('');
-    }
-
-    // ================= EXCEL EKSPORTLARI =================
-    function exportClassesDailyAnalyticsToExcel() {
-      const date = document.getElementById('attendanceDate').value;
-      const morningData = attendanceData[`${date}_morning`] || {};
-
-      let tableHtml = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-        <head><meta charset="UTF-8"></head>
-        <body>
-          <h2 style="text-align:center;">Maktab Sinflarining Kunlik Davomat Tahlili</h2>
-          <p style="text-align:center;"><b>Sana:</b> ${date} | <b>Jami Sinflar:</b> ${classes.length} ta</p>
-          <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; font-family:Arial, sans-serif;">
-            <tr style="background-color:#0284c7; color:#ffffff; font-weight:bold; text-align:center;">
-              <th>#</th>
-              <th>Sinf</th>
-              <th>Jami O'quvchi</th>
-              <th>Ertalab Bor</th>
-              <th>Ertalab Yo'q</th>
-              <th>Ertalabki Foiz</th>
-              <th>Kun Oxiridagi Bor</th>
-              <th>Kun Oxiridagi Yo'q</th>
-              <th>Kun Oxiridagi Foiz</th>
-            </tr>
-      `;
-
-      classes.forEach((c, idx) => {
-        const classStudents = students.filter(s => s.class === c);
-        const total = classStudents.length;
-
-        let morningBor = 0;
-        classStudents.forEach(s => {
-          const hasPerm = adminPermissions[date] && adminPermissions[date][s.id];
-          const st = morningData[s.id]?.status || 'bor';
-          if (hasPerm || st === 'bor') morningBor++;
-        });
-        const morningYoq = total - morningBor;
-        const morningPercent = total > 0 ? ((morningBor / total) * 100).toFixed(1) : '0.0';
-
-        let totalLessonSlots = 0;
-        let totalPresentSlots = 0;
-
-        schedule.forEach(p => {
-          const pData = attendanceData[`${date}_${p.id}`] || {};
-          classStudents.forEach(s => {
-            totalLessonSlots++;
-            const hasPerm = adminPermissions[date] && adminPermissions[date][s.id];
-            const st = pData[s.id]?.status || 'bor';
-            if (hasPerm || st === 'bor') totalPresentSlots++;
-          });
-        });
-
-        const dayEndPercent = totalLessonSlots > 0 ? ((totalPresentSlots / totalLessonSlots) * 100).toFixed(1) : '0.0';
-        const dayEndPresentAvg = (totalPresentSlots / (schedule.length || 1)).toFixed(0);
-        const dayEndAbsentAvg = total - dayEndPresentAvg;
-
-        tableHtml += `
-          <tr>
-            <td style="text-align:center;">${idx + 1}</td>
-            <td style="text-align:center; font-weight:bold; background-color:#f1f5f9;">${c} sinf</td>
-            <td style="text-align:center; font-weight:bold;">${total} ta</td>
-            <td style="text-align:center; background-color:#dcfce7; color:#166534; font-weight:bold;">${morningBor}</td>
-            <td style="text-align:center; background-color:#fee2e2; color:#991b1b; font-weight:bold;">${morningYoq}</td>
-            <td style="text-align:center; font-weight:bold; color:#1e40af;">${morningPercent}%</td>
-            <td style="text-align:center; background-color:#dcfce7; color:#166534; font-weight:bold;">${dayEndPresentAvg}</td>
-            <td style="text-align:center; background-color:#fee2e2; color:#991b1b; font-weight:bold;">${dayEndAbsentAvg}</td>
-            <td style="text-align:center; font-weight:bold; color:#4338ca; background-color:#e0e7ff;">${dayEndPercent}%</td>
-          </tr>
-        `;
-      });
-
-      tableHtml += `</table></body></html>`;
-
-      const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Sinflar_Kunlik_Tahlili_${date}.xls`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast("Sinflar tahlili Excel fayli yuklandi! 📊");
-    }
-
-    function exportAllStudentsHourlyAnalyticsToExcel() {
-      const date = document.getElementById('attendanceDate').value;
-
-      let tableHtml = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-        <head><meta charset="UTF-8"></head>
-        <body>
-          <h2 style="text-align:center;">Dars Soatlari Kesimidagi Kunlik Davomat</h2>
-          <p style="text-align:center;"><b>Sana:</b> ${date} | <b>Jami O'quvchilar:</b> ${students.length} ta</p>
-          <table border="1" cellpadding="5" cellspacing="0" style="border-collapse:collapse; font-family:Arial, sans-serif;">
-            <tr style="background-color:#4338ca; color:#ffffff; font-weight:bold; text-align:center;">
-              <th>#</th>
-              <th>O'quvchi F.I.SH.</th>
-              <th>Sinfi</th>
-              <th>Ertalab</th>
-              <th>1-dars</th>
-              <th>2-dars</th>
-              <th>3-dars</th>
-              <th>4-dars</th>
-              <th>5-dars</th>
-              <th>6-dars</th>
-              <th>7-dars</th>
-              <th>8-dars</th>
-              <th>Foiz</th>
-            </tr>
-      `;
-
-      let globalCounter = 1;
-
-      classes.forEach(c => {
-        const classStudents = students.filter(s => s.class === c);
-
-        tableHtml += `
-          <tr style="background-color:#e2e8f0; font-weight:bold;">
-            <td colspan="13" style="text-align:left; padding-left:10px;">🏫 ${c} SINF</td>
-          </tr>
-        `;
-
-        classStudents.forEach(student => {
-          const hasAdminPerm = adminPermissions[date] && adminPermissions[date][student.id];
-          let presentCount = 0;
-          let hourCells = '';
-
-          schedule.forEach(p => {
-            const pData = attendanceData[`${date}_${p.id}`] || {};
-            let status = pData[student.id]?.status || 'bor';
-            if (hasAdminPerm) status = 'bor';
-
-            if (status === 'bor') {
-              presentCount++;
-              hourCells += `<td style="text-align:center; color:#166534; font-weight:bold; background-color:#dcfce7;">✓</td>`;
-            } else if (status === 'kelmadi') {
-              hourCells += `<td style="text-align:center; color:#991b1b; font-weight:bold; background-color:#fee2e2;">✕</td>`;
-            } else {
-              hourCells += `<td style="text-align:center; color:#b45309; font-weight:bold; background-color:#fef3c7;">S</td>`;
-            }
-          });
-
-          const percent = ((presentCount / schedule.length) * 100).toFixed(1);
-
-          tableHtml += `
-            <tr>
-              <td style="text-align:center;">${globalCounter++}</td>
-              <td style="font-weight:bold;">${student.name}</td>
-              <td style="text-align:center;">${student.class}</td>
-              ${hourCells}
-              <td style="text-align:center; font-weight:bold; background-color:#e0e7ff; color:#3730a3;">${percent}%</td>
-            </tr>
-          `;
-        });
-      });
-
-      tableHtml += `</table></body></html>`;
-
-      const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Oquvchilar_Darsbay_Davomat_${date}.xls`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast("Darsbay Excel fayli yuklandi! 📋");
-    }
-
-    // ================= XODIMLAR VA ADMINLAR RO'YXATI =================
+    // ================= XODIMLAR BO'LIMI =================
     function renderAdminTeachersTable() {
-      if (!currentUser || (currentUser.role !== 'admin' && !isOwnerMode)) {
-        document.getElementById('adminTeachersTbody').innerHTML = '';
-        return;
-      }
-
-      const myCard = document.getElementById('myAdminAccountCard');
-      if (myCard && currentUser) {
-        myCard.classList.remove('hidden');
-        document.getElementById('myAccountName').innerText = currentUser.name || "Administrator";
-        const currentPass = users[currentUser.username] ? users[currentUser.username].password : "********";
-        document.getElementById('myAccountLoginDetails').innerText = `Login: ${currentUser.username} | Parol: ${currentPass}`;
-      }
-
       const tbody = document.getElementById('adminTeachersTbody');
       const allKeys = Object.keys(users);
 
@@ -2142,24 +1475,19 @@
         const u = users[key];
         const isAdmin = u.role === 'admin';
         const roleBadge = isAdmin
-          ? `<span class="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 rounded text-[10px] font-bold inline-flex items-center gap-1"><i class="fa-solid fa-crown text-amber-600"></i> Admin</span>`
+          ? `<span class="px-2 py-0.5 bg-amber-100 text-amber-900 border border-amber-300 rounded text-[10px] font-bold">Admin</span>`
           : `<span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-[10px] font-bold">O'qituvchi</span>`;
 
         return `
-          <tr class="hover:bg-slate-50 ${isAdmin ? 'bg-amber-50/30' : ''}">
+          <tr class="hover:bg-slate-50">
             <td class="py-2.5 px-3 text-center text-slate-400 font-bold text-xs">${index + 1}</td>
-            <td class="py-2.5 px-3 font-bold text-slate-800 text-xs sm:text-sm">
-              ${u.name}
-              ${key === currentUser.username ? '<span class="ml-1 text-[9px] bg-slate-800 text-white px-1.5 py-0.2 rounded font-bold">Siz</span>' : ''}
-            </td>
+            <td class="py-2.5 px-3 font-bold text-slate-800 text-xs sm:text-sm">${u.name}</td>
             <td class="py-2.5 px-3">${roleBadge}</td>
             <td class="py-2.5 px-3"><span class="px-2 py-0.5 bg-slate-100 rounded text-[11px] font-bold text-blue-700">${u.assignedClass || '—'}</span></td>
             <td class="py-2.5 px-3 font-mono font-bold text-blue-700 text-xs">${key}</td>
-            <td class="py-2.5 px-3 font-mono text-slate-700 text-xs">
-              <span class="bg-slate-100 px-2 py-0.5 rounded font-bold">${u.password}</span>
-            </td>
+            <td class="py-2.5 px-3 font-mono text-slate-700 text-xs"><span class="bg-slate-100 px-2 py-0.5 rounded font-bold">${u.password}</span></td>
             <td class="py-2.5 px-3 text-right">
-              <button type="button" onclick="openUserCreateModal('all', '${key}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded transition mr-1" title="Tahrirlash"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button type="button" onclick="openUserCreateModal('${key}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded transition mr-1" title="Tahrirlash"><i class="fa-solid fa-pen-to-square"></i></button>
               <button type="button" onclick="deleteUserAccount('${key}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded transition" title="O'chirish"><i class="fa-solid fa-trash"></i></button>
             </td>
           </tr>
@@ -2169,52 +1497,6 @@
       tbody.innerHTML = rowsHtml.join('');
     }
 
-    function openSelfEditModal() {
-      if (!currentUser) return;
-      const u = users[currentUser.username] || currentUser;
-      document.getElementById('selfNameInput').value = u.name || '';
-      document.getElementById('selfLoginInput').value = currentUser.username || '';
-      document.getElementById('selfPasswordInput').value = u.password || '';
-      document.getElementById('selfEditModal').classList.remove('hidden');
-    }
-
-    function closeSelfEditModal() {
-      document.getElementById('selfEditModal').classList.add('hidden');
-    }
-
-    document.getElementById('selfEditForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const newName = document.getElementById('selfNameInput').value.trim();
-      const newLogin = document.getElementById('selfLoginInput').value.trim();
-      const newPassword = document.getElementById('selfPasswordInput').value.trim();
-
-      if (!newName || !newLogin || !newPassword) return;
-
-      const oldUsername = currentUser.username;
-      const currentRole = users[oldUsername] ? users[oldUsername].role : currentUser.role;
-      const currentClass = users[oldUsername] ? users[oldUsername].assignedClass : null;
-
-      if (oldUsername !== newLogin) {
-        delete users[oldUsername];
-      }
-
-      users[newLogin] = {
-        role: currentRole,
-        name: newName,
-        assignedClass: currentClass,
-        password: newPassword
-      };
-
-      currentUser.username = newLogin;
-      currentUser.name = newName;
-
-      syncToFirebase('users', users);
-      closeSelfEditModal();
-      updateUserRoleBadge();
-      renderAdminTeachersTable();
-      showToast("Profilingiz yangilandi! 👤");
-    });
-
     function toggleUserClassSelect() {
       const role = document.getElementById('userFormRole').value;
       const wrap = document.getElementById('userFormClassWrapper');
@@ -2222,9 +1504,7 @@
       else wrap.classList.remove('hidden');
     }
 
-    function openUserCreateModal(mode = 'all', key = null) {
-      if (currentUser.role !== 'admin' && !isOwnerMode) return;
-
+    function openUserCreateModal(key = null) {
       const modal = document.getElementById('userModal');
       const form = document.getElementById('userForm');
       form.reset();
@@ -2234,7 +1514,7 @@
         document.getElementById('userFormKey').value = key;
         document.getElementById('userFormName').value = u.name;
         document.getElementById('userFormRole').value = u.role;
-        document.getElementById('userFormClass').value = u.assignedClass || '5-A';
+        document.getElementById('userFormClass').value = u.assignedClass || '';
         document.getElementById('userFormLogin').value = key;
         document.getElementById('userFormPassword').value = u.password;
         document.getElementById('userModalTitle').innerText = "Hisobni tahrirlash";
@@ -2253,12 +1533,10 @@
 
     document.getElementById('userForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      if (currentUser.role !== 'admin' && !isOwnerMode) return;
-
       const oldKey = document.getElementById('userFormKey').value;
       const name = document.getElementById('userFormName').value.trim();
       const role = document.getElementById('userFormRole').value;
-      const assignedClass = role === 'admin' ? null : document.getElementById('userFormClass').value;
+      const assignedClass = role === 'admin' ? null : (document.getElementById('userFormClass').value || null);
       const login = document.getElementById('userFormLogin').value.trim();
       const password = document.getElementById('userFormPassword').value.trim();
 
@@ -2267,13 +1545,6 @@
       }
 
       users[login] = { role, name, assignedClass, password };
-
-      if (login === 'admin1' || (currentUser && currentUser.username === login)) {
-        if (users['admin1']) users['admin1'].name = name;
-        if (currentUser && currentUser.username === login) currentUser.name = name;
-        updateUserRoleBadge();
-      }
-
       syncToFirebase('users', users);
       closeUserModal();
       renderAdminTeachersTable();
@@ -2281,86 +1552,12 @@
     });
 
     function deleteUserAccount(key) {
-      if (currentUser.role !== 'admin' && !isOwnerMode) return;
-
-      if (confirm(`Rostdan ham "${key}" hisobini o'chirmoqchimisiz?`)) {
+      if (confirm(`"${key}" hisobini o'chirmoqchimisiz?`)) {
         delete users[key];
         syncToFirebase('users', users);
         renderAdminTeachersTable();
         showToast("Hisob o'chirildi!");
       }
-    }
-
-    function exportToExcel() {
-      const selectedClass = document.getElementById('classSelector').value;
-      const date = document.getElementById('attendanceDate').value;
-      const periodKey = getPeriodKey();
-      const pSelect = document.getElementById('lessonPeriod');
-      const periodName = pSelect.selectedOptions[0] ? pSelect.selectedOptions[0].text : '';
-      const currentAttendance = attendanceData[periodKey] || {};
-
-      const classStudents = students.filter(s => s.class === selectedClass);
-
-      let tableHtml = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-        <head><meta charset="UTF-8"></head>
-        <body>
-          <h2 style="text-align:center;">${selectedClass} Sinf Davomat Hisoboti</h2>
-          <p><b>Sana:</b> ${date} | <b>Dars:</b> ${periodName}</p>
-          <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; font-family:Arial, sans-serif;">
-            <tr style="background-color:#0284c7; color:#ffffff; font-weight:bold;">
-              <th>#</th>
-              <th>F.I.SH.</th>
-              <th>Ota-ona telefoni</th>
-              <th>Holat</th>
-              <th>Sabab / Izoh</th>
-              <th>Admin Maqomi</th>
-            </tr>
-      `;
-
-      classStudents.forEach((s, idx) => {
-        const hasAdminPermission = adminPermissions[date] && adminPermissions[date][s.id];
-        let status = currentAttendance[s.id]?.status || 'bor';
-        if (hasAdminPermission) status = 'bor';
-
-        let statusText = 'Bor';
-        let statusBg = '#dcfce7';
-        if (status === 'kelmadi') { statusText = 'Kelmadi'; statusBg = '#fee2e2'; }
-        if (status === 'sababli') { statusText = 'Sababli'; statusBg = '#fef3c7'; }
-
-        let reason = '-';
-        if (status !== 'bor') {
-          const rType = currentAttendance[s.id]?.reasonType || 'oilaviy';
-          if (rType === 'oilaviy') reason = 'Oilaviy muammo';
-          else if (rType === 'kasal') reason = 'Kasal / Tibbiy';
-          else reason = currentAttendance[s.id]?.customReason || 'Boshqa sabab';
-        }
-
-        const adminStatus = hasAdminPermission ? 'Admin Ruxsatida' : 'Oddiy';
-
-        tableHtml += `
-          <tr>
-            <td style="text-align:center;">${idx + 1}</td>
-            <td><b>${s.name}</b></td>
-            <td>${s.phone}</td>
-            <td style="background-color:${statusBg}; text-align:center; font-weight:bold;">${statusText}</td>
-            <td>${reason}</td>
-            <td style="text-align:center;">${adminStatus}</td>
-          </tr>
-        `;
-      });
-
-      tableHtml += `</table></body></html>`;
-
-      const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Davomat_${selectedClass}_${date}.xls`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
     }
   </script>
 </body>
