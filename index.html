@@ -14,7 +14,7 @@
   <link id="appleTouchIcon" rel="apple-touch-icon" href="">
   <link id="appFavicon" rel="icon" type="image/png" href="">
   
-  <!-- Google Fonts: Plus Jakarta Sans (Ko'zga qulay zamonaviy shrift) -->
+  <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -42,13 +42,11 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .table-container { -webkit-overflow-scrolling: touch; }
     
-    /* Ko'zga yumshoq ko'rinuvchi status nishonlari */
     .badge-present { background-color: #d1fae5; color: #065f46; }
     .badge-absent { background-color: #ffe4e6; color: #9f1239; }
     .badge-late { background-color: #fef3c7; color: #92400e; }
     .badge-excused { background-color: #e0e7ff; color: #3730a3; }
 
-    /* Yumshoq kartochka dizayni */
     .eye-card {
       background-color: #f8fafc;
       border: 1px solid #e2e8f0;
@@ -71,7 +69,9 @@
     body.dark-eye-mode .bg-slate-50,
     body.dark-eye-mode .bg-slate-50\/80,
     body.dark-eye-mode .bg-slate-50\/70,
-    body.dark-eye-mode .bg-slate-100 {
+    body.dark-eye-mode .bg-slate-100,
+    body.dark-eye-mode .bg-slate-100\/80,
+    body.dark-eye-mode .bg-slate-100\/70 {
       background-color: #0f172a !important;
       border-color: #334155 !important;
       color: #cbd5e1 !important;
@@ -97,6 +97,8 @@
     body.dark-eye-mode .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
     body.dark-eye-mode .border-slate-100,
     body.dark-eye-mode .border-slate-200,
+    body.dark-eye-mode .border-slate-200\/70,
+    body.dark-eye-mode .border-slate-200\/80,
     body.dark-eye-mode .border-b {
       border-color: #334155 !important;
     }
@@ -158,6 +160,21 @@
     </div>
   </div>
 
+  <!-- Oxirgi dars tugaganda Avto-Yopilish Modali -->
+  <div id="autoCloseModal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-xs sm:max-w-sm w-full p-6 text-center shadow-2xl">
+      <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl">
+        <i class="fa-solid fa-flag-checkered"></i>
+      </div>
+      <h3 class="text-base font-extrabold text-slate-800 mb-1">Bugungi darslaringiz yakunlandi!</h3>
+      <p class="text-xs text-slate-500 mb-4 leading-relaxed">Jadval bo'yicha barcha dars soatlaringiz tugadi. Orqa fondagi faollik to'xtatildi. Tizim <span id="autoCloseCountdown" class="font-extrabold text-teal-700">10</span> soniyada avtomatik yopiladi.</p>
+      <div class="flex gap-2">
+        <button onclick="dismissAutoCloseAndStay()" class="w-1/2 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold active:bg-slate-200">Sahifada qolish</button>
+        <button onclick="logout()" class="w-1/2 py-2.5 bg-teal-700 text-white rounded-xl text-xs font-bold active:bg-teal-800">Hozir yopish</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Maxfiy Creator Kod Modali -->
   <div id="creatorModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl max-w-xs w-full p-6 text-center shadow-2xl">
@@ -216,7 +233,7 @@
       <div class="flex items-center justify-between mb-3">
         <div>
           <h3 class="text-base font-bold text-slate-800">Qo'ng'iroqlar Jadvali (Avto-soat)</h3>
-          <p class="text-[11px] text-slate-400">O'qituvchi faqat dars boshlangan vaqtdan boshlab davomatni tasdiqlay oladi</p>
+          <p class="text-[11px] text-slate-400">Dars boshlanishidan oldin davomat qulflanadi, o'tib ketgan darslar esa ochiq qoladi</p>
         </div>
       </div>
       <div id="bellTimesInputsContainer" class="space-y-2 mb-5"></div>
@@ -672,6 +689,95 @@
                 </tr>
               </thead>
               <tbody id="teachersManageTableBody" class="divide-y divide-slate-100 font-medium"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 8: XODIM 2 (MAKTAB HUDUDI VA LOKATSIYA BOSHQARUVI - FAQAT ADMIN VA CREATOR) ==================== -->
+      <section id="tabTeachersLocation" class="space-y-4 sm:space-y-6 hidden">
+        <!-- Maktab Lokatsiyasi va Radiusini Sozlash Paneli -->
+        <div class="eye-card p-4 sm:p-6 rounded-3xl space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h2 class="text-base sm:text-xl font-extrabold text-slate-800">Xodim 2 — Maktab Hududi va Lokatsiya Sozlamalari</h2>
+                <span id="schoolCoordsStatusBadge" class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold badge-late">Markaz belgilanmagan</span>
+              </div>
+              <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">Maktab koordinatasi, ruxsat etilgan radius va maktab Wi-Fi tarmog'ini belgilash (faqat Admin va Creator uchun)</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              <button onclick="setSchoolCenterHere()" class="flex-1 sm:flex-none px-4 py-2.5 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition">
+                <i class="fa-solid fa-location-crosshairs"></i> Joriy joylashuv + Wi-Fi ni olish
+              </button>
+            </div>
+          </div>
+
+          <!-- Koordinata, Radius va IP kiritish qatori -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-2 border-t border-slate-200/70">
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Kenglik (Latitude)</label>
+              <input type="number" step="any" id="schoolLatInput" placeholder="Masalan: 42.4602" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Uzunlik (Longitude)</label>
+              <input type="number" step="any" id="schoolLngInput" placeholder="Masalan: 59.6156" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Maktab Radiusi (Metrda)</label>
+              <input type="number" id="schoolRadiusInput" value="250" min="50" max="2000" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Maktab Wi-Fi IP (Ruxsatsiz aniqlash)</label>
+              <input type="text" id="schoolIpInput" placeholder="Avto yoki qo'lda IP" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono">
+            </div>
+            <div class="flex items-end">
+              <button onclick="saveManualSchoolLocationSettings()" class="w-full py-2 px-4 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition shadow-xs">
+                <i class="fa-solid fa-floppy-disk mr-1"></i> Parametrlarni saqlash
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Qisqacha tushuntirish va qidiruv -->
+        <div class="eye-card p-3.5 sm:p-4 rounded-3xl flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-bold">
+            <span class="px-2.5 py-1 rounded-lg badge-present inline-flex items-center gap-1.5">
+              <i class="fa-solid fa-building-circle-check"></i> Maktab hududida
+            </span>
+            <span class="px-2.5 py-1 rounded-lg badge-absent inline-flex items-center gap-1.5">
+              <i class="fa-solid fa-building-circle-exclamation"></i> Tashqarida
+            </span>
+            <span class="px-2.5 py-1 rounded-lg badge-excused inline-flex items-center gap-1.5">
+              <i class="fa-solid fa-flag-checkered"></i> Darslari yakunlandi
+            </span>
+            <span class="px-2.5 py-1 rounded-lg bg-slate-200 text-slate-700 inline-flex items-center gap-1.5">
+              <i class="fa-solid fa-location-slash"></i> Ruxsat yo'q
+            </span>
+          </div>
+          <input type="text" id="searchXodim2Input" oninput="renderTeachersLocationTable()" placeholder="O'qituvchini qidiring..." class="w-full sm:w-64 px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-600 focus:outline-none">
+        </div>
+
+        <!-- Xodim 2 Jadvali (Dars soatlari kesimida maktab hududida yoki tashqarida) -->
+        <div class="eye-card rounded-3xl overflow-hidden">
+          <div class="overflow-x-auto table-container">
+            <table class="w-full text-left text-xs whitespace-nowrap">
+              <thead class="bg-slate-100/80 text-slate-500 uppercase font-bold border-b text-[11px]">
+                <tr>
+                  <th class="p-3 w-10 text-center">№</th>
+                  <th class="p-3 min-w-[200px]">O'qituvchi F.I.SH</th>
+                  <th class="p-3 text-center">Joriy Holati</th>
+                  <th class="p-2.5 text-center">1-soat</th>
+                  <th class="p-2.5 text-center">2-soat</th>
+                  <th class="p-2.5 text-center">3-soat</th>
+                  <th class="p-2.5 text-center">4-soat</th>
+                  <th class="p-2.5 text-center">5-soat</th>
+                  <th class="p-2.5 text-center">6-soat</th>
+                  <th class="p-2.5 text-center">7-soat</th>
+                  <th class="p-2.5 text-center">8-soat</th>
+                </tr>
+              </thead>
+              <tbody id="teachersLocationTableBody" class="divide-y divide-slate-100 font-medium"></tbody>
             </table>
           </div>
         </div>
@@ -1274,6 +1380,17 @@
     let cachedAttendance = {};
     let cachedSchedules = {};
     let cachedBellTimes = JSON.parse(JSON.stringify(DEFAULT_BELL_TIMES));
+    let cachedSchoolLocation = null; // { lat, lng, radius, ip }
+    let latestTeacherAreaState = 'unknown'; // 'inside' | 'outside' | 'denied' | 'unknown'
+    let currentDeviceIp = null;
+    let geoWatchId = null;
+
+    // Ovozsiz audio, WakeLock va Avto-Yopilish o'zgaruvchilari
+    let silentAudioCtx = null;
+    let silentOscillator = null;
+    let wakeLockSentinel = null;
+    let autoCloseDismissedToday = false;
+    let autoCloseCountdownTimer = null;
 
     function preloadLocalFallbacks() {
       const savedTeachers = localStorage.getItem('school_cached_teachers');
@@ -1298,6 +1415,9 @@
 
       const savedBells = localStorage.getItem('school_cached_bells');
       if (savedBells) cachedBellTimes = JSON.parse(savedBells);
+
+      const savedSchoolLoc = localStorage.getItem('school_cached_location');
+      if (savedSchoolLoc) cachedSchoolLocation = JSON.parse(savedSchoolLoc);
     }
     preloadLocalFallbacks();
 
@@ -1317,9 +1437,19 @@
       });
     }
 
+    // Qurilmaning IP manzilini hech qanday ruxsatsiz aniqlash (Maktab Wi-Fi tekshiruvi uchun)
+    async function detectDevicePublicIp() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        if (data && data.ip) currentDeviceIp = data.ip;
+      } catch (e) {}
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const savedEyeDark = localStorage.getItem('school_eye_care_dark') === '1';
       applyEyeCareTheme(savedEyeDark);
+      detectDevicePublicIp();
 
       const dp = document.getElementById('adminDatePicker');
       if (dp) dp.value = currentDayStr;
@@ -1375,22 +1505,62 @@
         }
       });
 
+      db.ref('settings/schoolLocation').on('value', snap => {
+        if (snap.exists()) {
+          cachedSchoolLocation = snap.val();
+          localStorage.setItem('school_cached_location', JSON.stringify(cachedSchoolLocation));
+        } else {
+          cachedSchoolLocation = null;
+          localStorage.removeItem('school_cached_location');
+        }
+        updateSchoolCoordsBadge();
+        if (currentUser) renderTeachersLocationTable();
+      });
+
       const savedUser = localStorage.getItem('school_attendance_user');
       if (savedUser) {
         currentUser = JSON.parse(savedUser);
         showApp();
       }
 
-      // Har 20 soniyada dars soati boshlanganini tekshirib turish
+      // Ekranga birinchi teginganda ovozsiz audio va WakeLock'ni faollashtirish (oxirgi darsgacha aktiv turishi uchun)
+      const activateKeepAliveOnGesture = () => {
+        if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'creator') {
+          const win = getTeacherTodayWorkWindow(currentUser.login);
+          const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
+          if (win.hasLessons && nowMins <= win.endMins) {
+            startSilentAudioKeepAlive();
+            requestScreenWakeLock();
+          }
+        }
+      };
+      document.addEventListener('click', activateKeepAliveOnGesture, { passive: true });
+      document.addEventListener('touchstart', activateKeepAliveOnGesture, { passive: true });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && currentUser && currentUser.role !== 'admin' && currentUser.role !== 'creator') {
+          checkTeacherWorkWindowAndAutoClose();
+          flushLocalLocationBufferToFirebase();
+        }
+      });
+
+      // Har 60 soniyada (1 daqiqa) qurilma xotirasidagi joylashuv buferini platformaga yuborish va ish vaqtini tekshirish
       setInterval(() => {
         if (!currentUser) return;
+        if (currentUser.role !== 'admin' && currentUser.role !== 'creator') {
+          checkTeacherWorkWindowAndAutoClose();
+          flushLocalLocationBufferToFirebase();
+        }
         if (!document.getElementById('tabTakeAttendance').classList.contains('hidden')) {
           renderTeacherAttendanceTable();
         }
         if (!document.getElementById('tabAnalytics').classList.contains('hidden')) {
           renderTeacherSubmissionMonitor();
         }
-      }, 20000);
+        if (!document.getElementById('tabTeachersLocation').classList.contains('hidden')) {
+          renderTeachersLocationTable();
+        }
+      }, 60000);
     });
 
     function subscribeToAttendanceDate(dateStr) {
@@ -1523,6 +1693,9 @@
     }
 
     function logout() {
+      stopAllBackgroundPersistence();
+      if (autoCloseCountdownTimer) clearInterval(autoCloseCountdownTimer);
+      document.getElementById('autoCloseModal').classList.add('hidden');
       localStorage.removeItem('school_attendance_user');
       currentUser = null;
       document.getElementById('appScreen').classList.add('hidden');
@@ -1532,10 +1705,12 @@
     function showApp() {
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('appScreen').classList.remove('hidden');
+      autoCloseDismissedToday = false;
 
       if (currentUser.role !== 'admin' && currentUser.role !== 'creator') {
         todayDayStr = formatDateLocal(new Date());
         if (currentDayStr !== todayDayStr) subscribeToAttendanceDate(todayDayStr);
+        checkTeacherWorkWindowAndAutoClose();
       }
 
       const roleBadge = document.getElementById('userRoleBadge');
@@ -1550,10 +1725,12 @@
           <button onclick="switchTab('tabTakeAttendance')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 whitespace-nowrap">Davomat Olish</button>
           <button onclick="switchTab('tabStudentsManage')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 whitespace-nowrap">O'quvchilar</button>
           <button onclick="switchTab('tabTeachersManage')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 whitespace-nowrap">Xodimlar</button>
+          <button onclick="switchTab('tabTeachersLocation')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 whitespace-nowrap">Xodim 2</button>
         `;
         populateAdminDropdowns();
         syncTeacherLessonAndClass(true);
         selectScheduleEditorDay(selectedScheduleEditorDay);
+        updateSchoolCoordsBadge();
         switchTab('tabAnalytics');
       } else if (currentUser.role === 'admin') {
         roleBadge.innerText = "Maktab Administratori";
@@ -1562,9 +1739,11 @@
           <button onclick="switchTab('tabScheduleManage')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 whitespace-nowrap">Dars Jadvali</button>
           <button onclick="switchTab('tabStudentsManage')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 whitespace-nowrap">O'quvchilar</button>
           <button onclick="switchTab('tabTeachersManage')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 whitespace-nowrap">Xodimlar</button>
+          <button onclick="switchTab('tabTeachersLocation')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 whitespace-nowrap">Xodim 2</button>
         `;
         populateAdminDropdowns();
         selectScheduleEditorDay(selectedScheduleEditorDay);
+        updateSchoolCoordsBadge();
         switchTab('tabAnalytics');
       } else if (currentUser.role === 'class_leader') {
         roleBadge.innerText = `${currentUser.name} (${currentUser.class} rahbari)`;
@@ -1591,7 +1770,7 @@
     }
 
     function switchTab(tabId) {
-      ['tabAnalytics', 'tabScheduleManage', 'tabTakeAttendance', 'tabClassLeader', 'tabStudentsManage', 'tabTeachersManage', 'tabTeacherProfile'].forEach(id => {
+      ['tabAnalytics', 'tabScheduleManage', 'tabTakeAttendance', 'tabClassLeader', 'tabStudentsManage', 'tabTeachersManage', 'tabTeachersLocation', 'tabTeacherProfile'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
       });
@@ -1610,6 +1789,7 @@
       if (tabId === 'tabScheduleManage') renderInteractiveScheduleTable();
       if (tabId === 'tabTeacherProfile') populateTeacherProfileTab();
       if (tabId === 'tabTakeAttendance') renderTeacherAttendanceTable();
+      if (tabId === 'tabTeachersLocation') renderTeachersLocationTable();
     }
 
     function populateAdminDropdowns() {
@@ -1622,6 +1802,527 @@
       ORDERED_CLASSES.forEach(c => filterSel.innerHTML += `<option value="${c}">${c}</option>`);
     }
 
+    // ==================== OVOZSIZ AUDIO + WAKELOCK + 1 DAQIQALIK LOKAL BUFER + AVTO-YOPILISH ====================
+    function startSilentAudioKeepAlive() {
+      try {
+        if (silentAudioCtx && silentAudioCtx.state === 'running') return;
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        if (!silentAudioCtx) silentAudioCtx = new AudioContextClass();
+        if (silentAudioCtx.state === 'suspended') silentAudioCtx.resume();
+
+        if (!silentOscillator) {
+          const osc = silentAudioCtx.createOscillator();
+          const gain = silentAudioCtx.createGain();
+          // Quloqqa mutlaqo eshitilmaydigan, ammo brauzerni uyg'oq saqlaydigan mikro-signal
+          gain.gain.value = 0.00001;
+          osc.frequency.value = 1;
+          osc.connect(gain);
+          gain.connect(silentAudioCtx.destination);
+          osc.start();
+          silentOscillator = osc;
+        }
+      } catch (e) {}
+    }
+
+    function stopSilentAudioKeepAlive() {
+      try {
+        if (silentOscillator) {
+          silentOscillator.stop();
+          silentOscillator.disconnect();
+          silentOscillator = null;
+        }
+        if (silentAudioCtx) {
+          silentAudioCtx.close();
+          silentAudioCtx = null;
+        }
+      } catch (e) {}
+    }
+
+    async function requestScreenWakeLock() {
+      try {
+        if ('wakeLock' in navigator && !wakeLockSentinel) {
+          wakeLockSentinel = await navigator.wakeLock.request('screen');
+          wakeLockSentinel.addEventListener('release', () => {
+            wakeLockSentinel = null;
+          });
+        }
+      } catch (e) {}
+    }
+
+    function releaseScreenWakeLock() {
+      try {
+        if (wakeLockSentinel) {
+          wakeLockSentinel.release();
+          wakeLockSentinel = null;
+        }
+      } catch (e) {}
+    }
+
+    function stopAllBackgroundPersistence() {
+      stopSilentLocationTracking();
+      stopSilentAudioKeepAlive();
+      releaseScreenWakeLock();
+    }
+
+    // O'qituvchining bugungi birinchi va oxirgi darsi vaqtlarini aniqlaydi
+    function getTeacherTodayWorkWindow(teacherLogin) {
+      const dayIdx = getDayIndexFromDateStr(todayDayStr);
+      const dayMap = getTeacherScheduleForDay(teacherLogin, dayIdx);
+      const hours = Object.keys(dayMap).filter(h => Boolean(dayMap[h])).map(Number).sort((a, b) => a - b);
+
+      if (!hasAnyScheduleLoaded()) {
+        // Agar jadval hali yuklanmagan bo'lsa, 1-soatdan 8-soatgacha
+        return {
+          hasLessons: true,
+          firstHour: 1,
+          lastHour: 8,
+          startMins: timeStrToMinutes(DEFAULT_BELL_TIMES['1'].start) - 15,
+          endMins: timeStrToMinutes(DEFAULT_BELL_TIMES['8'].end)
+        };
+      }
+
+      if (hours.length === 0) {
+        return { hasLessons: false, firstHour: null, lastHour: null, startMins: 0, endMins: 0 };
+      }
+
+      const firstH = String(hours[0]);
+      const lastH = String(hours[hours.length - 1]);
+      const firstSlot = cachedBellTimes[firstH] || DEFAULT_BELL_TIMES[firstH];
+      const lastSlot = cachedBellTimes[lastH] || DEFAULT_BELL_TIMES[lastH];
+
+      return {
+        hasLessons: true,
+        firstHour: hours[0],
+        lastHour: hours[hours.length - 1],
+        startMins: timeStrToMinutes(firstSlot.start) - 15,
+        endMins: timeStrToMinutes(lastSlot.end)
+      };
+    }
+
+    function checkTeacherWorkWindowAndAutoClose() {
+      if (!currentUser || !currentUser.login || currentUser.role === 'admin' || currentUser.role === 'creator') return;
+      const win = getTeacherTodayWorkWindow(currentUser.login);
+      const now = new Date();
+      const nowMins = now.getHours() * 60 + now.getMinutes();
+
+      if (!win.hasLessons) {
+        // Bugun darsi yo'q
+        stopAllBackgroundPersistence();
+        db.ref(`attendance/${todayDayStr}/_LIVE_LOC/${currentUser.login}`).set({
+          state: 'no_lessons',
+          updatedAt: now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }),
+          ts: Date.now()
+        });
+        return;
+      }
+
+      if (nowMins > win.endMins) {
+        // Oxirgi dars tugadi -> GPS va ovozsiz audioni to'xtatamiz va avto-yopamiz
+        stopAllBackgroundPersistence();
+        flushLocalLocationBufferToFirebase();
+        db.ref(`attendance/${todayDayStr}/_LIVE_LOC/${currentUser.login}`).set({
+          state: 'finished',
+          updatedAt: now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }),
+          ts: Date.now()
+        });
+
+        if (!autoCloseDismissedToday) {
+          triggerAutoCloseModal();
+        }
+        return;
+      }
+
+      // Dars vaqti ichida bo'lsa, kuzatuvni faol ushlab turamiz
+      if (nowMins >= win.startMins && nowMins <= win.endMins) {
+        if (geoWatchId === null) {
+          startSilentLocationTracking();
+        }
+      }
+    }
+
+    function triggerAutoCloseModal() {
+      const modal = document.getElementById('autoCloseModal');
+      const countEl = document.getElementById('autoCloseCountdown');
+      if (!modal || !modal.classList.contains('hidden')) return;
+
+      modal.classList.remove('hidden');
+      let secondsLeft = 10;
+      if (countEl) countEl.innerText = secondsLeft;
+
+      if (autoCloseCountdownTimer) clearInterval(autoCloseCountdownTimer);
+      autoCloseCountdownTimer = setInterval(() => {
+        secondsLeft--;
+        if (countEl) countEl.innerText = Math.max(0, secondsLeft);
+        if (secondsLeft <= 0) {
+          clearInterval(autoCloseCountdownTimer);
+          logout();
+          try { window.close(); } catch (e) {}
+        }
+      }, 1000);
+    }
+
+    function dismissAutoCloseAndStay() {
+      autoCloseDismissedToday = true;
+      if (autoCloseCountdownTimer) clearInterval(autoCloseCountdownTimer);
+      document.getElementById('autoCloseModal').classList.add('hidden');
+    }
+
+    // ==================== XODIM 2: YASHIRIN JOYLASHUV + QURILMA XOTIRASI BUFERI ====================
+    function calcDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const toRad = x => (x * Math.PI) / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function evaluateAreaStateFromCoords(lat, lng, accuracy = 0) {
+      // 1. Agar maktab Wi-Fi IP manzili belgilangan bo'lsa va o'qituvchi shu Wi-Fi da bo'lsa -> Maktabda
+      if (cachedSchoolLocation && cachedSchoolLocation.ip && currentDeviceIp && cachedSchoolLocation.ip === currentDeviceIp) {
+        return 'inside';
+      }
+      if (!cachedSchoolLocation || !cachedSchoolLocation.lat || !cachedSchoolLocation.lng) {
+        return 'inside';
+      }
+      const radius = Number(cachedSchoolLocation.radius || 250);
+      const rawDist = calcDistanceMeters(lat, lng, Number(cachedSchoolLocation.lat), Number(cachedSchoolLocation.lng));
+      // Bino ichidagi beton devorlar xatoligini kompensatsiya qilish (maksimum 100 metrgacha)
+      const effectiveDist = Math.max(0, rawDist - Math.min(Number(accuracy || 0), 100));
+      return effectiveDist <= radius ? 'inside' : 'outside';
+    }
+
+    // Qurilmaning o'z xotirasiga (localStorage) saqlab turish va 1 daqiqadan so'ng platformaga yuborish
+    function saveLocationToLocalBuffer(payload) {
+      try {
+        const raw = localStorage.getItem('school_loc_buffer');
+        const list = raw ? JSON.parse(raw) : [];
+        list.push(payload);
+        localStorage.setItem('school_loc_buffer', JSON.stringify(list.slice(-30)));
+      } catch (e) {}
+    }
+
+    function flushLocalLocationBufferToFirebase() {
+      try {
+        const raw = localStorage.getItem('school_loc_buffer');
+        if (!raw) return;
+        const list = JSON.parse(raw);
+        if (!Array.isArray(list) || list.length === 0) return;
+
+        const updates = {};
+        list.forEach(item => {
+          if (!item || !item.date || !item.login) return;
+          if (item.type === 'live') {
+            updates[`attendance/${item.date}/_LIVE_LOC/${item.login}`] = {
+              state: item.state,
+              updatedAt: item.timeStr,
+              ts: item.ts
+            };
+          } else if (item.type === 'lesson' && item.hour) {
+            updates[`attendance/${item.date}/_LOCATIONS/${item.login}/${item.hour}`] = item.state;
+          }
+        });
+
+        if (Object.keys(updates).length > 0) {
+          db.ref().update(updates, (err) => {
+            if (!err) localStorage.removeItem('school_loc_buffer');
+          });
+        }
+      } catch (e) {}
+    }
+
+    function startSilentLocationTracking() {
+      if (!currentUser || !currentUser.login || currentUser.role === 'admin' || currentUser.role === 'creator') return;
+      stopSilentLocationTracking();
+
+      const onPosSuccess = (pos) => {
+        if (!currentUser || !currentUser.login) return;
+        const state = evaluateAreaStateFromCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+        latestTeacherAreaState = state;
+        const timeStr = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+
+        // Avval qurilmaning o'ziga saqlanadi (va 1 daqiqalik taymerda hamda darhol bazaga sinxronlanadi)
+        saveLocationToLocalBuffer({
+          type: 'live',
+          date: todayDayStr,
+          login: currentUser.login,
+          state: state,
+          timeStr: timeStr,
+          ts: Date.now()
+        });
+        db.ref(`attendance/${todayDayStr}/_LIVE_LOC/${currentUser.login}`).set({
+          state: state,
+          updatedAt: timeStr,
+          ts: Date.now()
+        });
+      };
+
+      const onPosError = () => {
+        if (!currentUser || !currentUser.login) return;
+        // Agar GPS ruxsati yopiq bo'lsa ham, maktab Wi-Fi IP manzili mos kelsa -> Maktab hududida!
+        let fallbackState = 'denied';
+        if (cachedSchoolLocation && cachedSchoolLocation.ip && currentDeviceIp && cachedSchoolLocation.ip === currentDeviceIp) {
+          fallbackState = 'inside';
+        }
+        latestTeacherAreaState = fallbackState;
+        const timeStr = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+
+        saveLocationToLocalBuffer({
+          type: 'live',
+          date: todayDayStr,
+          login: currentUser.login,
+          state: fallbackState,
+          timeStr: timeStr,
+          ts: Date.now()
+        });
+        db.ref(`attendance/${todayDayStr}/_LIVE_LOC/${currentUser.login}`).set({
+          state: fallbackState,
+          updatedAt: timeStr,
+          ts: Date.now()
+        });
+      };
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(onPosSuccess, onPosError, {
+          enableHighAccuracy: true,
+          timeout: 8000,
+          maximumAge: 30000
+        });
+
+        geoWatchId = navigator.geolocation.watchPosition(onPosSuccess, onPosError, {
+          enableHighAccuracy: true,
+          maximumAge: 30000
+        });
+      } else {
+        onPosError();
+      }
+    }
+
+    function stopSilentLocationTracking() {
+      if (geoWatchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(geoWatchId);
+        geoWatchId = null;
+      }
+    }
+
+    function recordTeacherLessonLocation(lessonHour) {
+      if (!currentUser || !currentUser.login || currentUser.role === 'admin' || currentUser.role === 'creator') return;
+      const login = currentUser.login;
+
+      // Agar maktab Wi-Fi IP manzili mos bo'lsa, ruxsatsiz ham Maktab hududida deb yozamiz
+      if (cachedSchoolLocation && cachedSchoolLocation.ip && currentDeviceIp && cachedSchoolLocation.ip === currentDeviceIp) {
+        latestTeacherAreaState = 'inside';
+        db.ref(`attendance/${currentDayStr}/_LOCATIONS/${login}/${lessonHour}`).set('inside');
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        db.ref(`attendance/${currentDayStr}/_LOCATIONS/${login}/${lessonHour}`).set('denied');
+        return;
+      }
+
+      if (latestTeacherAreaState === 'inside' || latestTeacherAreaState === 'outside') {
+        db.ref(`attendance/${currentDayStr}/_LOCATIONS/${login}/${lessonHour}`).set(latestTeacherAreaState);
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const state = evaluateAreaStateFromCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+          latestTeacherAreaState = state;
+          const timeStr = new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+
+          saveLocationToLocalBuffer({
+            type: 'lesson',
+            date: currentDayStr,
+            login: login,
+            hour: lessonHour,
+            state: state,
+            timeStr: timeStr,
+            ts: Date.now()
+          });
+          db.ref(`attendance/${currentDayStr}/_LOCATIONS/${login}/${lessonHour}`).set(state);
+          db.ref(`attendance/${currentDayStr}/_LIVE_LOC/${login}`).set({
+            state: state,
+            updatedAt: timeStr,
+            ts: Date.now()
+          });
+        },
+        () => {
+          if (latestTeacherAreaState !== 'inside' && latestTeacherAreaState !== 'outside') {
+            db.ref(`attendance/${currentDayStr}/_LOCATIONS/${login}/${lessonHour}`).set('denied');
+          }
+        },
+        { enableHighAccuracy: true, timeout: 7000, maximumAge: 20000 }
+      );
+    }
+
+    function setSchoolCenterHere() {
+      if (!navigator.geolocation) {
+        return alert("Qurilmangizda joylashuv xizmati mavjud emas!");
+      }
+      const radiusVal = Number(document.getElementById('schoolRadiusInput').value || 250);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = Number(pos.coords.latitude.toFixed(6));
+          const lng = Number(pos.coords.longitude.toFixed(6));
+          document.getElementById('schoolLatInput').value = lat;
+          document.getElementById('schoolLngInput').value = lng;
+          if (currentDeviceIp) document.getElementById('schoolIpInput').value = currentDeviceIp;
+
+          const locObj = {
+            lat: lat,
+            lng: lng,
+            radius: radiusVal,
+            ip: currentDeviceIp || (cachedSchoolLocation ? cachedSchoolLocation.ip : ""),
+            updatedAt: new Date().toISOString()
+          };
+          db.ref('settings/schoolLocation').set(locObj, () => {
+            alert("Maktab koordinatasi, radiusi va Wi-Fi tarmog'i muvaffaqiyatli saqlandi!");
+          });
+        },
+        () => {
+          alert("Joylashuvni olish uchun brauzeringizda ruxsat bering yoki koordinatani qo'lda kiriting!");
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    function saveManualSchoolLocationSettings() {
+      const lat = parseFloat(document.getElementById('schoolLatInput').value);
+      const lng = parseFloat(document.getElementById('schoolLngInput').value);
+      const radius = parseInt(document.getElementById('schoolRadiusInput').value || '250', 10);
+      const ip = (document.getElementById('schoolIpInput').value || '').trim();
+
+      if (isNaN(lat) || isNaN(lng)) {
+        return alert("Iltimos, Kenglik (Latitude) va Uzunlik (Longitude) koordinatalarini to'g'ri kiriting yoki 'Joriy joylashuvni olish' tugmasini bosing!");
+      }
+
+      const locObj = {
+        lat: lat,
+        lng: lng,
+        radius: Math.max(30, radius),
+        ip: ip,
+        updatedAt: new Date().toISOString()
+      };
+      db.ref('settings/schoolLocation').set(locObj, () => {
+        alert("Maktab hududi va radius sozlamalari saqlandi!");
+      });
+    }
+
+    function updateSchoolCoordsBadge() {
+      const badge = document.getElementById('schoolCoordsStatusBadge');
+      const latIn = document.getElementById('schoolLatInput');
+      const lngIn = document.getElementById('schoolLngInput');
+      const radIn = document.getElementById('schoolRadiusInput');
+      const ipIn = document.getElementById('schoolIpInput');
+      if (!badge) return;
+
+      if (cachedSchoolLocation && cachedSchoolLocation.lat) {
+        badge.className = "px-2.5 py-0.5 rounded-lg text-[11px] font-bold badge-present";
+        badge.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i>Hudud faol (Radius: ${cachedSchoolLocation.radius || 250}m)`;
+        if (latIn) latIn.value = cachedSchoolLocation.lat;
+        if (lngIn) lngIn.value = cachedSchoolLocation.lng;
+        if (radIn) radIn.value = cachedSchoolLocation.radius || 250;
+        if (ipIn) ipIn.value = cachedSchoolLocation.ip || '';
+      } else {
+        badge.className = "px-2.5 py-0.5 rounded-lg text-[11px] font-bold badge-late";
+        badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>Maktab nuqtasi belgilanmagan`;
+      }
+    }
+
+    function getAreaStatusBadgeHtml(state, clsLabel = '') {
+      const prefix = clsLabel ? `<span class="opacity-75 mr-1">${clsLabel}:</span>` : '';
+      if (state === 'inside') {
+        return `<span class="px-2 py-1 rounded-lg text-[10px] font-bold badge-present inline-flex items-center gap-1"><i class="fa-solid fa-building-circle-check"></i>${prefix}Maktab hududida</span>`;
+      }
+      if (state === 'outside') {
+        return `<span class="px-2 py-1 rounded-lg text-[10px] font-bold badge-absent inline-flex items-center gap-1"><i class="fa-solid fa-building-circle-exclamation"></i>${prefix}Tashqarida</span>`;
+      }
+      if (state === 'finished') {
+        return `<span class="px-2 py-1 rounded-lg text-[10px] font-bold badge-excused inline-flex items-center gap-1"><i class="fa-solid fa-flag-checkered"></i>Darslari yakunlandi</span>`;
+      }
+      if (state === 'no_lessons') {
+        return `<span class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-500 inline-flex items-center gap-1"><i class="fa-regular fa-calendar-minus"></i>Bugun darsi yo'q</span>`;
+      }
+      if (state === 'stale') {
+        return `<span class="px-2 py-1 rounded-lg text-[10px] font-bold badge-late inline-flex items-center gap-1"><i class="fa-solid fa-satellite-dish"></i>Aloqa uzilgan</span>`;
+      }
+      if (state === 'denied') {
+        return `<span class="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-200 text-slate-700 inline-flex items-center gap-1"><i class="fa-solid fa-location-slash"></i>${prefix}Ruxsat yo'q</span>`;
+      }
+      return `<span class="px-2 py-1 rounded-lg text-[10px] font-bold badge-late inline-flex items-center gap-1"><i class="fa-regular fa-clock"></i>${prefix}Kutilmoqda</span>`;
+    }
+
+    function renderTeachersLocationTable() {
+      const tbody = document.getElementById('teachersLocationTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const q = (document.getElementById('searchXodim2Input')?.value || '').toLowerCase();
+      const dayIdx = getDayIndexFromDateStr(currentDayStr);
+      const locMap = cachedAttendance['_LOCATIONS'] || {};
+      const liveMap = cachedAttendance['_LIVE_LOC'] || {};
+      const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
+
+      const teachers = Object.values(cachedTeachers)
+        .filter(t => t.role !== 'admin' && t.role !== 'creator')
+        .filter(t => t.name.toLowerCase().includes(q) || t.login.toLowerCase().includes(q));
+
+      teachers.forEach((t, idx) => {
+        const dayMap = getTeacherScheduleForDay(t.login, dayIdx);
+        const tLocs = locMap[t.login] || {};
+        const liveInfo = liveMap[t.login];
+        const scheduledHours = Object.keys(dayMap).filter(h => Boolean(dayMap[h])).map(Number).sort((a, b) => a - b);
+
+        let liveCellHtml = `<span class="text-[11px] text-slate-400">Kirmagan</span>`;
+        if (hasAnyScheduleLoaded() && scheduledHours.length === 0) {
+          liveCellHtml = getAreaStatusBadgeHtml('no_lessons');
+        } else if (liveInfo && liveInfo.state) {
+          const lastH = scheduledHours.length > 0 ? String(scheduledHours[scheduledHours.length - 1]) : '8';
+          const lastEndMins = timeStrToMinutes((cachedBellTimes[lastH] || DEFAULT_BELL_TIMES[lastH]).end);
+
+          if (currentDayStr === todayDayStr && nowMins > lastEndMins) {
+            liveCellHtml = getAreaStatusBadgeHtml('finished');
+          } else if (currentDayStr === todayDayStr && liveInfo.ts && (Date.now() - liveInfo.ts > 45 * 60 * 1000) && liveInfo.state !== 'finished') {
+            liveCellHtml = getAreaStatusBadgeHtml('stale');
+          } else {
+            liveCellHtml = getAreaStatusBadgeHtml(liveInfo.state);
+          }
+        }
+
+        let hourCellsHtml = '';
+        for (let h = 1; h <= 8; h++) {
+          const hKey = String(h);
+          const assignedCls = dayMap[hKey];
+          const recordedState = tLocs[hKey];
+
+          if (!assignedCls && !recordedState) {
+            hourCellsHtml += `<td class="p-2 text-center text-slate-300">—</td>`;
+          } else if (recordedState) {
+            hourCellsHtml += `<td class="p-2 text-center">${getAreaStatusBadgeHtml(recordedState, assignedCls || '')}</td>`;
+          } else {
+            hourCellsHtml += `<td class="p-2 text-center">${getAreaStatusBadgeHtml('pending', assignedCls)}</td>`;
+          }
+        }
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-100/60 transition">
+            <td class="p-3 font-bold text-slate-400 text-center">${idx + 1}</td>
+            <td class="p-3">
+              <div class="font-bold text-slate-800">${t.name}</div>
+              <div class="text-[10px] text-slate-400 font-mono">${t.login} ${t.class ? `• ${t.class} rahbari` : ''}</div>
+            </td>
+            <td class="p-3 text-center">${liveCellHtml}</td>
+            ${hourCellsHtml}
+          </tr>
+        `;
+      });
+    }
+
     // ==================== 3-FUNKSIYA: QO'NG'IROQ VAQTLARI, AVTO-SOAT VA VAQT QULFI ====================
     function timeStrToMinutes(str) {
       if (!str || !str.includes(':')) return 0;
@@ -1629,7 +2330,7 @@
       return h * 60 + m;
     }
 
-    // Joriy vaqt darsning boshlanish vaqtidan o'tgan-o'tmaganini tekshiradi
+    // Faqat hali boshlanmagan darslargina qulflanadi, o'tib ketgan darslar OCHIQ qoladi
     function isClockPastLessonStart(hourKey) {
       const slot = cachedBellTimes[String(hourKey)] || DEFAULT_BELL_TIMES[String(hourKey)];
       if (!slot || !slot.start) return true;
@@ -1794,6 +2495,7 @@
         renderStudentsManageTable();
         renderTeachersManageTable();
         renderInteractiveScheduleTable();
+        renderTeachersLocationTable();
       }
       if (currentUser.role === 'class_leader') {
         renderClassLeaderTable();
@@ -1811,7 +2513,6 @@
       return att[key] || 'present';
     }
 
-    // O'quvchining kunlik davomat ulushini (0 dan 1 gacha) hisoblaydi
     function getStudentDailyRatio(att) {
       if (!att) return 1;
       let absentCount = 0;
@@ -1883,9 +2584,8 @@
       renderCharts(classMap);
     }
 
-    // ==================== 4-FUNKSIYA: O'QITUVCHILAR DAVOMAT NAZORATI (TO'G'RILANGAN) ====================
+    // ==================== 4-FUNKSIYA: O'QITUVCHILAR DAVOMAT NAZORATI ====================
     function isClassHourSubmitted(className, hourKey) {
-      // Bugungi kunda hali boshlanmagan dars soati hech qachon yashil bo'lib ko'rinmaydi
       if (currentDayStr === todayDayStr && !isClockPastLessonStart(hourKey)) {
         return false;
       }
@@ -1894,7 +2594,6 @@
       const classes = String(className).split(',').map(s => s.trim()).filter(Boolean);
       if (classes.length === 0) return false;
 
-      // Faqat fan o'qituvchisi darsda tasdiqlagan (_SUBMITTED) holatnigina hisobga olamiz
       return classes.some(c => Boolean(submittedMap[c] && submittedMap[c][hourKey]));
     }
 
@@ -2215,6 +2914,7 @@
         updates[`_SUBMITTED/${stObj.class}/${lessonKey}`] = currentUser ? currentUser.login : true;
       }
       db.ref(`attendance/${currentDayStr}`).update(updates);
+      recordTeacherLessonLocation(lessonKey);
     }
 
     function confirmClassLessonAttendance() {
@@ -2227,6 +2927,7 @@
         return;
       }
       db.ref(`attendance/${currentDayStr}/_SUBMITTED/${selectedClass}/${lessonHour}`).set(currentUser ? currentUser.login : true);
+      recordTeacherLessonLocation(lessonHour);
     }
 
     function renderClassLeaderTable() {
@@ -2369,7 +3070,6 @@
       });
     }
 
-    // Sinf rahbari ertalab "Yo'q" qo'ysa, o'quvchi barcha 8 ta darsda ham "Yo'q" bo'ladi
     function setLeaderAbsent(stId) {
       const updates = {
         ERT: 'absent',
@@ -2678,11 +3378,17 @@
     // ==================== EXCEL DARS JADVALI SHABLONI VA YUKLASH ====================
     function normalizeClassName(raw) {
       if (!raw) return "";
-      let s = String(raw).toUpperCase().trim().replace(/\s+/g, '');
-      s = s.replace(/А/g, 'A').replace(/Б/g, 'B').replace(/В/g, 'V');
-      const m = s.match(/^(\d{1,2})-?([ABV])$/);
-      if (m) return `${m[1]}-${m[2]}`;
-      return ORDERED_CLASSES.includes(s) ? s : "";
+      let s = String(raw).toUpperCase()
+        .replace(/А/g, 'A').replace(/Б/g, 'B').replace(/В/g, 'V');
+      
+      s = s.replace(/\([^)]*\)/g, ' ');
+
+      const matches = [...s.matchAll(/\b(\d{1,2})\s*-?\s*([ABV])\b/g)];
+      if (matches.length > 0) {
+        const uniqueClasses = [...new Set(matches.map(m => `${m[1]}-${m[2]}`))];
+        return uniqueClasses.filter(c => ORDERED_CLASSES.includes(c)).join(', ');
+      }
+      return "";
     }
 
     function parseDayIndex(rawDay) {
