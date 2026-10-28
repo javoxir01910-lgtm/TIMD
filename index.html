@@ -5091,6 +5091,523 @@
     } else {
       injectPart5UIElements();
     }
+// ==================== 6-QISM: QURILMALAR NAZORATI VA TIZIMNI 0 DAN BOSHLASH ====================
+    let cachedDevicesMap = {};
+    let isSingleDeviceLockActive = false;
+
+    // 1. Qurilmaning o'chmas Unikal ID kodini (Fingerprint) olish yoki yaratish
+    function getOrCreateDeviceFingerprint() {
+      let fp = localStorage.getItem('school_device_fp_id');
+      if (fp) return fp;
+
+      const nav = window.navigator;
+      const scr = window.screen;
+      const rawSig = [
+        nav.platform || '',
+        nav.language || '',
+        scr.width + 'x' + scr.height,
+        scr.colorDepth || '',
+        window.devicePixelRatio || 1,
+        nav.hardwareConcurrency || '',
+        nav.maxTouchPoints || 0
+      ].join('|');
+
+      let hash = 0;
+      for (let i = 0; i < rawSig.length; i++) {
+        hash = ((hash << 5) - hash) + rawSig.charCodeAt(i);
+        hash |= 0;
+      }
+      const randSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+      fp = 'DEV-' + Math.abs(hash).toString(16).toUpperCase().substring(0, 4) + '-' + randSuffix;
+      localStorage.setItem('school_device_fp_id', fp);
+      return fp;
+    }
+
+    // 2. Telefon / Kompyuterning aniq nomi va modelini aniqlash
+    async function detectDetailedDeviceName() {
+      const ua = navigator.userAgent || '';
+      const scrW = Math.min(window.screen.width, window.screen.height);
+      const scrH = Math.max(window.screen.width, window.screen.height);
+      const dpr = window.devicePixelRatio || 1;
+
+      // A) Zamonaviy Chrome/Android Client Hints orqali aniq modelni olish
+      if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+        try {
+          const vals = await navigator.userAgentData.getHighEntropyValues(['model', 'platform', 'platformVersion']);
+          if (vals.model) {
+            const plat = vals.platform || 'Android';
+            const ver = vals.platformVersion ? vals.platformVersion.split('.')[0] : '';
+            return `📱 ${vals.model} (${plat}${ver ? ' ' + ver : ''})`;
+          }
+        } catch (e) {}
+      }
+
+      // B) Android User-Agent ichidan modelni ajratib olish (Samsung, Redmi, Poco, Honor, Realme...)
+      if (/android/i.test(ua)) {
+        const verMatch = ua.match(/Android\s+([\d.]+)/i);
+        const verStr = verMatch ? `Android ${verMatch[1]}` : 'Android';
+        const modelMatch = ua.match(/;\s*([^;)]+?)\s+Build\//i) || ua.match(/Android[^;]+;\s*([^;)]+)/i);
+        if (modelMatch && modelMatch[1]) {
+          const cleanModel = modelMatch[1].replace(/wv$/i, '').trim();
+          if (cleanModel && cleanModel !== 'K') {
+            return `📱 ${cleanModel} (${verStr})`;
+          }
+        }
+        return `📱 Android Smartfon (${verStr} • ${scrW}×${scrH})`;
+      }
+
+      // V) iPhone / iPad (iOS)
+      if (/iPhone|iPad|iPod/i.test(ua)) {
+        const iosMatch = ua.match(/OS\s+([\d_]+)/i);
+        const iosVer = iosMatch ? `iOS ${iosMatch[1].replace(/_/g, '.')}` : 'iOS';
+        return `🍎 iPhone (${iosVer} • ${scrW}×${scrH} @${dpr}x)`;
+      }
+
+      // G) Kompyuter (Windows / Mac / Linux)
+      if (/Windows NT 10\.0/i.test(ua)) return `💻 Windows 10/11 Kompyuter (${scrW}×${scrH})`;
+      if (/Windows/i.test(ua)) return `💻 Windows Kompyuter`;
+      if (/Macintosh|Mac OS X/i.test(ua)) return `💻 MacBook / iMac (macOS)`;
+      if (/Linux/i.test(ua)) return `💻 Linux Qurilma`;
+
+      return `📱 Qurilma (${scrW}×${scrH})`;
+    }
+
+    // 3. Foydalanuvchi kirganda qurilmani tekshirish va Firebase bazasiga yozish
+    async function registerAndVerifyCurrentUserDevice() {
+      if (!currentUser || !currentUser.login || currentUser.role === 'creator') return true;
+
+      const login = currentUser.login;
+      const devId = getOrCreateDeviceFingerprint();
+      const devName = await detectDetailedDeviceName();
+      const nowStr = `${todayDayStr} ${getCurrentTimeHHMM()}`;
+
+      // Agar Admin "1 ta qurilma qulfi"ni yoqqan bo'lsa va bu xodimda boshqa qurilma ro'yxatdan o'tgan bo'lsa
+      if (isSingleDeviceLockActive && currentUser.role !== 'admin') {
+        const userDevs = cachedDevicesMap[login] || {};
+        const existingIds = Object.keys(userDevs);
+        if (existingIds.length > 0 && !userDevs[devId]) {
+          const firstDevName = userDevs[existingIds[0]]?.deviceName || existingIds[0];
+          alert(`🔒 XAVFSIZLIK BLOKI!\n\nSizning profilingiz "${firstDevName}" qurilmasiga biriktirilgan.\n\nBoshqa (2-chi) qurilmadan kirish taqiqlangan! Qurilmani almashtirish uchun Maktab Administratoriga murojaat qiling.`);
+          logout();
+          return false;
+        }
+      }
+
+      const existingRec = (cachedDevicesMap[login] && cachedDevicesMap[login][devId]) ? cachedDevicesMap[login][devId] : {};
+      const payload = {
+        deviceId: devId,
+        deviceName: devName,
+        firstSeen: existingRec.firstSeen || nowStr,
+        lastSeen: nowStr,
+        lastTs: Date.now(),
+        loginCount: (Number(existingRec.loginCount) || 0) + 1,
+        ip: currentDeviceIp || existingRec.ip || '—'
+      };
+
+      db.ref(`devices/${login}/${devId}`).set(payload);
+      return true;
+    }
+
+    // 4. "Qurilmalar" bo'limi va "0 dan boshlash" tugmasini HTMLga avtomatik qo'shish
+    function injectPart6DevicesAndResetUI() {
+      const mainEl = document.querySelector('#appScreen main');
+      if (!mainEl || document.getElementById('tabDevicesManage')) return;
+
+      // A) Umumiy Tahlil bo'limi tepasiga "Tizimni 0 dan boshlash" tugmasini qo'shish
+      const resetTodayBtn = document.querySelector('#tabAnalytics button[onclick="resetToTodayDate()"]');
+      if (resetTodayBtn && !document.getElementById('btnFullResetZero')) {
+        const zeroBtn = document.createElement('button');
+        zeroBtn.id = 'btnFullResetZero';
+        zeroBtn.type = 'button';
+        zeroBtn.onclick = resetAllAttendanceToZeroForMorning;
+        zeroBtn.className = 'px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-extrabold flex items-center gap-1.5 border border-rose-200 transition';
+        zeroBtn.innerHTML = `<i class="fa-solid fa-broom"></i> <span>0 dan boshlash (Tozalash)</span>`;
+        resetTodayBtn.parentNode.appendChild(zeroBtn);
+      }
+
+      // B) Yangi "Qurilmalar" bo'limi (#tabDevicesManage)
+      const devSection = document.createElement('section');
+      devSection.id = 'tabDevicesManage';
+      devSection.className = 'space-y-4 sm:space-y-6 hidden';
+      devSection.innerHTML = `
+        <div class="eye-card p-4 sm:p-6 rounded-3xl flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="text-base sm:text-xl font-extrabold text-slate-800">Xodimlar Qurilmalari va Xavfsizlik Nazorati</h2>
+              <span id="deviceLockModeBadge" class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold badge-present">Kuzatuv rejimi</span>
+            </div>
+            <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">Kim nechta telefondan kirayotgani, qurilma modeli va bitta telefondan bir necha kishi kirishini (o'rniga kirishni) aniqlash</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <button onclick="toggleSingleDeviceLockSetting()" id="btnToggleDeviceLock" class="flex-1 sm:flex-none px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition">
+              <i class="fa-solid fa-lock"></i> <span>2-qurilmani bloklash: O'chiq</span>
+            </button>
+            <button onclick="exportDevicesReportExcel()" class="flex-1 sm:flex-none px-3.5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition">
+              <i class="fa-solid fa-file-excel"></i> Qurilmalar (Excel)
+            </button>
+            <button onclick="resetAllAttendanceToZeroForMorning()" class="w-full sm:w-auto px-3.5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition">
+              <i class="fa-solid fa-rotate-left"></i> Tizimni 0 dan boshlash
+            </button>
+          </div>
+        </div>
+
+        <!-- Statistika kartochkalari -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+          <div class="eye-card p-3.5 sm:p-4 rounded-2xl flex items-center justify-between">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Faol Xodimlar</p>
+              <h3 id="statDevActiveUsers" class="text-lg sm:text-xl font-extrabold text-slate-800 mt-0.5">0 nafar</h3>
+            </div>
+            <div class="w-9 h-9 bg-sky-50 text-sky-700 rounded-xl flex items-center justify-center text-sm"><i class="fa-solid fa-mobile-screen-button"></i></div>
+          </div>
+          <div class="eye-card p-3.5 sm:p-4 rounded-2xl flex items-center justify-between">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">1 ta Qurilmali (Toza)</p>
+              <h3 id="statDevSingle" class="text-lg sm:text-xl font-extrabold text-emerald-700 mt-0.5">0 nafar</h3>
+            </div>
+            <div class="w-9 h-9 bg-emerald-50 text-emerald-700 rounded-xl flex items-center justify-center text-sm"><i class="fa-solid fa-shield-check"></i></div>
+          </div>
+          <div class="eye-card p-3.5 sm:p-4 rounded-2xl flex items-center justify-between">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">2+ Qurilmali Xodimlar</p>
+              <h3 id="statDevMulti" class="text-lg sm:text-xl font-extrabold text-amber-600 mt-0.5">0 nafar</h3>
+            </div>
+            <div class="w-9 h-9 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-sm"><i class="fa-solid fa-clone"></i></div>
+          </div>
+          <div class="eye-card p-3.5 sm:p-4 rounded-2xl flex items-center justify-between">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Bitta Telefondan 2+ Profil</p>
+              <h3 id="statDevShared" class="text-lg sm:text-xl font-extrabold text-rose-600 mt-0.5">0 ta</h3>
+            </div>
+            <div class="w-9 h-9 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-sm"><i class="fa-solid fa-user-secret"></i></div>
+          </div>
+        </div>
+
+        <!-- Qurilmalar Jadvali -->
+        <div class="eye-card rounded-3xl overflow-hidden">
+          <div class="p-4 border-b border-slate-200/70 flex flex-wrap items-center justify-between gap-3">
+            <select id="filterDevicesType" onchange="renderDevicesManageSection()" class="bg-slate-100 border-0 rounded-xl px-3 py-2 text-xs font-bold">
+              <option value="ALL">Barcha Xodimlar va Ishchilar</option>
+              <option value="multi">🟡 2 va undan ko'p qurilmadan kirganlar</option>
+              <option value="shared">🚨 Bitta telefondan bir necha profilga kirganlar</option>
+            </select>
+            <input type="text" id="searchDevicesInput" oninput="renderDevicesManageSection()" placeholder="Xodim yoki telefon modelini qidiring..." class="w-full sm:w-64 px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none">
+          </div>
+          <div class="overflow-x-auto table-container">
+            <table class="w-full text-left text-xs whitespace-nowrap">
+              <thead class="bg-slate-100/80 text-slate-500 uppercase font-bold border-b text-[11px]">
+                <tr>
+                  <th class="p-3 w-10 text-center">№</th>
+                  <th class="p-3 min-w-[200px]">Xodim F.I.SH</th>
+                  <th class="p-3">Lavozimi / Roli</th>
+                  <th class="p-3 text-center">Qurilmalar Soni</th>
+                  <th class="p-3 min-w-[280px]">Foydalanilgan Qurilma Nomi (Modeli) va Vaqti</th>
+                  <th class="p-3 text-center">Xavfsizlik Holati</th>
+                  <th class="p-3 text-right">Amal</th>
+                </tr>
+              </thead>
+              <tbody id="devicesManageTableBody" class="divide-y divide-slate-100 font-medium"></tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      mainEl.appendChild(devSection);
+    }
+
+    // 5. Firebase tinglovchilarini ulash
+    db.ref('devices').on('value', snap => {
+      cachedDevicesMap = snap.val() || {};
+      if (!document.getElementById('tabDevicesManage')?.classList.contains('hidden')) {
+        renderDevicesManageSection();
+      }
+    });
+
+    db.ref('settings/deviceLockEnabled').on('value', snap => {
+      isSingleDeviceLockActive = Boolean(snap.val());
+      updateDeviceLockUI();
+    });
+
+    function updateDeviceLockUI() {
+      const btn = document.getElementById('btnToggleDeviceLock');
+      const badge = document.getElementById('deviceLockModeBadge');
+      if (!btn || !badge) return;
+      if (isSingleDeviceLockActive) {
+        btn.className = 'flex-1 sm:flex-none px-3.5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition';
+        btn.innerHTML = `<i class="fa-solid fa-lock"></i> <span>2-qurilmani bloklash: YOQILGAN</span>`;
+        badge.className = 'px-2.5 py-0.5 rounded-lg text-[11px] font-bold badge-absent';
+        badge.innerText = '🔒 Qat\'iy 1 ta qurilma qulfi faol';
+      } else {
+        btn.className = 'flex-1 sm:flex-none px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition';
+        btn.innerHTML = `<i class="fa-solid fa-lock-open"></i> <span>2-qurilmani bloklash: O'chiq</span>`;
+        badge.className = 'px-2.5 py-0.5 rounded-lg text-[11px] font-bold badge-present';
+        badge.innerText = 'Kuzatuv rejimi (Bloklanmaydi)';
+      }
+    }
+
+    function toggleSingleDeviceLockSetting() {
+      const nextState = !isSingleDeviceLockActive;
+      const msg = nextState
+        ? "Diqqat! '2-qurilmani bloklash' rejimini yoqmoqchimisiz?\n\nBu rejimda har bir xodim faqat o'zining 1-chi kirgan telefonidan foydalana oladi, begona 2-chi telefondan kirish bloklanadi."
+        : "2-qurilmani bloklash rejimini o'chirib, oddiy kuzatuv rejimiga o'tmoqchimisiz?";
+      if (confirm(msg)) {
+        db.ref('settings/deviceLockEnabled').set(nextState);
+      }
+    }
+
+    // 6. Bitta qurilmadan bir nechta xodim kirganini (Shared Device) hisoblash
+    function buildDeviceToUsersMap() {
+      const devOwners = {}; // { deviceId: [ { login, name } ] }
+      const staffByLogin = {};
+      Object.values(cachedTeachers).forEach(t => {
+        if (t.login) staffByLogin[t.login] = t.name;
+      });
+
+      Object.keys(cachedDevicesMap).forEach(login => {
+        const userDevs = cachedDevicesMap[login] || {};
+        Object.keys(userDevs).forEach(devId => {
+          if (!devOwners[devId]) devOwners[devId] = [];
+          devOwners[devId].push({
+            login: login,
+            name: staffByLogin[login] || login
+          });
+        });
+      });
+      return devOwners;
+    }
+
+    function renderDevicesManageSection() {
+      const tbody = document.getElementById('devicesManageTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const filterType = document.getElementById('filterDevicesType')?.value || 'ALL';
+      const q = (document.getElementById('searchDevicesInput')?.value || '').toLowerCase();
+
+      const devOwnersMap = buildDeviceToUsersMap();
+      const allStaff = Object.values(cachedTeachers).filter(t => t.role !== 'creator');
+
+      let activeUsersCount = 0;
+      let singleDeviceCount = 0;
+      let multiDeviceCount = 0;
+      let sharedDeviceIncidents = 0;
+
+      const rowsData = [];
+
+      allStaff.forEach(t => {
+        const userDevsObj = cachedDevicesMap[t.login] || {};
+        const devList = Object.values(userDevsObj).sort((a, b) => (b.lastTs || 0) - (a.lastTs || 0));
+        const devCount = devList.length;
+
+        if (devCount > 0) activeUsersCount++;
+        if (devCount === 1) singleDeviceCount++;
+        if (devCount >= 2) multiDeviceCount++;
+
+        // Tekshiramiz: shu xodimning birorta qurilmasidan boshqa xodim ham kirganmi?
+        const sharedWithNames = [];
+        devList.forEach(d => {
+          const owners = devOwnersMap[d.deviceId] || [];
+          owners.forEach(o => {
+            if (o.login !== t.login && !sharedWithNames.includes(o.name)) {
+              sharedWithNames.push(o.name);
+            }
+          });
+        });
+
+        if (sharedWithNames.length > 0) sharedDeviceIncidents++;
+
+        rowsData.push({
+          teacher: t,
+          devList,
+          devCount,
+          sharedWithNames
+        });
+      });
+
+      document.getElementById('statDevActiveUsers').innerText = `${activeUsersCount} nafar`;
+      document.getElementById('statDevSingle').innerText = `${singleDeviceCount} nafar`;
+      document.getElementById('statDevMulti').innerText = `${multiDeviceCount} nafar`;
+      document.getElementById('statDevShared').innerText = `${sharedDeviceIncidents} ta`;
+
+      const filtered = rowsData.filter(item => {
+        if (filterType === 'multi' && item.devCount < 2) return false;
+        if (filterType === 'shared' && item.sharedWithNames.length === 0) return false;
+        if (q) {
+          const matchName = item.teacher.name.toLowerCase().includes(q) || item.teacher.login.toLowerCase().includes(q);
+          const matchDev = item.devList.some(d => (d.deviceName || '').toLowerCase().includes(q) || (d.deviceId || '').toLowerCase().includes(q));
+          if (!matchName && !matchDev) return false;
+        }
+        return true;
+      });
+
+      window.cachedDevicesExportRows = [];
+
+      filtered.forEach((item, idx) => {
+        const t = item.teacher;
+        const devCount = item.devCount;
+
+        let roleLabel = "Fan o'qituvchisi";
+        if (t.role === 'admin') roleLabel = "Administrator";
+        else if (t.role === 'class_leader') roleLabel = `${t.class} rahbari`;
+        else if (t.role === 'worker') roleLabel = t.jobTitle || "Maktab xodimi";
+
+        let countBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-400">0 ta</span>`;
+        if (devCount === 1) countBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-extrabold badge-present">1 ta</span>`;
+        else if (devCount === 2) countBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-extrabold badge-late">2 ta qurilma</span>`;
+        else if (devCount >= 3) countBadge = `<span class="px-2.5 py-1 rounded-lg text-xs font-extrabold badge-absent">${devCount} ta qurilma!</span>`;
+
+        let devicesHtml = `<span class="text-slate-400 italic text-[11px]">Hali tizimga kirmagan</span>`;
+        if (devCount > 0) {
+          devicesHtml = item.devList.map((d, dIdx) => `
+            <div class="py-1 ${dIdx > 0 ? 'border-t border-slate-200/60 mt-1' : ''}">
+              <span class="font-bold text-slate-800">${dIdx + 1}) ${d.deviceName}</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded ml-1">#${d.deviceId}</span>
+              <div class="text-[10px] text-slate-400">Oxirgi faollik: ${d.lastSeen} • Kirishlar: ${d.loginCount || 1} marta</div>
+            </div>
+          `).join('');
+        }
+
+        let statusHtml = `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-400">Kutilmoqda</span>`;
+        let statusTextForExcel = "Kirmagan";
+
+        if (item.sharedWithNames.length > 0) {
+          statusHtml = `<span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold badge-absent inline-block">🚨 O'rniga kirish! (${item.sharedWithNames.join(', ')} bilan bitta telefon)</span>`;
+          statusTextForExcel = `O'RNIGA KIRISH (${item.sharedWithNames.join(', ')})`;
+        } else if (devCount === 1) {
+          statusHtml = `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold badge-present"><i class="fa-solid fa-circle-check mr-1"></i>Toza (Shaxsiy 1 ta)</span>`;
+          statusTextForExcel = "Toza (1 ta qurilma)";
+        } else if (devCount === 2) {
+          statusHtml = `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold badge-late"><i class="fa-solid fa-triangle-exclamation mr-1"></i>2 xil qurilmadan kirgan</span>`;
+          statusTextForExcel = "Ogohlantirish (2 ta qurilma)";
+        } else if (devCount >= 3) {
+          statusHtml = `<span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold badge-absent"><i class="fa-solid fa-skull-crossbones mr-1"></i>GUMONLI (${devCount} ta qurilma)</span>`;
+          statusTextForExcel = `GUMONLI (${devCount} ta qurilma)`;
+        }
+
+        window.cachedDevicesExportRows.push([
+          idx + 1,
+          t.name,
+          roleLabel,
+          t.login,
+          `${devCount} ta`,
+          item.devList.map(d => `${d.deviceName} [${d.deviceId}] (${d.lastSeen})`).join(' | ') || '—',
+          statusTextForExcel
+        ]);
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-100/60 transition">
+            <td class="p-3 font-bold text-slate-400 text-center">${idx + 1}</td>
+            <td class="p-3">
+              <div class="font-bold text-slate-800">${t.name}</div>
+              <div class="text-[10px] font-mono text-slate-400">${t.login}</div>
+            </td>
+            <td class="p-3 font-semibold text-slate-600">${roleLabel}</td>
+            <td class="p-3 text-center">${countBadge}</td>
+            <td class="p-3 whitespace-normal">${devicesHtml}</td>
+            <td class="p-3 text-center whitespace-normal">${statusHtml}</td>
+            <td class="p-3 text-right">
+              ${devCount > 0 ? `
+                <button onclick="clearUserDevices('${t.login}', '${t.name.replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-[11px] font-bold transition">
+                  <i class="fa-solid fa-rotate-right mr-1"></i>Tozalash
+                </button>
+              ` : '<span class="text-slate-300">—</span>'}
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function clearUserDevices(login, name) {
+      if (confirm(`"${name}" xodimning ro'yxatdan o'tgan barcha qurilmalarini o'chirib, yangi telefondan kirishiga ruxsat bermoqchimisiz?`)) {
+        db.ref(`devices/${login}`).remove();
+      }
+    }
+
+    function exportDevicesReportExcel() {
+      if (!window.cachedDevicesExportRows || window.cachedDevicesExportRows.length === 0) {
+        renderDevicesManageSection();
+      }
+      const rows = [
+        ["Maktab Xodimlarining Foydalanayotgan Qurilmalari va Xavfsizlik Hisoboti"],
+        [`Sana: ${currentDayStr}`],
+        [],
+        ["#", "Xodim F.I.SH", "Lavozimi", "Login", "Qurilmalar Soni", "Qurilma Modellari va Kirgan Vaqti", "Xavfsizlik Holati"],
+        ...(window.cachedDevicesExportRows || [])
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = [{ wch: 6 }, { wch: 36 }, { wch: 20 }, { wch: 16 }, { wch: 16 }, { wch: 55 }, { wch: 28 }];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Qurilmalar_Nazorati");
+      XLSX.writeFile(wb, `Xodimlar_Qurilmalari_${currentDayStr}.xlsx`);
+    }
+
+    // ==================== 7. ERTALABDAN TIZIMNI "0" DAN BOSHLASH (TESTLARNI TOZALASH) ====================
+    function resetAllAttendanceToZeroForMorning() {
+      const msg = "🧹 DIQQAT! TIZIMNI 0 DAN BOSHLASH:\n\n" +
+        "Barcha sinov (test) uchun kiritilgan davomatlar, 'Keldim/Ketdim' vaqtlari va oylik/haftalik test raqamlari 0 ga tushiriladi.\n\n" +
+        "✅ O'quvchilar ro'yxati (300 ta),\n" +
+        "✅ Xodimlar va Ishchilar (login-parollari bilan),\n" +
+        "✅ Dars jadvali va Maktab GPS koordinatalari O'CHMAYDI!\n\n" +
+        "Tasdiqlaysizmi?";
+
+      if (!confirm(msg)) return;
+
+      const clearDevsToo = confirm("Qurilmalar tarixini ham 0 ga tushirib tozalamoqchimisiz?\n(OK = Qurilmalar ham tozalanadi | Отмена = Faqat davomat 0 ga tushadi)");
+
+      // Lokal keshdagi test yozuvlarni tozalash
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith('school_minute_logs_') || k.startsWith('school_loc_buffer') || k.startsWith('notif10_') || k.startsWith('notif5_'))) {
+          keysToRemove.push(k);
+        }
+      }
+      keysToRemove.forEach(k => localStorage.removeItem(k));
+
+      db.ref('attendance').remove(() => {
+        if (clearDevsToo) {
+          db.ref('devices').remove();
+        }
+        cachedAttendance = {};
+        cachedCheckInOut = {};
+        renderViews();
+        alert("✅ Tizim muvaffaqiyatli 0 ga tushirildi! Ertalab soat 07:00 dan barcha hisobotlar toza 0 dan boshlanadi.");
+      });
+    }
+
+    // 8. Menyuga "Qurilmalar" tugmasini qo'shish va kirishda qurilmani qayd etish
+    const _part5ShowApp = showApp;
+    showApp = function() {
+      injectPart6DevicesAndResetUI();
+      _part5ShowApp();
+
+      const tabs = document.getElementById('navTabs');
+      if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'creator')) {
+        if (tabs && !tabs.innerHTML.includes('tabDevicesManage')) {
+          tabs.innerHTML += `<button onclick="switchTab('tabDevicesManage')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 whitespace-nowrap"><i class="fa-solid fa-mobile-screen mr-1"></i>Qurilmalar</button>`;
+        }
+      }
+
+      registerAndVerifyCurrentUserDevice();
+      updateDeviceLockUI();
+    };
+
+    const _part5SwitchTab = switchTab;
+    switchTab = function(tabId) {
+      injectPart6DevicesAndResetUI();
+      const dSec = document.getElementById('tabDevicesManage');
+      if (dSec) dSec.classList.add('hidden');
+      _part5SwitchTab(tabId);
+      if (tabId === 'tabDevicesManage' && dSec) {
+        dSec.classList.remove('hidden');
+        renderDevicesManageSection();
+      }
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', injectPart6DevicesAndResetUI);
+    } else {
+      injectPart6DevicesAndResetUI();
+    }
   </script>
 </body>
 </html>
