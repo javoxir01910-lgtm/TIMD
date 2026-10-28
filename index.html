@@ -4195,6 +4195,902 @@
         XLSX.writeFile(wb, `${labelName}_Davomat_Hisoboti_${currentDayStr}.xlsx`);
       });
     }
+    // ==================== 5-QISM: KELDIM/KETDIM, ISHCHILAR BO'LIMI VA BILDIRISHNOMALAR ====================
+    let cachedCheckInOut = {};
+    let activeCheckInOutRef = null;
+
+    // 1. Dinamik HTML elementlarni (<main> va modallar ichiga) avtomatik qo'shish
+    function injectPart5UIElements() {
+      const mainEl = document.querySelector('#appScreen main');
+      if (!mainEl || document.getElementById('globalCheckInOutCard')) return;
+
+      // A) Barcha xodimlar uchun "Keldim / Ketdim" paneli (<main> ning eng tepasiga)
+      const checkInOutBanner = document.createElement('div');
+      checkInOutBanner.id = 'globalCheckInOutCard';
+      checkInOutBanner.className = 'eye-card p-4 sm:p-5 rounded-3xl border border-teal-200/80 shadow-xs';
+      checkInOutBanner.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div id="checkInOutIconBox" class="w-11 h-11 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center text-lg font-black flex-shrink-0">
+              <i class="fa-solid fa-door-open"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-xs sm:text-sm font-extrabold text-slate-800">Ishga Kelish va Ketish Nazorati</h3>
+                <span id="myCheckInOutStatusBadge" class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold badge-late">Hali belgilanmagan</span>
+              </div>
+              <p id="myCheckInOutTimesText" class="text-[11px] text-slate-500 mt-0.5 font-medium">
+                Maktabga kelganda <b>"Keldim"</b>, ish yakunida <b>"Ketdim"</b> tugmasini bosing
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <button id="btnUserCheckIn" onclick="handleUserCheckIn()" class="flex-1 sm:flex-none px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 shadow-xs transition">
+              <i class="fa-solid fa-right-to-bracket"></i> <span>Keldim</span>
+            </button>
+            <button id="btnUserCheckOut" onclick="handleUserCheckOut()" class="flex-1 sm:flex-none px-4 py-2.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 shadow-xs transition">
+              <i class="fa-solid fa-right-from-bracket"></i> <span>Ketdim</span>
+            </button>
+            <button onclick="requestLessonNotificationPermission(true)" id="btnEnableNotif" title="Dars oldi eslatmalarini yoqish" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition">
+              <i class="fa-solid fa-bell text-amber-500"></i> <span class="hidden md:inline">Eslatma</span>
+            </button>
+          </div>
+        </div>
+      `;
+      mainEl.insertBefore(checkInOutBanner, mainEl.firstChild);
+
+      // B) Darsga 10 va 5 daqiqa qolganda ekranda chiquvchi Ovozli Eslatma oynasi (Toast Modal)
+      const reminderToast = document.createElement('div');
+      reminderToast.id = 'lessonReminderToast';
+      reminderToast.className = 'fixed top-4 right-4 left-4 sm:left-auto sm:w-96 bg-teal-900 text-white p-4 rounded-3xl shadow-2xl z-50 hidden border border-teal-400/40';
+      reminderToast.innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-900 flex-shrink-0 flex items-center justify-center text-lg font-black animate-bounce">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+          <div class="flex-1">
+            <h4 id="lessonReminderTitle" class="text-xs sm:text-sm font-extrabold text-amber-300">Dars eslatmasi!</h4>
+            <p id="lessonReminderBody" class="text-xs text-teal-50 mt-1 leading-relaxed"></p>
+          </div>
+          <button onclick="document.getElementById('lessonReminderToast').classList.add('hidden')" class="text-teal-200 hover:text-white p-1">
+            <i class="fa-solid fa-xmark text-base"></i>
+          </button>
+        </div>
+      `;
+      document.body.appendChild(reminderToast);
+
+      // V) Admin uchun yangi "Ishchilar" bo'limi (#tabWorkersManage)
+      const workersSection = document.createElement('section');
+      workersSection.id = 'tabWorkersManage';
+      workersSection.className = 'space-y-4 sm:space-y-6 hidden';
+      workersSection.innerHTML = `
+        <div class="eye-card p-4 sm:p-6 rounded-3xl flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base sm:text-xl font-extrabold text-slate-800">Ishchilar va Xodimlar Davomati (Keldim / Ketdim)</h2>
+            <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">Admindan tortib barcha o'qituvchi va texnik ishchilargacha kunlik kelish-ketish, gumonli holatlar va login/parollar</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <button onclick="downloadWorkersTemplateExcel()" class="flex-1 sm:flex-none px-3 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition">
+              <i class="fa-solid fa-download"></i> Shablon
+            </button>
+            <input type="file" id="workersExcelInput" accept=".xlsx, .xls" class="hidden" onchange="handleWorkersExcelImport(event)">
+            <button onclick="document.getElementById('workersExcelInput').click()" class="flex-1 sm:flex-none px-3.5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition">
+              <i class="fa-solid fa-file-import"></i> Excel Import (Login yaratish)
+            </button>
+            <button onclick="exportWorkersMonthlyExcel()" class="flex-1 sm:flex-none px-3.5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition">
+              <i class="fa-solid fa-file-excel"></i> Oylik Hisobot (Export)
+            </button>
+            <button onclick="openWorkerAddModal()" class="w-full sm:w-auto px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition">
+              <i class="fa-solid fa-user-plus"></i> Ishchi qo'shish
+            </button>
+          </div>
+        </div>
+
+        <!-- Kunlik Statistika Kartochkalari -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+          <div class="eye-card p-3.5 sm:p-4 rounded-2xl flex items-center justify-between">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Jami Xodim va Ishchi</p>
+              <h3 id="statWorkersTotal" class="text-lg sm:text-xl font-extrabold text-slate-800 mt-0.5">0 nafar</h3>
+            </div>
+            <div class="w-9 h-9 bg-sky-50 text-sky-700 rounded-xl flex items-center justify-center text-sm"><i class="fa-solid fa-id-card-clip"></i></div>
+          </div>
+          <div class="eye-card p-3.5 sm:p-4 rounded-2xl flex items-center justify-between">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">"Keldim" ni bosganlar</p>
+              <h3 id="statWorkersCheckedIn" class="text-lg sm:text-xl font-extrabold text-emerald-700 mt-0.5">0 nafar</h3>
+            </div>
+            <div class="w-9 h-9 bg-emerald-50 text-emerald-700 rounded-xl flex items-center justify-center text-sm"><i class="fa-solid fa-door-open"></i></div>
+          </div>
+          <div class="eye-card p-3.5 sm:p-4 rounded-2xl flex items-center justify-between">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">"Ketdim" ni bosganlar</p>
+              <h3 id="statWorkersCheckedOut" class="text-lg sm:text-xl font-extrabold text-teal-700 mt-0.5">0 nafar</h3>
+            </div>
+            <div class="w-9 h-9 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center text-sm"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
+          </div>
+          <div class="eye-card p-3.5 sm:p-4 rounded-2xl flex items-center justify-between">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-400">Gumonli Holatlar</p>
+              <h3 id="statWorkersSuspicious" class="text-lg sm:text-xl font-extrabold text-rose-600 mt-0.5">0 ta</h3>
+            </div>
+            <div class="w-9 h-9 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-sm"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          </div>
+        </div>
+
+        <!-- Jadval va Filtr -->
+        <div class="eye-card rounded-3xl overflow-hidden">
+          <div class="p-4 border-b border-slate-200/70 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2 flex-wrap">
+              <select id="filterWorkersRole" onchange="renderWorkersManageSection()" class="bg-slate-100 border-0 rounded-xl px-3 py-2 text-xs font-bold">
+                <option value="ALL">Barcha Xodimlar (Admin + O'qituvchi + Ishchi)</option>
+                <option value="worker">Faqat Ishchilar (Texnik / Ma'muriy)</option>
+                <option value="teachers">Faqat O'qituvchilar</option>
+                <option value="suspicious">🔴 Faqat Gumonli Holatlar</option>
+              </select>
+            </div>
+            <input type="text" id="searchWorkersInput" oninput="renderWorkersManageSection()" placeholder="Ism yoki login bo'yicha qidirish..." class="w-full sm:w-64 px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none">
+          </div>
+          <div class="overflow-x-auto table-container">
+            <table class="w-full text-left text-xs whitespace-nowrap">
+              <thead class="bg-slate-100/80 text-slate-500 uppercase font-bold border-b text-[11px]">
+                <tr>
+                  <th class="p-3 w-10 text-center">№</th>
+                  <th class="p-3 min-w-[200px]">F.I.SH</th>
+                  <th class="p-3">Lavozimi / Roli</th>
+                  <th class="p-3">Login / Parol</th>
+                  <th class="p-3 text-center">Keldim Vaqti</th>
+                  <th class="p-3 text-center">Ketdim Vaqti</th>
+                  <th class="p-3 text-center">Darslar Tasdig'i</th>
+                  <th class="p-3 text-center">Ketishda Joylashuv</th>
+                  <th class="p-3 text-center">Yakuniy Holat</th>
+                  <th class="p-3 text-right">Amallar</th>
+                </tr>
+              </thead>
+              <tbody id="workersManageTableBody" class="divide-y divide-slate-100 font-medium"></tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      mainEl.appendChild(workersSection);
+
+      // G) Xodim qo'shish modaliga "Ishchi (worker)" rolini va Lavozim nomini qo'shish
+      const roleSelect = document.getElementById('formTeacherRole');
+      if (roleSelect && !roleSelect.querySelector('option[value="worker"]')) {
+        const opt = document.createElement('option');
+        opt.value = 'worker';
+        opt.textContent = "Ishchi (Texnik / Ma'muriy xodim)";
+        roleSelect.appendChild(opt);
+
+        const jobWrapper = document.createElement('div');
+        jobWrapper.id = 'formWorkerTitleWrapper';
+        jobWrapper.className = 'hidden';
+        jobWrapper.innerHTML = `
+          <label class="block text-[11px] font-bold text-slate-500 mb-1">Ishchi lavozimi</label>
+          <input type="text" id="formWorkerTitle" placeholder="Masalan: Kutubxonachi, Qorovul, Psixolog..." class="w-full border rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-teal-600 focus:outline-none">
+        `;
+        const clsWrapper = document.getElementById('formTeacherClassWrapper');
+        if (clsWrapper && clsWrapper.parentNode) {
+          clsWrapper.parentNode.insertBefore(jobWrapper, clsWrapper.nextSibling);
+        }
+      }
+    }
+
+    // 2. Firebase'dan kunlik _CHECKINOUT ma'lumotlarini real vaqtda o'qish
+    function subscribeToCheckInOut(dateStr) {
+      if (activeCheckInOutRef) activeCheckInOutRef.off();
+      activeCheckInOutRef = db.ref(`attendance/${dateStr}/_CHECKINOUT`);
+      activeCheckInOutRef.on('value', snap => {
+        cachedCheckInOut = snap.val() || {};
+        updateMyCheckInOutBannerUI();
+        if (!document.getElementById('tabWorkersManage')?.classList.contains('hidden')) {
+          renderWorkersManageSection();
+        }
+      });
+    }
+
+    // 3. Mavjud funksiyalarni kengaytirish (Hook)
+    const _origSubscribeToAttendanceDate = subscribeToAttendanceDate;
+    subscribeToAttendanceDate = function(dateStr) {
+      _origSubscribeToAttendanceDate(dateStr);
+      subscribeToCheckInOut(dateStr);
+    };
+
+    const _origOnTeacherRoleSelectChange = onTeacherRoleSelectChange;
+    onTeacherRoleSelectChange = function() {
+      _origOnTeacherRoleSelectChange();
+      const role = document.getElementById('formTeacherRole')?.value;
+      const jobWrap = document.getElementById('formWorkerTitleWrapper');
+      if (jobWrap) {
+        if (role === 'worker') jobWrap.classList.remove('hidden');
+        else jobWrap.classList.add('hidden');
+      }
+    };
+
+    const _origOpenTeacherFormModal = openTeacherFormModal;
+    openTeacherFormModal = function(teacherId = null) {
+      injectPart5UIElements();
+      _origOpenTeacherFormModal(teacherId);
+      const jobInput = document.getElementById('formWorkerTitle');
+      if (jobInput) {
+        if (teacherId && cachedTeachers[teacherId]) {
+          jobInput.value = cachedTeachers[teacherId].jobTitle || '';
+        } else {
+          jobInput.value = '';
+        }
+      }
+      onTeacherRoleSelectChange();
+    };
+
+    function openWorkerAddModal() {
+      openTeacherFormModal(null);
+      const roleSel = document.getElementById('formTeacherRole');
+      if (roleSel) {
+        roleSel.value = 'worker';
+        onTeacherRoleSelectChange();
+      }
+    }
+
+    // saveTeacherForm ni jobTitle bilan saqlaydigan qilib kengaytirish
+    saveTeacherForm = function() {
+      const name = document.getElementById('formTeacherName').value.trim();
+      const role = document.getElementById('formTeacherRole').value;
+      const cls = role === 'class_leader' ? document.getElementById('formTeacherClass').value : "";
+      const jobTitle = role === 'worker' ? (document.getElementById('formWorkerTitle')?.value.trim() || "Ishchi xodim") : "";
+      const login = document.getElementById('formTeacherLogin').value.trim();
+      const pass = document.getElementById('formTeacherPass').value.trim();
+
+      if (!name || !login || !pass) return alert("Barcha maydonlarni to'ldiring!");
+
+      const duplicate = Object.values(cachedTeachers).find(t => t.login.toLowerCase() === login.toLowerCase() && t.id !== editingTeacherId);
+      if (duplicate) return alert("Ushbu login boshqa xodimda band! Boshqa login kiriting.");
+
+      const id = editingTeacherId || ("t_" + Date.now());
+      const oldLogin = (editingTeacherId && cachedTeachers[editingTeacherId]) ? cachedTeachers[editingTeacherId].login : null;
+
+      const newTeacherObj = { id, name, role, class: cls, jobTitle, login, pass };
+
+      db.ref(`teachers/${id}`).set(newTeacherObj, () => {
+        if (oldLogin && oldLogin !== login && cachedSchedules[oldLogin]) {
+          const movedSchedule = cachedSchedules[oldLogin];
+          db.ref(`schedules/teacherMap/${login}`).set(movedSchedule);
+          db.ref(`schedules/teacherMap/${oldLogin}`).remove();
+        }
+        closeTeacherFormModal();
+      });
+    };
+
+    const _origSwitchTab = switchTab;
+    switchTab = function(tabId) {
+      injectPart5UIElements();
+      const wSec = document.getElementById('tabWorkersManage');
+      if (wSec) wSec.classList.add('hidden');
+      _origSwitchTab(tabId);
+      if (tabId === 'tabWorkersManage' && wSec) {
+        wSec.classList.remove('hidden');
+        renderWorkersManageSection();
+      }
+    };
+
+    const _origShowApp = showApp;
+    showApp = function() {
+      injectPart5UIElements();
+      _origShowApp();
+      subscribeToCheckInOut(currentDayStr);
+
+      const tabs = document.getElementById('navTabs');
+      if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'creator')) {
+        if (tabs && !tabs.innerHTML.includes('tabWorkersManage')) {
+          tabs.innerHTML += `<button onclick="switchTab('tabWorkersManage')" class="px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 whitespace-nowrap"><i class="fa-solid fa-users-gear mr-1"></i>Ishchilar</button>`;
+        }
+      } else if (currentUser && currentUser.role === 'worker') {
+        const roleBadge = document.getElementById('userRoleBadge');
+        if (roleBadge) roleBadge.innerText = `${currentUser.name} (${currentUser.jobTitle || 'Ishchi xodim'})`;
+        if (tabs) {
+          tabs.innerHTML = `
+            <button onclick="switchTab('tabTeacherProfile')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-white shadow-xs text-teal-700 whitespace-nowrap"><i class="fa-solid fa-user-gear mr-1"></i>Profil va Ma'lumotlar</button>
+          `;
+        }
+        switchTab('tabTeacherProfile');
+      }
+
+      updateMyCheckInOutBannerUI();
+      requestLessonNotificationPermission(false);
+    };
+
+    const _origRenderViews = renderViews;
+    renderViews = function() {
+      _origRenderViews();
+      updateMyCheckInOutBannerUI();
+      if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'creator')) {
+        renderWorkersManageSection();
+      }
+    };
+
+    // ==================== 4. "KELDIM" VA "KETDIM" MANTIQI VA GUMONLI HOLAT TAHLILI ====================
+    function getUserEffectiveLogin() {
+      if (!currentUser) return null;
+      return currentUser.login || currentUser.id || 'creator';
+    }
+
+    // O'qituvchining bugungi jami darslari va tasdiqlangan darslari sonini hisoblash
+    function getTeacherLessonCompletionStats(teacherLogin, dayIdx) {
+      const dayMap = getTeacherScheduleForDay(teacherLogin, dayIdx);
+      const scheduledHours = Object.keys(dayMap).filter(h => Boolean(dayMap[h]));
+      const totalScheduled = scheduledHours.length;
+      if (totalScheduled === 0) {
+        return { totalScheduled: 0, confirmedCount: 0, allConfirmed: false };
+      }
+
+      const subMap = cachedAttendance['_SUBMITTED'] || {};
+      const locMap = (cachedAttendance['_LOCATIONS'] || {})[teacherLogin] || {};
+      let confirmedCount = 0;
+
+      scheduledHours.forEach(h => {
+        const cls = dayMap[h];
+        const classesArr = String(cls).split(',').map(s => s.trim()).filter(Boolean);
+        const isDone = Boolean(locMap[h]) || classesArr.some(c => subMap[c] && subMap[c][h]);
+        if (isDone) confirmedCount++;
+      });
+
+      return {
+        totalScheduled,
+        confirmedCount,
+        allConfirmed: confirmedCount >= totalScheduled
+      };
+    }
+
+    function handleUserCheckIn() {
+      if (!currentUser) return;
+      const loginKey = getUserEffectiveLogin();
+      const nowTime = getCurrentTimeHHMM();
+
+      // Orqa fon va bildirishnomalarni faollashtiramiz
+      startSilentAudioKeepAlive();
+      requestScreenWakeLock();
+      requestLessonNotificationPermission(false);
+
+      const processCheckInWithArea = (areaState) => {
+        if (areaState === 'outside' && currentUser.role !== 'creator') {
+          return alert("Diqqat! Siz maktab hududidan tashqaridasiz. 'Keldim' tugmasini faqat maktab hududiga kirgach bosishingiz mumkin!");
+        }
+        if (areaState === 'denied' && currentUser.role !== 'creator') {
+          return alert("Iltimos, qurilmangizda joylashuvga (GPS) ruxsat bering! Maktab hududida ekanligingizni tasdiqlash kerak.");
+        }
+
+        const existing = cachedCheckInOut[loginKey] || {};
+        const checkInTime = existing.checkInTime || nowTime;
+
+        const payload = {
+          ...existing,
+          checkInTime: checkInTime,
+          checkInArea: 'inside',
+          checkInTs: existing.checkInTs || Date.now(),
+          status: existing.checkOutTime ? existing.status : 'working'
+        };
+
+        db.ref(`attendance/${todayDayStr}/_CHECKINOUT/${loginKey}`).set(payload);
+        logMinuteAreaStateLocally('inside');
+        db.ref(`attendance/${todayDayStr}/_MINUTE_LOGS/${loginKey}/${checkInTime}`).set('inside');
+        alert(`✅ Maktabga kelgan vaqtingiz (${checkInTime}) muvaffaqiyatli qayd etildi!`);
+      };
+
+      if (cachedSchoolLocation && cachedSchoolLocation.ip && currentDeviceIp && cachedSchoolLocation.ip === currentDeviceIp) {
+        latestTeacherAreaState = 'inside';
+        processCheckInWithArea('inside');
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        processCheckInWithArea(currentUser.role === 'creator' ? 'inside' : 'denied');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const state = evaluateAreaStateFromCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+          latestTeacherAreaState = state;
+          processCheckInWithArea(state);
+        },
+        () => {
+          if (latestTeacherAreaState === 'inside') processCheckInWithArea('inside');
+          else processCheckInWithArea('denied');
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 15000 }
+      );
+    }
+
+    function handleUserCheckOut() {
+      if (!currentUser) return;
+      const loginKey = getUserEffectiveLogin();
+      const existing = cachedCheckInOut[loginKey] || {};
+
+      if (!existing.checkInTime) {
+        return alert("Siz bugun hali 'Keldim' tugmasini bosmagansiz! Avval 'Keldim' tugmasini bosing.");
+      }
+
+      const nowTime = getCurrentTimeHHMM();
+      const dayIdx = getDayIndexFromDateStr(todayDayStr);
+      const lessonStats = getTeacherLessonCompletionStats(loginKey, dayIdx);
+
+      const finalizeCheckOut = (areaState) => {
+        let finalStatus = 'confirmed'; // 'confirmed' | 'accepted_full_lessons' | 'suspicious' | 'inside_incomplete'
+
+        if (areaState === 'inside') {
+          if (lessonStats.totalScheduled > 0 && !lessonStats.allConfirmed) {
+            finalStatus = 'inside_incomplete';
+          } else {
+            finalStatus = 'confirmed';
+          }
+        } else {
+          // Maktab hududidan tashqarida (yoki GPS o'chiq holatda) "Ketdim" bosildi:
+          // Agar o'qituvchi barcha darslarida davomatni tasdiqlagan bo'lsa -> Qabul qilinadi!
+          if (lessonStats.totalScheduled > 0 && lessonStats.allConfirmed) {
+            finalStatus = 'accepted_full_lessons';
+          } else {
+            // Aks holda (davomat olmagan bo'lsa yoki darsi yo'q ishchi tashqarida bossa) -> GUMONLI!
+            finalStatus = 'suspicious';
+          }
+        }
+
+        const payload = {
+          ...existing,
+          checkOutTime: nowTime,
+          checkOutArea: areaState,
+          checkOutTs: Date.now(),
+          lessonsSummary: `${lessonStats.confirmedCount}/${lessonStats.totalScheduled}`,
+          status: finalStatus
+        };
+
+        db.ref(`attendance/${todayDayStr}/_CHECKINOUT/${loginKey}`).set(payload, () => {
+          if (areaState === 'inside') {
+            db.ref(`attendance/${todayDayStr}/_MINUTE_LOGS/${loginKey}/${nowTime}`).set('inside');
+          }
+          stopAllBackgroundPersistence();
+
+          if (finalStatus === 'suspicious') {
+            alert(`⚠️ Diqqat! Siz maktab hududidan tashqarida (yoki dars davomatlarini to'liq tasdiqlamasdan) "Ketdim" tugmasini bosdingiz.\n\nTizim buni "GUMONLI" holat sifatida Admin panelga qayd etdi!`);
+          } else if (finalStatus === 'accepted_full_lessons') {
+            alert(`✅ Sizning barcha darslaringiz (${lessonStats.confirmedCount}/${lessonStats.totalScheduled}) tasdiqlanganligi sababli ketish vaqtingiz (${nowTime}) qabul qilindi!`);
+          } else {
+            alert(`✅ Maktabdan ketish vaqtingiz (${nowTime}) maktab hududida tasdiqlandi. Xayrli kun!`);
+          }
+        });
+      };
+
+      if (cachedSchoolLocation && cachedSchoolLocation.ip && currentDeviceIp && cachedSchoolLocation.ip === currentDeviceIp) {
+        finalizeCheckOut('inside');
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        finalizeCheckOut('outside');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const state = evaluateAreaStateFromCoords(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+          latestTeacherAreaState = state;
+          finalizeCheckOut(state);
+        },
+        () => {
+          finalizeCheckOut(latestTeacherAreaState === 'inside' ? 'inside' : 'outside');
+        },
+        { enableHighAccuracy: true, timeout: 7000, maximumAge: 15000 }
+      );
+    }
+
+    function getCheckInOutStatusBadgeHtml(rec, lessonStats) {
+      if (!rec || !rec.checkInTime) {
+        return `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-500">Kelmagan</span>`;
+      }
+      if (!rec.checkOutTime) {
+        return `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold badge-present"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Ish jarayonida (${rec.checkInTime} dan)</span>`;
+      }
+      if (rec.status === 'confirmed') {
+        return `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold badge-present"><i class="fa-solid fa-circle-check mr-1"></i>Tasdiqlangan (Hududda)</span>`;
+      }
+      if (rec.status === 'accepted_full_lessons') {
+        return `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold badge-present"><i class="fa-solid fa-check-double mr-1"></i>Qabul qilindi (Darslar to'liq)</span>`;
+      }
+      if (rec.status === 'inside_incomplete') {
+        return `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold badge-late"><i class="fa-solid fa-circle-exclamation mr-1"></i>Hududda (Dars chala: ${lessonStats.confirmedCount}/${lessonStats.totalScheduled})</span>`;
+      }
+      return `<span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold badge-absent"><i class="fa-solid fa-triangle-exclamation mr-1"></i>GUMONLI (Tashqarida / Tasdiqsiz)</span>`;
+    }
+
+    function updateMyCheckInOutBannerUI() {
+      const badge = document.getElementById('myCheckInOutStatusBadge');
+      const timesText = document.getElementById('myCheckInOutTimesText');
+      if (!badge || !timesText || !currentUser) return;
+
+      const loginKey = getUserEffectiveLogin();
+      const rec = cachedCheckInOut[loginKey];
+      const dayIdx = getDayIndexFromDateStr(todayDayStr);
+      const lessonStats = getTeacherLessonCompletionStats(loginKey, dayIdx);
+
+      badge.outerHTML = `<span id="myCheckInOutStatusBadge">${getCheckInOutStatusBadgeHtml(rec, lessonStats)}</span>`;
+      if (rec && rec.checkInTime) {
+        timesText.innerHTML = `🟢 Keldim: <b>${rec.checkInTime}</b> &nbsp;|&nbsp; 🔴 Ketdim: <b>${rec.checkOutTime || '—'}</b> ${lessonStats.totalScheduled > 0 ? `&nbsp;|&nbsp; 📚 Darslar: <b>${lessonStats.confirmedCount}/${lessonStats.totalScheduled}</b>` : ''}`;
+      } else {
+        timesText.innerHTML = `Maktabga kelganda <b>"Keldim"</b>, ish yakunida <b>"Ketdim"</b> tugmasini bosing`;
+      }
+    }
+
+    // ==================== 5. HAR BIR DARSDAN 10 VA 5 DAQIQA OLDIN 2 MARTALIK BILDIRISHNOMA ====================
+    function requestLessonNotificationPermission(showFeedback = false) {
+      if (!('Notification' in window)) {
+        if (showFeedback) alert("Qurilmangiz brauzer bildirishnomalarini qo'llab-quvvatlamaydi, lekin ilova ichida ovozli eslatma ishlaydi!");
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        if (showFeedback) alert("🔔 Dars oldi (10 va 5 daqiqa qolganda) eslatmalar faol holatda!");
+        return;
+      }
+      Notification.requestPermission().then(perm => {
+        if (showFeedback && perm === 'granted') {
+          alert("🔔 Bildirishnomalar muvaffaqiyatli yoqildi! Har bir darsingizdan 10 va 5 daqiqa oldin eslatma yuboriladi.");
+        }
+      });
+    }
+
+    function playNotificationBellSound() {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        const ctx = new AudioContextClass();
+        const now = ctx.currentTime;
+
+        [587.33, 880].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.22);
+          gain.gain.setValueAtTime(0.25, now + i * 0.22);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.22 + 0.45);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + i * 0.22);
+          osc.stop(now + i * 0.22 + 0.45);
+        });
+      } catch (e) {}
+    }
+
+    function triggerDualLessonAlert(title, bodyText) {
+      playNotificationBellSound();
+      if (navigator.vibrate) {
+        try { navigator.vibrate([300, 150, 300]); } catch (e) {}
+      }
+
+      // Ekranda Toast Modal ko'rsatish
+      const toast = document.getElementById('lessonReminderToast');
+      if (toast) {
+        document.getElementById('lessonReminderTitle').innerText = title;
+        document.getElementById('lessonReminderBody').innerText = bodyText;
+        toast.classList.remove('hidden');
+      }
+
+      // Tizimli Push Notification chiqarish
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          const n = new Notification(title, {
+            body: bodyText,
+            icon: document.getElementById('appFavicon')?.href || '',
+            requireInteraction: true
+          });
+          n.onclick = () => {
+            window.focus();
+            n.close();
+          };
+        } catch (e) {}
+      }
+    }
+
+    function checkUpcomingLessonNotifications() {
+      if (!currentUser || !currentUser.login || currentUser.role === 'admin' || currentUser.role === 'creator' || currentUser.role === 'worker') return;
+      const dayIdx = getDayIndexFromDateStr(todayDayStr);
+      const dayMap = getTeacherScheduleForDay(currentUser.login, dayIdx);
+      const now = new Date();
+      const curMins = now.getHours() * 60 + now.getMinutes();
+
+      for (let h = 1; h <= 8; h++) {
+        const hKey = String(h);
+        const cls = dayMap[hKey];
+        if (!cls) continue;
+
+        const slot = cachedBellTimes[hKey] || DEFAULT_BELL_TIMES[hKey];
+        if (!slot || !slot.start) continue;
+
+        const startMins = timeStrToMinutes(slot.start);
+        const diff = startMins - curMins;
+
+        // 1-eslatma: Darsga 10 daqiqa qolganda (diff 10 yoki 9 daqiqa bo'lganda 1 marta)
+        if (diff <= 10 && diff >= 8) {
+          const key10 = `notif10_${todayDayStr}_${currentUser.login}_${hKey}`;
+          if (!localStorage.getItem(key10)) {
+            localStorage.setItem(key10, '1');
+            triggerDualLessonAlert(
+              `🔔 Darsga 10 daqiqa qoldi! (${hKey}-soat)`,
+              `Soat ${slot.start} da ${cls} sinfida ${hKey}-soat darsingiz boshlanadi. Tayyorgarlik ko'ring!`
+            );
+          }
+        }
+
+        // 2-eslatma: Darsga 5 daqiqa qolganda (diff 5 yoki 4 daqiqa bo'lganda 1 marta)
+        if (diff <= 5 && diff >= 3) {
+          const key5 = `notif5_${todayDayStr}_${currentUser.login}_${hKey}`;
+          if (!localStorage.getItem(key5)) {
+            localStorage.setItem(key5, '1');
+            triggerDualLessonAlert(
+              `⏰ Darsga 5 daqiqa qoldi! (${hKey}-soat: ${cls})`,
+              `Soat ${slot.start} da ${cls} sinfida darsingiz boshlanadi. Davomatni tasdiqlashni unutmang!`
+            );
+          }
+        }
+      }
+    }
+
+    setInterval(checkUpcomingLessonNotifications, 20000);
+
+    // ==================== 6. ADMIN "ISHCHILAR" BO'LIMI JADVALI VA EXCEL IMPORT / EXPORT ====================
+    function renderWorkersManageSection() {
+      const tbody = document.getElementById('workersManageTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const roleFilter = document.getElementById('filterWorkersRole')?.value || 'ALL';
+      const q = (document.getElementById('searchWorkersInput')?.value || '').toLowerCase();
+      const dayIdx = getDayIndexFromDateStr(currentDayStr);
+
+      const allStaff = Object.values(cachedTeachers).filter(t => t.role !== 'creator');
+      let checkedInCount = 0;
+      let checkedOutCount = 0;
+      let suspiciousCount = 0;
+
+      allStaff.forEach(t => {
+        const rec = cachedCheckInOut[t.login];
+        if (rec && rec.checkInTime) checkedInCount++;
+        if (rec && rec.checkOutTime) checkedOutCount++;
+        if (rec && rec.status === 'suspicious') suspiciousCount++;
+      });
+
+      document.getElementById('statWorkersTotal').innerText = `${allStaff.length} nafar`;
+      document.getElementById('statWorkersCheckedIn').innerText = `${checkedInCount} nafar`;
+      document.getElementById('statWorkersCheckedOut').innerText = `${checkedOutCount} nafar`;
+      document.getElementById('statWorkersSuspicious').innerText = `${suspiciousCount} ta`;
+
+      const filtered = allStaff.filter(t => {
+        if (q && !t.name.toLowerCase().includes(q) && !t.login.toLowerCase().includes(q)) return false;
+        const rec = cachedCheckInOut[t.login];
+        if (roleFilter === 'worker') return t.role === 'worker';
+        if (roleFilter === 'teachers') return t.role === 'subject' || t.role === 'class_leader';
+        if (roleFilter === 'suspicious') return rec && rec.status === 'suspicious';
+        return true;
+      });
+
+      filtered.forEach((t, idx) => {
+        const rec = cachedCheckInOut[t.login] || {};
+        const lessonStats = getTeacherLessonCompletionStats(t.login, dayIdx);
+
+        let roleBadge = `<span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md text-[11px] font-bold">Fan o'qituvchisi</span>`;
+        if (t.role === 'admin') roleBadge = `<span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-md text-[11px] font-bold">Administrator</span>`;
+        else if (t.role === 'class_leader') roleBadge = `<span class="px-2 py-0.5 bg-teal-50 text-teal-700 rounded-md text-[11px] font-bold">${t.class} rahbari</span>`;
+        else if (t.role === 'worker') roleBadge = `<span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md text-[11px] font-bold">${t.jobTitle || 'Ishchi xodim'}</span>`;
+
+        const lessonCell = lessonStats.totalScheduled > 0
+          ? `<span class="px-2 py-0.5 rounded-md font-bold ${lessonStats.allConfirmed ? 'badge-present' : 'badge-late'}">${lessonStats.confirmedCount} / ${lessonStats.totalScheduled} soat</span>`
+          : `<span class="text-slate-400 text-[11px]">Dars yo'q</span>`;
+
+        let outAreaBadge = `<span class="text-slate-300">—</span>`;
+        if (rec.checkOutTime) {
+          outAreaBadge = rec.checkOutArea === 'inside'
+            ? `<span class="px-2 py-0.5 rounded-md badge-present font-bold">Maktabda</span>`
+            : `<span class="px-2 py-0.5 rounded-md badge-absent font-bold">Tashqarida</span>`;
+        }
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-100/60 transition">
+            <td class="p-3 font-bold text-slate-400 text-center">${idx + 1}</td>
+            <td class="p-3 font-bold text-slate-800">${t.name}</td>
+            <td class="p-3">${roleBadge}</td>
+            <td class="p-3 font-mono text-[11px]"><b class="text-slate-800">${t.login}</b> / <span class="text-slate-500">${t.pass}</span></td>
+            <td class="p-3 text-center font-mono font-bold text-emerald-700">${rec.checkInTime || '—'}</td>
+            <td class="p-3 text-center font-mono font-bold text-rose-700">${rec.checkOutTime || '—'}</td>
+            <td class="p-3 text-center">${lessonCell}</td>
+            <td class="p-3 text-center">${outAreaBadge}</td>
+            <td class="p-3 text-center">${getCheckInOutStatusBadgeHtml(rec, lessonStats)}</td>
+            <td class="p-3 text-right space-x-1">
+              <button onclick="openTeacherFormModal('${t.id}')" class="px-2 py-1 bg-teal-50 text-teal-700 rounded-lg font-bold"><i class="fa-solid fa-pen"></i></button>
+              ${t.id !== 'admin' ? `<button onclick="deleteTeacher('${t.id}')" class="px-2 py-1 badge-absent rounded-lg font-bold"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // Ishchilar uchun Excel Shablon yuklab olish
+    function downloadWorkersTemplateExcel() {
+      const rows = [
+        ["F.I.SH", "Lavozimi", "Login", "Parol"],
+        ["Karimov Jasur Alisherovich", "Kutubxonachi", "karimov_j", "123456"],
+        ["Oripova Dilnoza Rustamovna", "Maktab psixologi", "oripova_d", "123456"],
+        ["Tursunovali Baxtiyor", "Qorovul", "", ""]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = [{ wch: 36 }, { wch: 24 }, { wch: 18 }, { wch: 14 }];
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Ishchilar_Shabloni");
+      XLSX.writeFile(wb, "Ishchilar_Import_Shabloni.xlsx");
+    }
+
+    // Ism-familiyadan avtomatik login yasash
+    function generateAutoLoginFromName(fullName, existingLoginsSet) {
+      const clean = String(fullName).toLowerCase()
+        .replace(/o‘|o'|ў/g, 'o').replace(/g‘|g'|ғ/g, 'g')
+        .replace(/sh|ш/g, 'sh').replace(/ch|ч/g, 'ch')
+        .replace(/[^a-z0-9\s]/g, '').trim();
+      const parts = clean.split(/\s+/);
+      let base = parts[0] || ('ishchi_' + Math.floor(Math.random() * 900 + 100));
+      if (parts[1]) base += '_' + parts[1].charAt(0);
+
+      let candidate = base;
+      let counter = 1;
+      while (existingLoginsSet.has(candidate)) {
+        candidate = `${base}${counter}`;
+        counter++;
+      }
+      existingLoginsSet.add(candidate);
+      return candidate;
+    }
+
+    // Exceldan Ishchilarni Import qilish va Login/Parol yaratish
+    function handleWorkersExcelImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const wb = XLSX.read(data, { type: 'array' });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
+
+          const existingLogins = new Set(Object.values(cachedTeachers).map(t => (t.login || '').toLowerCase()));
+          const updates = {};
+          let addedCount = 0;
+
+          rows.forEach((row, idx) => {
+            const keys = Object.keys(row);
+            const name = String(row['F.I.SH'] || row['Ism'] || row['Xodim'] || row[keys[0]] || '').trim();
+            if (!name || name.toLowerCase() === 'f.i.sh') return;
+
+            const jobTitle = String(row['Lavozimi'] || row['Lavozim'] || row[keys[1]] || 'Ishchi xodim').trim();
+            let login = String(row['Login'] || row['login'] || row[keys[2]] || '').trim().toLowerCase();
+            let pass = String(row['Parol'] || row['parol'] || row[keys[3]] || '123456').trim();
+
+            if (!login || existingLogins.has(login)) {
+              login = generateAutoLoginFromName(name, existingLogins);
+            } else {
+              existingLogins.add(login);
+            }
+            if (!pass) pass = '123456';
+
+            const id = 'w_' + Date.now() + '_' + idx;
+            updates[`teachers/${id}`] = {
+              id,
+              name,
+              role: 'worker',
+              class: '',
+              jobTitle,
+              login,
+              pass
+            };
+            addedCount++;
+          });
+
+          if (addedCount === 0) {
+            alert("Fayl ichidan ishchilar ro'yxati topilmadi!");
+            event.target.value = '';
+            return;
+          }
+
+          db.ref().update(updates, () => {
+            alert(`✅ Jami ${addedCount} nafar ishchi muvaffaqiyatli qo'shildi va ular uchun Login/Parollar yaratildi!`);
+            event.target.value = '';
+          });
+        } catch (err) {
+          alert("Excel faylni o'qishda xatolik yuz berdi!");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // Ishchilar va Xodimlarning Oylik (30 kunlik) "Keldim / Ketdim" Excel Eksporti
+    function exportWorkersMonthlyExcel() {
+      const parts = currentDayStr.split('-');
+      const endDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      const dateKeys = [];
+
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(endDate);
+        d.setDate(endDate.getDate() - i);
+        if (d.getDay() !== 0) dateKeys.push(formatDateLocal(d));
+      }
+
+      const startDateStr = dateKeys[0] || currentDayStr;
+      db.ref('attendance').orderByKey().startAt(startDateStr).endAt(currentDayStr).once('value', snap => {
+        const allAtt = snap.val() || {};
+        const staffList = Object.values(cachedTeachers).filter(t => t.role !== 'creator');
+
+        const summaryRows = [
+          [`Xodimlar va Ishchilarning Oylik "Keldim / Ketdim" Hisoboti (${startDateStr} — ${currentDayStr})`],
+          [],
+          ["#", "F.I.SH", "Lavozimi / Roli", "Login", "Parol", "Ishga kelgan kunlari", "Tasdiqlangan ketishlar", "Gumonli holatlar soni"]
+        ];
+
+        const dailyHeader = ["#", "F.I.SH", "Lavozimi", ...dateKeys];
+        const dailyRows = [
+          [`Kunlik "Keldim - Ketdim" Vaqtlari Jadvali (${startDateStr} — ${currentDayStr})`],
+          [],
+          dailyHeader
+        ];
+
+        staffList.forEach((t, idx) => {
+          let daysPresent = 0;
+          let cleanCheckOuts = 0;
+          let suspiciousDays = 0;
+
+          const roleLabel = t.role === 'worker' ? (t.jobTitle || 'Ishchi') : (t.role === 'admin' ? 'Admin' : (t.role === 'class_leader' ? `${t.class} rahbari` : "O'qituvchi"));
+          const perDayCells = [];
+
+          dateKeys.forEach(dKey => {
+            const dayRec = ((allAtt[dKey] || {})['_CHECKINOUT'] || {})[t.login];
+            if (dayRec && dayRec.checkInTime) {
+              daysPresent++;
+              if (dayRec.status === 'suspicious') suspiciousDays++;
+              else if (dayRec.checkOutTime) cleanCheckOuts++;
+
+              const tag = dayRec.status === 'suspicious' ? ' [GUMONLI]' : '';
+              perDayCells.push(`${dayRec.checkInTime} - ${dayRec.checkOutTime || '...'}${tag}`);
+            } else {
+              perDayCells.push("—");
+            }
+          });
+
+          summaryRows.push([
+            idx + 1,
+            t.name,
+            roleLabel,
+            t.login,
+            t.pass,
+            `${daysPresent} kun`,
+            `${cleanCheckOuts} kun`,
+            suspiciousDays > 0 ? `${suspiciousDays} marta (Gumonli)` : "0"
+          ]);
+
+          dailyRows.push([idx + 1, t.name, roleLabel, ...perDayCells]);
+        });
+
+        const wb = XLSX.utils.book_new();
+        const ws1 = XLSX.utils.aoa_to_sheet(summaryRows);
+        ws1['!cols'] = [{ wch: 6 }, { wch: 36 }, { wch: 22 }, { wch: 16 }, { wch: 14 }, { wch: 20 }, { wch: 22 }, { wch: 22 }];
+        const ws2 = XLSX.utils.aoa_to_sheet(dailyRows);
+
+        XLSX.utils.book_append_sheet(wb, ws1, "Oylik_Yigma_Hisobot");
+        XLSX.utils.book_append_sheet(wb, ws2, "Kunlik_Keldim_Ketdim");
+        XLSX.writeFile(wb, `Ishchilar_Oylik_Hisobot_${currentDayStr}.xlsx`);
+      });
+    }
+
+    // Dastur yuklanganda 5-qism elementlarini ishga tushiramiz
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', injectPart5UIElements);
+    } else {
+      injectPart5UIElements();
+    }
   </script>
 </body>
 </html>
